@@ -51,4 +51,14 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 1, @leaderboard.rank_for('member_4')
   end
+  
+  def test_score_for
+    @leaderboard.add_member('member_1', 1)
+    @leaderboard.add_member('member_2', 2)
+    @leaderboard.add_member('member_3', 3)
+    @leaderboard.add_member('member_4', 4)
+    @leaderboard.add_member('member_5', 5)
+    
+    assert_equal 4, @leaderboard.score_for('member_4')
+  end
 end

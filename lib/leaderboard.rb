@@ -48,4 +48,8 @@ class Leaderboard
   def rank_for(member)
     @redis_server.zrevrank(@leaderboard_name, member)
   end
+  
+  def score_for(member)
+    @redis_server.zscore(@leaderboard_name, member).to_f
+  end
 end
