@@ -105,6 +105,21 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 1, leaders.size / 2
   end
   
+  def test_around_me
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
+    
+    leaders_around_me = @leaderboard.around_me('member_30')
+    assert_equal @leaderboard.page_size, leaders_around_me.size / 2
+    
+    leaders_around_me = @leaderboard.around_me('member_1')
+    assert_equal @leaderboard.page_size + 1, leaders_around_me.size
+    
+    leaders_around_me = @leaderboard.around_me('member_76')
+    assert_equal @leaderboard.page_size, leaders_around_me.size / 2
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)

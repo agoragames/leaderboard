@@ -83,6 +83,16 @@ class Leaderboard
     @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
   end
   
-  def around_me(member, current_page)
+  def around_me(member, with_scores = true)
+    reverse_rank_for_member = @redis_server.zrevrank(@leaderboard_name, member)
+    
+    starting_offset = reverse_rank_for_member - (@page_size / 2)
+    if starting_offset < 0
+      starting_offset = 0
+    end
+    
+    ending_offset = (starting_offset + @page_size) - 1
+    
+    @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
   end
 end
