@@ -54,6 +54,10 @@ class Leaderboard
     @redis_connection.zcount(@leaderboard_name, min_score, max_score)
   end
   
+  def change_score_for(member, delta)
+    @redis_connection.zincrby(@leaderboard_name, delta, member)
+  end
+  
   def rank_for(member)
     @redis_connection.zrevrank(@leaderboard_name, member)
   end

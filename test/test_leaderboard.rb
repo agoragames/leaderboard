@@ -153,6 +153,17 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_nil @leaderboard.rank_for('member_1')
   end
   
+  def test_change_score_for
+    @leaderboard.add_member('member_1', 5)    
+    assert_equal 5, @leaderboard.score_for('member_1')
+
+    @leaderboard.change_score_for('member_1', 5)    
+    assert_equal 10, @leaderboard.score_for('member_1')
+
+    @leaderboard.change_score_for('member_1', -5)    
+    assert_equal 5, @leaderboard.score_for('member_1')
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)
