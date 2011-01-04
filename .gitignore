@@ -42,3 +42,4 @@ pkg
 #*.swp
 
 Gemfile.lock
+test/db/*
