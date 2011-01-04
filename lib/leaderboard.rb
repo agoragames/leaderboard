@@ -61,7 +61,7 @@ class Leaderboard
   def score_for(member)
     @redis_server.zscore(@leaderboard_name, member).to_f
   end
-  
+
   def leaders(current_page, with_scores = true)
     if current_page < 1
       current_page = 1
@@ -94,5 +94,20 @@ class Leaderboard
     ending_offset = (starting_offset + @page_size) - 1
     
     @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+  end
+  
+  def ranked_in_list(members, with_scores = false)
+    ranks_for_members = []
+    
+    members.each do |member|
+      data = []
+      data << member
+      data << rank_for(member)
+      data << score_for(member) if with_scores
+      
+      ranks_for_members << data
+    end
+    
+    ranks_for_members
   end
 end
