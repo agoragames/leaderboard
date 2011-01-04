@@ -8,6 +8,11 @@ class Leaderboard
     @leaderboard_name = leaderboard_name
     @host = host
     @port = port
+    
+    if page_size < 1
+      page_size = DEFAULT_PAGE_SIZE
+    end
+    
     @page_size = page_size
     
     @redis_server = Redis.new(:host => @host, :port => @port)
@@ -39,6 +44,10 @@ class Leaderboard
   
   def total_members
     @redis_server.zcard(@leaderboard_name)
+  end
+  
+  def total_pages
+    (total_members / @page_size.to_f).ceil
   end
   
   def total_members_in_score_range(min_score, max_score)
