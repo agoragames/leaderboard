@@ -8,4 +8,8 @@ group :development do
   gem "rcov", ">= 0"
 end
 
+group :test do
+  gem 'mocha'
+end
+
 gem 'redis', :git => 'git://github.com/ezmobius/redis-rb.git'

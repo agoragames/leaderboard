@@ -22,4 +22,12 @@ class Leaderboard
   def leaderboard_name
     @leaderboard_name
   end
+  
+  def add_member(member, score)
+    @redis_server.zadd(@leaderboard_name, score, member)
+  end
+  
+  def total_members
+    @redis_server.zcard(@leaderboard_name)
+  end  
 end
