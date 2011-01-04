@@ -13,6 +13,10 @@ class Leaderboard
     @redis_server = Redis.new(:host => @host, :port => @port)
   end
   
+  def flush
+    @redis_server.flushdb
+  end
+  
   def host
     @host
   end
@@ -39,5 +43,9 @@ class Leaderboard
   
   def total_members_in_score_range(min_score, max_score)
     @redis_server.zcount(@leaderboard_name, min_score, max_score)
-  end  
+  end
+  
+  def rank_for(member)
+    @redis_server.zrevrank(@leaderboard_name, member)
+  end
 end
