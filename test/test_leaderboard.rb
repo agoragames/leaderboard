@@ -67,6 +67,44 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 2, @leaderboard.total_pages
   end
   
+  def test_leaders
+    add_members_to_leaderboard(25)
+    
+    assert_equal 25, @leaderboard.total_members
+
+    leaders = @leaderboard.leaders(1)
+        
+    assert_equal 25, leaders.size / 2
+    assert_equal 'member_25', leaders[0]
+    assert_equal 25, leaders[1].to_i
+    assert_equal 'member_1', leaders[-2]
+    assert_equal 1, leaders[-1].to_i
+  end
+  
+  def test_leaders_with_multiple_pages
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
+
+    leaders = @leaderboard.leaders(1)
+    assert_equal @leaderboard.page_size, leaders.size / 2
+    
+    leaders = @leaderboard.leaders(2)
+    assert_equal @leaderboard.page_size, leaders.size / 2
+
+    leaders = @leaderboard.leaders(3)
+    assert_equal @leaderboard.page_size, leaders.size / 2
+
+    leaders = @leaderboard.leaders(4)
+    assert_equal 1, leaders.size / 2
+    
+    leaders = @leaderboard.leaders(-5)
+    assert_equal @leaderboard.page_size, leaders.size / 2
+    
+    leaders = @leaderboard.leaders(10)
+    assert_equal 1, leaders.size / 2
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)

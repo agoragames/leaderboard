@@ -61,4 +61,28 @@ class Leaderboard
   def score_for(member)
     @redis_server.zscore(@leaderboard_name, member).to_f
   end
+  
+  def leaders(current_page, with_scores = true)
+    if current_page < 1
+      current_page = 1
+    end
+    
+    if current_page > total_pages
+      current_page = total_pages
+    end
+    
+    index_for_redis = current_page - 1
+
+    starting_offset = (index_for_redis * @page_size)
+    if starting_offset < 0
+      starting_offset = 0
+    end
+    
+    ending_offset = (starting_offset + @page_size) - 1
+    
+    @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+  end
+  
+  def around_me(member, current_page)
+  end
 end
