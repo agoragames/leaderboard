@@ -38,6 +38,10 @@ class Leaderboard
     @redis_connection.zadd(@leaderboard_name, score, member)
   end
   
+  def remove_member(member)
+    @redis_connection.zrem(@leaderboard_name, member)
+  end
+  
   def total_members
     @redis_connection.zcard(@leaderboard_name)
   end

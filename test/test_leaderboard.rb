@@ -142,6 +142,17 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 10, ranked_members[2][2]    
   end
   
+  def test_remove_member
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
+    
+    @leaderboard.remove_member('member_1')
+    
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE - 1, @leaderboard.total_members
+    assert_nil @leaderboard.rank_for('member_1')
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)
