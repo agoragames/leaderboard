@@ -47,15 +47,19 @@ class Leaderboard
     @redis_connection.zincrby(@leaderboard_name, delta, member)
   end
   
-  def rank_for(member)
-    @redis_connection.zrevrank(@leaderboard_name, member)
+  def rank_for(member, use_zero_index_for_rank = false)    
+    if use_zero_index_for_rank
+      return @redis_connection.zrevrank(@leaderboard_name, member)
+    else
+      return @redis_connection.zrevrank(@leaderboard_name, member) + 1 rescue nil
+    end
   end
   
   def score_for(member)
     @redis_connection.zscore(@leaderboard_name, member).to_f
   end
 
-  def leaders(current_page, with_scores = true)
+  def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     if current_page < 1
       current_page = 1
     end
@@ -73,10 +77,15 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    raw_leader_data = @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    if raw_leader_data
+      massage_leader_data(raw_leader_data, with_rank, use_zero_index_for_rank)
+    else
+      return nil
+    end
   end
   
-  def around_me(member, with_scores = true)
+  def around_me(member, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     reverse_rank_for_member = @redis_connection.zrevrank(@leaderboard_name, member)
     
     starting_offset = reverse_rank_for_member - (@page_size / 2)
@@ -86,21 +95,49 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    raw_leader_data = @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    if raw_leader_data
+      massage_leader_data(raw_leader_data, with_rank, use_zero_index_for_rank)
+    else
+      return nil
+    end
   end
   
-  def ranked_in_list(members, with_scores = false)
+  def ranked_in_list(members, with_scores = false, use_zero_index_for_rank = false)
     ranks_for_members = []
     
     members.each do |member|
       data = {}
       data[:member] = member
-      data[:rank] = rank_for(member)
+      data[:rank] = rank_for(member, use_zero_index_for_rank)
       data[:score] = score_for(member) if with_scores
       
       ranks_for_members << data
     end
     
     ranks_for_members
+  end
+  
+  private 
+  
+  def massage_leader_data(leaders, with_rank, use_zero_index_for_rank)
+    member_attribute = true    
+    leader_data = []
+    
+    data = {}        
+    leaders.each do |leader_data_item|
+      if member_attribute
+        data[:member] = leader_data_item
+      else
+        data[:score] = leader_data_item
+        data[:rank] = rank_for(data[:member], use_zero_index_for_rank) if with_rank
+        leader_data << data
+        data = {}     
+      end
+            
+      member_attribute = !member_attribute
+    end
+    
+    leader_data
   end
 end

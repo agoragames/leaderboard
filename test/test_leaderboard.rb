@@ -47,8 +47,9 @@ class TestLeaderboard < Test::Unit::TestCase
   
   def test_rank_for
     add_members_to_leaderboard(5)
-    
-    assert_equal 1, @leaderboard.rank_for('member_4')
+
+    assert_equal 2, @leaderboard.rank_for('member_4')
+    assert_equal 1, @leaderboard.rank_for('member_4', true)
   end
   
   def test_score_for
@@ -76,11 +77,11 @@ class TestLeaderboard < Test::Unit::TestCase
 
     leaders = @leaderboard.leaders(1)
         
-    assert_equal 25, leaders.size / 2
-    assert_equal 'member_25', leaders[0]
-    assert_equal 25, leaders[1].to_i
-    assert_equal 'member_1', leaders[-2]
-    assert_equal 1, leaders[-1].to_i
+    assert_equal 25, leaders.size
+    assert_equal 'member_25', leaders[0][:member]
+    assert_equal 'member_2', leaders[-2][:member]
+    assert_equal 'member_1', leaders[-1][:member]
+    assert_equal 1, leaders[-1][:score].to_i
   end
   
   def test_leaders_with_multiple_pages
@@ -89,22 +90,22 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
 
     leaders = @leaderboard.leaders(1)
-    assert_equal @leaderboard.page_size, leaders.size / 2
+    assert_equal @leaderboard.page_size, leaders.size
     
     leaders = @leaderboard.leaders(2)
-    assert_equal @leaderboard.page_size, leaders.size / 2
+    assert_equal @leaderboard.page_size, leaders.size
 
     leaders = @leaderboard.leaders(3)
-    assert_equal @leaderboard.page_size, leaders.size / 2
+    assert_equal @leaderboard.page_size, leaders.size
 
     leaders = @leaderboard.leaders(4)
-    assert_equal 1, leaders.size / 2
+    assert_equal 1, leaders.size
     
     leaders = @leaderboard.leaders(-5)
-    assert_equal @leaderboard.page_size, leaders.size / 2
+    assert_equal @leaderboard.page_size, leaders.size
     
     leaders = @leaderboard.leaders(10)
-    assert_equal 1, leaders.size / 2
+    assert_equal 1, leaders.size
   end
   
   def test_around_me
@@ -113,13 +114,13 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
     
     leaders_around_me = @leaderboard.around_me('member_30')
-    assert_equal @leaderboard.page_size, leaders_around_me.size / 2
+    assert_equal @leaderboard.page_size / 2, leaders_around_me.size / 2
     
     leaders_around_me = @leaderboard.around_me('member_1')
-    assert_equal @leaderboard.page_size + 1, leaders_around_me.size
+    assert_equal @leaderboard.page_size / 2 + 1, leaders_around_me.size
     
     leaders_around_me = @leaderboard.around_me('member_76')
-    assert_equal @leaderboard.page_size, leaders_around_me.size / 2
+    assert_equal @leaderboard.page_size / 2, leaders_around_me.size / 2
   end
   
   def test_ranked_in_list
@@ -132,13 +133,13 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 3, ranked_members.size
 
-    assert_equal 24, ranked_members[0][:rank]
+    assert_equal 25, ranked_members[0][:rank]
     assert_equal 1, ranked_members[0][:score]
 
-    assert_equal 20, ranked_members[1][:rank]
+    assert_equal 21, ranked_members[1][:rank]
     assert_equal 5, ranked_members[1][:score]
 
-    assert_equal 15, ranked_members[2][:rank]
+    assert_equal 16, ranked_members[2][:rank]
     assert_equal 10, ranked_members[2][:score]    
   end
   

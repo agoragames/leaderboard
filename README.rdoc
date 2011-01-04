@@ -25,20 +25,20 @@ Get some information about your leaderboard:
   ruby-1.8.7-p302 > highscore_lb.total_pages
    => 1 
   
-Get some information about a specific member(s) in the leaderboard (ranks are 0-based so add 1 if necessary):
+Get some information about a specific member(s) in the leaderboard:
 
   ruby-1.8.7-p302 > highscore_lb.score_for('member_4')
    => 4.0 
   ruby-1.8.7-p302 > highscore_lb.rank_for('member_4')
-   => 6 
+   => 7 
   ruby-1.8.7-p302 > highscore_lb.rank_for('member_10')
-   => 0 
+   => 1 
   
 Get page 1 in the leaderboard:
 
   ruby-1.8.7-p302 > highscore_lb.leaders(1)
-   => ["member_10", "10", "member_9", "9", "member_8", "8", "member_7", "7", "member_6", "6", "member_5", "5", "member_4", "4", "member_3", "3", "member_2", "2", "member_1", "1"] 
-
+	 => [{:member=>"member_10", :rank=>1, :score=>"10"}, {:member=>"member_9", :rank=>2, :score=>"9"}, {:member=>"member_8", :rank=>3, :score=>"8"}, {:member=>"member_7", :rank=>4, :score=>"7"}, {:member=>"member_6", :rank=>5, :score=>"6"}, {:member=>"member_5", :rank=>6, :score=>"5"}, {:member=>"member_4", :rank=>7, :score=>"4"}, {:member=>"member_3", :rank=>8, :score=>"3"}, {:member=>"member_2", :rank=>9, :score=>"2"}, {:member=>"member_1", :rank=>10, :score=>"1"}]
+	
 Add more members to your leaderboard:
 
   ruby-1.8.7-p302 > 50.upto(95) do |index|
@@ -51,8 +51,8 @@ Add more members to your leaderboard:
 Get an "Around Me" leaderboard for a member:
 
   ruby-1.8.7-p302 > highscore_lb.around_me('member_53')
-   => ["member_65", "65", "member_64", "64", "member_63", "63", "member_62", "62", "member_61", "61", "member_60", "60", "member_59", "59", "member_58", "58", "member_57", "57", "member_56", "56", "member_55", "55", "member_54", "54", "member_53", "53", "member_52", "52", "member_51", "51", "member_50", "50", "member_10", "10", "member_9", "9", "member_8", "8", "member_7", "7", "member_6", "6", "member_5", "5", "member_4", "4", "member_3", "3", "member_2", "2"] 
-  
+	 => [{:member=>"member_65", :rank=>31, :score=>"65"}, {:member=>"member_64", :rank=>32, :score=>"64"}, {:member=>"member_63", :rank=>33, :score=>"63"}, {:member=>"member_62", :rank=>34, :score=>"62"}, {:member=>"member_61", :rank=>35, :score=>"61"}, {:member=>"member_60", :rank=>36, :score=>"60"}, {:member=>"member_59", :rank=>37, :score=>"59"}, {:member=>"member_58", :rank=>38, :score=>"58"}, {:member=>"member_57", :rank=>39, :score=>"57"}, {:member=>"member_56", :rank=>40, :score=>"56"}, {:member=>"member_55", :rank=>41, :score=>"55"}, {:member=>"member_54", :rank=>42, :score=>"54"}, {:member=>"member_53", :rank=>43, :score=>"53"}, {:member=>"member_52", :rank=>44, :score=>"52"}, {:member=>"member_51", :rank=>45, :score=>"51"}, {:member=>"member_50", :rank=>46, :score=>"50"}, {:member=>"member_10", :rank=>47, :score=>"10"}, {:member=>"member_9", :rank=>48, :score=>"9"}, {:member=>"member_8", :rank=>49, :score=>"8"}, {:member=>"member_7", :rank=>50, :score=>"7"}, {:member=>"member_6", :rank=>51, :score=>"6"}, {:member=>"member_5", :rank=>52, :score=>"5"}, {:member=>"member_4", :rank=>53, :score=>"4"}, {:member=>"member_3", :rank=>54, :score=>"3"}, {:member=>"member_2", :rank=>55, :score=>"2"}]	
+	
 Get rank and score for an arbitrary list of members (e.g. friends):
 
   ruby-1.8.7-p302 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'], true)
@@ -61,6 +61,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 == Future Ideas
 
 * Bulk insert
+* Is nil? OK to return if Redis returns no data or should it be []?
   
 == Contributing to leaderboard
  
