@@ -12,4 +12,5 @@ group :test do
   gem 'mocha'
 end
 
-gem 'redis', :git => 'git://github.com/ezmobius/redis-rb.git'
+gem 'redis'
+

@@ -1,11 +1,63 @@
 = leaderboard
 
-Leaderboards backed by Redis.
+Leaderboards backed by Redis, http://redis.io.
 
 Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
 
+== Usage
 
+Create a new leaderboard or attach to an existing leaderboard named 'highscores':
 
+  ruby-1.8.7-p302 > highscore_lb = Leaderboard.new('highscores')
+   => #<Leaderboard:0x1018e4250 @page_size=25, @port=6379, @host="localhost", @redis_connection=#<Redis client v2.1.1 connected to redis://localhost:6379/0 (Redis v2.1.10)>, @leaderboard_name="highscores"> 
+  
+Add members to your leaderboard:
+
+  ruby-1.8.7-p302 > 1.upto(10) do |index|
+  ruby-1.8.7-p302 >     highscore_lb.add_member("member_#{index}", index)
+  ruby-1.8.7-p302 ?>  end
+   => 1 
+  
+Get some information about your leaderboard:
+
+  ruby-1.8.7-p302 > highscore_lb.total_members
+   => 10 
+  ruby-1.8.7-p302 > highscore_lb.total_pages
+   => 1 
+  
+Get some information about a specific member(s) in the leaderboard (ranks are 0-based so add 1 if necessary):
+
+  ruby-1.8.7-p302 > highscore_lb.score_for('member_4')
+   => 4.0 
+  ruby-1.8.7-p302 > highscore_lb.rank_for('member_4')
+   => 6 
+  ruby-1.8.7-p302 > highscore_lb.rank_for('member_10')
+   => 0 
+  
+Get page 1 in the leaderboard:
+
+  ruby-1.8.7-p302 > highscore_lb.leaders(1)
+   => ["member_10", "10", "member_9", "9", "member_8", "8", "member_7", "7", "member_6", "6", "member_5", "5", "member_4", "4", "member_3", "3", "member_2", "2", "member_1", "1"] 
+
+Add more members to your leaderboard:
+
+  ruby-1.8.7-p302 > 50.upto(95) do |index|
+  ruby-1.8.7-p302 >     highscore_lb.add_member("member_#{index}", index)
+  ruby-1.8.7-p302 ?>  end
+   => 50 
+  ruby-1.8.7-p302 > highscore_lb.total_pages
+   => 3 
+  
+Get an "Around Me" leaderboard for a member:
+
+  ruby-1.8.7-p302 > highscore_lb.around_me('member_53')
+   => ["member_65", "65", "member_64", "64", "member_63", "63", "member_62", "62", "member_61", "61", "member_60", "60", "member_59", "59", "member_58", "58", "member_57", "57", "member_56", "56", "member_55", "55", "member_54", "54", "member_53", "53", "member_52", "52", "member_51", "51", "member_50", "50", "member_10", "10", "member_9", "9", "member_8", "8", "member_7", "7", "member_6", "6", "member_5", "5", "member_4", "4", "member_3", "3", "member_2", "2"] 
+  
+Get rank and score for an arbitrary list of members (e.g. friends):
+
+  ruby-1.8.7-p302 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'], true)
+   => [["member_1", 55, 1.0], ["member_62", 33, 62.0], ["member_67", 28, 67.0]] 
+  
 == Contributing to leaderboard
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
