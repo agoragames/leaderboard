@@ -1,6 +1,10 @@
 = leaderboard
 
-Description goes here.
+Leaderboards backed by Redis.
+
+Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
+
+
 
 == Contributing to leaderboard
  

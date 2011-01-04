@@ -15,13 +15,9 @@ class Leaderboard
     
     @page_size = page_size
     
-    @redis_server = Redis.new(:host => @host, :port => @port)
+    @redis_connection = Redis.new(:host => @host, :port => @port)
   end
-  
-  def flush
-    @redis_server.flushdb
-  end
-  
+    
   def host
     @host
   end
@@ -39,11 +35,11 @@ class Leaderboard
   end
   
   def add_member(member, score)
-    @redis_server.zadd(@leaderboard_name, score, member)
+    @redis_connection.zadd(@leaderboard_name, score, member)
   end
   
   def total_members
-    @redis_server.zcard(@leaderboard_name)
+    @redis_connection.zcard(@leaderboard_name)
   end
   
   def total_pages
@@ -51,15 +47,15 @@ class Leaderboard
   end
   
   def total_members_in_score_range(min_score, max_score)
-    @redis_server.zcount(@leaderboard_name, min_score, max_score)
+    @redis_connection.zcount(@leaderboard_name, min_score, max_score)
   end
   
   def rank_for(member)
-    @redis_server.zrevrank(@leaderboard_name, member)
+    @redis_connection.zrevrank(@leaderboard_name, member)
   end
   
   def score_for(member)
-    @redis_server.zscore(@leaderboard_name, member).to_f
+    @redis_connection.zscore(@leaderboard_name, member).to_f
   end
 
   def leaders(current_page, with_scores = true)
@@ -80,11 +76,11 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
   end
   
   def around_me(member, with_scores = true)
-    reverse_rank_for_member = @redis_server.zrevrank(@leaderboard_name, member)
+    reverse_rank_for_member = @redis_connection.zrevrank(@leaderboard_name, member)
     
     starting_offset = reverse_rank_for_member - (@page_size / 2)
     if starting_offset < 0
@@ -93,7 +89,7 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    @redis_server.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
   end
   
   def ranked_in_list(members, with_scores = false)

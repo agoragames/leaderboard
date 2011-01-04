@@ -4,10 +4,11 @@ require 'mocha'
 class TestLeaderboard < Test::Unit::TestCase
   def setup
     @leaderboard = Leaderboard.new('name')
+    @redis_connection = Redis.new
   end
   
   def teardown
-    @leaderboard.flush
+    @redis_connection.flushdb
   end
   
   def test_version
@@ -61,7 +62,8 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 1, @leaderboard.total_pages
     
-    @leaderboard.flush
+    @redis_connection.flushdb
+    
     add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
     
     assert_equal 2, @leaderboard.total_pages
