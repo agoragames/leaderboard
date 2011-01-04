@@ -56,7 +56,11 @@ Get an "Around Me" leaderboard for a member:
 Get rank and score for an arbitrary list of members (e.g. friends):
 
   ruby-1.8.7-p302 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'], true)
-   => [["member_1", 55, 1.0], ["member_62", 33, 62.0], ["member_67", 28, 67.0]] 
+   => [["member_1", 55, 1.0], ["member_62", 33, 62.0], ["member_67", 28, 67.0]]
+   
+== Future Ideas
+
+* Bulk insert
   
 == Contributing to leaderboard
  

@@ -4,6 +4,11 @@ class Leaderboard
   VERSION = '1.0.0'.freeze
   DEFAULT_PAGE_SIZE = 25
   
+  attr_reader :host
+  attr_reader :port
+  attr_reader :leaderboard_name
+  attr_reader :page_size
+  
   def initialize(leaderboard_name, host = 'localhost', port = 6379, page_size = DEFAULT_PAGE_SIZE)
     @leaderboard_name = leaderboard_name
     @host = host
@@ -17,23 +22,7 @@ class Leaderboard
     
     @redis_connection = Redis.new(:host => @host, :port => @port)
   end
-    
-  def host
-    @host
-  end
-  
-  def port
-    @port
-  end
-  
-  def leaderboard_name
-    @leaderboard_name
-  end
-  
-  def page_size
-    @page_size
-  end
-  
+      
   def add_member(member, score)
     @redis_connection.zadd(@leaderboard_name, score, member)
   end
