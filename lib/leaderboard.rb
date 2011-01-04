@@ -93,10 +93,10 @@ class Leaderboard
     ranks_for_members = []
     
     members.each do |member|
-      data = []
-      data << member
-      data << rank_for(member)
-      data << score_for(member) if with_scores
+      data = {}
+      data[:member] = member
+      data[:rank] = rank_for(member)
+      data[:score] = score_for(member) if with_scores
       
       ranks_for_members << data
     end

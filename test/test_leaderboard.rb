@@ -132,14 +132,14 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 3, ranked_members.size
 
-    assert_equal 24, ranked_members[0][1]
-    assert_equal 1, ranked_members[0][2]
+    assert_equal 24, ranked_members[0][:rank]
+    assert_equal 1, ranked_members[0][:score]
 
-    assert_equal 20, ranked_members[1][1]
-    assert_equal 5, ranked_members[1][2]
+    assert_equal 20, ranked_members[1][:rank]
+    assert_equal 5, ranked_members[1][:score]
 
-    assert_equal 15, ranked_members[2][1]
-    assert_equal 10, ranked_members[2][2]    
+    assert_equal 15, ranked_members[2][:rank]
+    assert_equal 10, ranked_members[2][:score]    
   end
   
   def test_remove_member
