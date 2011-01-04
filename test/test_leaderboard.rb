@@ -28,4 +28,12 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 1, leaderboard.total_members
   end
+
+  def test_total_members_in_score_range
+    leaderboard = Leaderboard.new('name')
+    
+    leaderboard.add_member('david', 1)
+    
+    assert_equal 1, leaderboard.total_members_in_score_range(1, 1)
+  end
 end

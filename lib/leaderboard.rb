@@ -29,5 +29,9 @@ class Leaderboard
   
   def total_members
     @redis_server.zcard(@leaderboard_name)
+  end
+  
+  def total_members_in_score_range(min_score, max_score)
+    @redis_server.zcount(@leaderboard_name, min_score, max_score)
   end  
 end
