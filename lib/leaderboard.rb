@@ -103,7 +103,7 @@ class Leaderboard
     end
   end
   
-  def ranked_in_list(members, with_scores = false, use_zero_index_for_rank = false)
+  def ranked_in_list(members, with_scores = true, use_zero_index_for_rank = false)
     ranks_for_members = []
     
     members.each do |member|
