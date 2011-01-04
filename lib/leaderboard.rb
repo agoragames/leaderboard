@@ -2,11 +2,13 @@ require 'redis'
 
 class Leaderboard
   VERSION = '1.0.0'.freeze
+  DEFAULT_PAGE_SIZE = 25
   
-  def initialize(leaderboard_name, host = 'localhost', port = 6379)
+  def initialize(leaderboard_name, host = 'localhost', port = 6379, page_size = DEFAULT_PAGE_SIZE)
     @leaderboard_name = leaderboard_name
     @host = host
     @port = port
+    @page_size = page_size
     
     @redis_server = Redis.new(:host => @host, :port => @port)
   end
@@ -21,6 +23,10 @@ class Leaderboard
   
   def leaderboard_name
     @leaderboard_name
+  end
+  
+  def page_size
+    @page_size
   end
   
   def add_member(member, score)
