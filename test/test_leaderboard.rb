@@ -1,5 +1,4 @@
 require 'helper'
-require 'mocha'
 
 class TestLeaderboard < Test::Unit::TestCase
   def setup
@@ -28,17 +27,12 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.page_size
   end
   
-  def test_add_member
-    @leaderboard.expects(:add_member).at_least_once
+  def test_add_member_and_total_members
     @leaderboard.add_member('member', 1)
-  end
-  
-  def test_total_members
-    @leaderboard.add_member('member', 1)
-    
+
     assert_equal 1, @leaderboard.total_members
   end
-
+  
   def test_total_members_in_score_range
     add_members_to_leaderboard(5)
     
