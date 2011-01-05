@@ -62,6 +62,60 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 
 * Bulk insert
 * Is nil? OK to return if Redis returns no data or should it be []?
+
+== Performance Metrics
+
+10 million sequential scores insert:
+
+  ruby-1.8.7-p302 > insert_time = Benchmark.measure do
+  ruby-1.8.7-p302 >       1.upto(10000000) do |index|
+  ruby-1.8.7-p302 >           highscore_lb.add_member("member_#{index}", index)
+  ruby-1.8.7-p302 ?>      end
+  ruby-1.8.7-p302 ?>  end
+   => #<Benchmark::Tms:0x101605660 @label="", @stime=173.61, @total=577.52, @real=911.718175172806, @utime=403.91, @cstime=0.0, @cutime=0.0> 
+  
+Average time to request an arbitrary page from the leaderboard:
+
+  ruby-1.8.7-p302 > requests_to_make = 50000
+   => 50000 
+  ruby-1.8.7-p302 > lb_request_time = 0
+   => 0 
+  ruby-1.8.7-p302 > 1.upto(requests_to_make) do
+  ruby-1.8.7-p302 >       lb_request_time += Benchmark.measure do
+  ruby-1.8.7-p302 >           highscore_lb.leaders(rand(highscore_lb.total_pages))
+  ruby-1.8.7-p302 ?>      end.total
+  ruby-1.8.7-p302 ?>  end
+   => 1 
+  ruby-1.8.7-p302 > 
+  ruby-1.8.7-p302 >   p lb_request_time / requests_to_make
+  0.001808
+   => nil 
+  
+10 million random scores insert:
+
+  ruby-1.8.7-p302 > insert_time = Benchmark.measure do
+  ruby-1.8.7-p302 >       1.upto(10000000) do |index|
+  ruby-1.8.7-p302 >           highscore_lb.add_member("member_#{index}", rand(50000000))
+  ruby-1.8.7-p302 ?>      end
+  ruby-1.8.7-p302 ?>  end
+   => #<Benchmark::Tms:0x10164ebf8 @label="", @stime=172.94, @total=577.91, @real=1356.57155895233, @utime=404.97, @cstime=0.0, @cutime=0.0> 
+  
+Average time to request an arbitrary page from the leaderboard:
+
+  ruby-1.8.7-p302 > requests_to_make = 50000
+   => 50000 
+  ruby-1.8.7-p302 > lb_request_time = 0
+   => 0 
+  ruby-1.8.7-p302 > 1.upto(requests_to_make) do
+  ruby-1.8.7-p302 >       lb_request_time += Benchmark.measure do
+  ruby-1.8.7-p302 >           highscore_lb.leaders(rand(highscore_lb.total_pages))
+  ruby-1.8.7-p302 ?>      end.total
+  ruby-1.8.7-p302 ?>  end
+   => 1 
+  ruby-1.8.7-p302 > 
+  ruby-1.8.7-p302 >   p lb_request_time / requests_to_make
+  0.00179680000000001
+   => nil 
   
 == Contributing to leaderboard
  
