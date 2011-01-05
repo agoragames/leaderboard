@@ -4,6 +4,15 @@ Leaderboards backed by Redis, http://redis.io.
 
 Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
 
+== Installation
+
+Install the gem:
+
+	gem install leaderboard
+	
+Make sure your redis server is running! Redis configuration is outside the scope of this README, but 
+check out the Redis documentation, http://redis.io/documentation.
+	
 == Usage
 
 Create a new leaderboard or attach to an existing leaderboard named 'highscores':
@@ -58,11 +67,6 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   ruby-1.8.7-p302 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'], true)
    => [{:rank=>55, :member=>"member_1", :score=>1.0}, {:rank=>33, :member=>"member_62", :score=>62.0}, {:rank=>28, :member=>"member_67", :score=>67.0}]   
    
-== Future Ideas
-
-* Bulk insert
-* Is nil? OK to return if Redis returns no data or should it be []?
-
 == Performance Metrics
 
 10 million sequential scores insert:
@@ -116,6 +120,11 @@ Average time to request an arbitrary page from the leaderboard:
   ruby-1.8.7-p302 >   p lb_request_time / requests_to_make
   0.00179680000000001
    => nil 
+
+== Future Ideas
+
+* Bulk insert
+* Is nil? OK to return if Redis returns no data or should it be []?
   
 == Contributing to leaderboard
  
