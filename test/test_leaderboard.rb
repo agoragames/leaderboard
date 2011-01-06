@@ -11,7 +11,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '1.0.0', Leaderboard::VERSION
+    assert_equal '1.0.1', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
@@ -157,6 +157,14 @@ class TestLeaderboard < Test::Unit::TestCase
 
     @leaderboard.change_score_for('member_1', -5)    
     assert_equal 5, @leaderboard.score_for('member_1')
+  end
+  
+  def test_can_change_page_size_and_have_it_reflected_in_size_of_result_set
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    @leaderboard.page_size = 5
+    assert_equal 5, @leaderboard.total_pages
+    assert_equal 5, @leaderboard.leaders(1).size
   end
   
   private

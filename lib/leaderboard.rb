@@ -1,15 +1,18 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.0'.freeze
+  VERSION = '1.0.1'.freeze
+  
   DEFAULT_PAGE_SIZE = 25
+  DEFAULT_REDIS_HOST = 'localhost'
+  DEFAULT_REDIS_PORT = 6379
   
   attr_reader :host
   attr_reader :port
   attr_reader :leaderboard_name
-  attr_reader :page_size
+  attr_accessor :page_size
   
-  def initialize(leaderboard_name, host = 'localhost', port = 6379, page_size = DEFAULT_PAGE_SIZE)
+  def initialize(leaderboard_name, host = DEFAULT_REDIS_HOST, port = DEFAULT_REDIS_PORT, page_size = DEFAULT_PAGE_SIZE, redis_options = {})
     @leaderboard_name = leaderboard_name
     @host = host
     @port = port
@@ -20,7 +23,13 @@ class Leaderboard
     
     @page_size = page_size
     
-    @redis_connection = Redis.new(:host => @host, :port => @port)
+    redis_options = redis_options.dup
+    redis_options[:host] ||= @host
+    redis_options[:port] ||= @port
+    
+    @redis_options = redis_options
+    
+    @redis_connection = Redis.new(@redis_options)
   end
       
   def add_member(member, score)
