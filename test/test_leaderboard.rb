@@ -159,6 +159,13 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 5, @leaderboard.score_for('member_1')
   end
   
+  def test_check_member
+    @leaderboard.add_member('member_1', 10)
+    
+    assert_equal true, @leaderboard.check_member?('member_1')
+    assert_equal false, @leaderboard.check_member?('member_2')
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)

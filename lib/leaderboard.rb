@@ -58,6 +58,10 @@ class Leaderboard
   def score_for(member)
     @redis_connection.zscore(@leaderboard_name, member).to_f
   end
+  
+  def check_member?(member)
+    !@redis_connection.zscore(@leaderboard_name, member).nil?
+  end
 
   def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     if current_page < 1
