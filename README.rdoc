@@ -19,6 +19,11 @@ Create a new leaderboard or attach to an existing leaderboard named 'highscores'
 
   ruby-1.8.7-p302 > highscore_lb = Leaderboard.new('highscores')
    => #<Leaderboard:0x1018e4250 @page_size=25, @port=6379, @host="localhost", @redis_connection=#<Redis client v2.1.1 connected to redis://localhost:6379/0 (Redis v2.1.10)>, @leaderboard_name="highscores"> 
+   
+If you need to pass in options for Redis, you can do this with the redis_options parameter:
+
+  redis_options = {:host => 'localhost', :port => 6379, :password => 'password', :db => 'some_redis_db'}
+  highscore_lb = Leaderboard.new('highscores', redis_options[:host], redis_options[:port], Leaderboard::DEFAULT_PAGE_SIZE, redis_options))
   
 Add members to your leaderboard:
 
@@ -73,6 +78,13 @@ Other useful methods:
 	total_members_in_score_range(min_score, max_score): Count the number of members within a score range in the leaderboard
 	change_score_for(member, delta): Change the score for a member by some amount delta (delta could be positive or negative)
 	check_member?(member): Check to see whether member is in the leaderboard
+   
+You can set the page size to something other than the default:
+
+  ruby-1.8.7-p302 > highscore_lb.page_size = 5
+   => 5 
+  ruby-1.8.7-p302 > highscore_lb
+   => #<Leaderboard:0x1018e2130 @leaderboard_name="highscores", @page_size=5, @port=6379, @redis_connection=#<Redis client v2.1.1 connected to redis://localhost:6379/0 (Redis v2.1.10)>, @host="localhost", @redis_options={:host=>"localhost", :port=>6379}>   
    
 == Performance Metrics
 
