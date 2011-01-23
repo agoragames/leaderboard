@@ -142,7 +142,10 @@ Average time to request an arbitrary page from the leaderboard:
 
 == Future Ideas
 
+* Rank and score for a member in a single call
+* Remove scores within a score range
 * Bulk insert
+* Atomicity for various operations?
 * Is nil? OK to return if Redis returns no data or should it be []?
   
 == Contributing to leaderboard
