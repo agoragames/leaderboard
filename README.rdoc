@@ -79,7 +79,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   ruby-1.8.7-p302 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'], true)
    => [{:rank=>55, :member=>"member_1", :score=>1.0}, {:rank=>33, :member=>"member_62", :score=>62.0}, {:rank=>28, :member=>"member_67", :score=>67.0}]   
 
-Other useful methods:
+=== Other useful methods
 
 	remove_member(member): Remove a member from the leaderboard
 	total_members_in_score_range(min_score, max_score): Count the number of members within a score range in the leaderboard
