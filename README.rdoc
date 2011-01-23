@@ -85,6 +85,8 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 	total_members_in_score_range(min_score, max_score): Count the number of members within a score range in the leaderboard
 	change_score_for(member, delta): Change the score for a member by some amount delta (delta could be positive or negative)
 	check_member?(member): Check to see whether member is in the leaderboard
+	score_and_rank_for(member, use_zero_index_for_rank = false): Retrieve the score and rank for a member in a single call
+	remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
       
 == Performance Metrics
 
@@ -142,8 +144,6 @@ Average time to request an arbitrary page from the leaderboard:
 
 == Future Ideas
 
-* Rank and score for a member in a single call
-* Remove scores within a score range
 * Bulk insert
 * Atomicity for various operations?
 * Is nil? OK to return if Redis returns no data or should it be []?

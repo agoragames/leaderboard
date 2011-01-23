@@ -71,7 +71,15 @@ class Leaderboard
   def check_member?(member)
     !@redis_connection.zscore(@leaderboard_name, member).nil?
   end
-
+  
+  def score_and_rank_for(member, use_zero_index_for_rank = false)
+    {:member => member, :score => score_for(member), :rank => rank_for(member, use_zero_index_for_rank)}    
+  end
+  
+  def remove_members_in_score_range(min_score, max_score)
+    @redis_connection.zremrangebyscore(@leaderboard_name, min_score, max_score)
+  end
+  
   def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     if current_page < 1
       current_page = 1
@@ -142,7 +150,7 @@ class Leaderboard
       if member_attribute
         data[:member] = leader_data_item
       else
-        data[:score] = leader_data_item
+        data[:score] = leader_data_item.to_f
         data[:rank] = rank_for(data[:member], use_zero_index_for_rank) if with_rank
         leader_data << data
         data = {}     

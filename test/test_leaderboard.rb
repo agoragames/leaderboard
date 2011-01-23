@@ -174,6 +174,36 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 5, @leaderboard.leaders(1).size
   end
   
+  def test_score_and_rank_for
+    add_members_to_leaderboard
+    
+    data = @leaderboard.score_and_rank_for('member_1')
+    assert_equal 'member_1', data[:member]
+    assert_equal 1, data[:score]
+    assert_equal 5, data[:rank]
+  end
+  
+  def test_remove_members_in_score_range
+    add_members_to_leaderboard
+    
+    assert_equal 5, @leaderboard.total_members
+    
+    @leaderboard.add_member('cheater_1', 100)
+    @leaderboard.add_member('cheater_2', 101)
+    @leaderboard.add_member('cheater_3', 102)
+
+    assert_equal 8, @leaderboard.total_members
+
+    @leaderboard.remove_members_in_score_range(100, 102)
+    
+    assert_equal 5, @leaderboard.total_members
+    
+    leaders = @leaderboard.leaders(1)
+    leaders.each do |leader|
+      assert leader[:score] < 100
+    end
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)
