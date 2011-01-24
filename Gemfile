@@ -8,5 +8,5 @@ group :development do
   gem "rcov", ">= 0"
 end
 
-gem 'redis'
+gem 'redis', "~> 2.1.1"
 
