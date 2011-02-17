@@ -1,4 +1,4 @@
-# leaderboard 1.0.1 (in progress)
+# leaderboard 1.0.1 (2011-02-16)
 
  * `redis_options` can be passed in the initializer to pass options for the connection to Redis
  * `page_size` is now settable outside of the initializer

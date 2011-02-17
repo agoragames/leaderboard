@@ -164,6 +164,5 @@ Average time to request an arbitrary page from the leaderboard:
 
 == Copyright
 
-Copyright (c) 2011 David Czarnecki. See LICENSE.txt for
-further details.
+Copyright (c) 2011 David Czarnecki. See LICENSE.txt for further details.
 

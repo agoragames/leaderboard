@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{leaderboard}
-  s.version = "1.0.0"
+  s.version = "1.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David Czarnecki"]
-  s.date = %q{2011-01-05}
+  s.date = %q{2011-02-16}
   s.description = %q{Leaderboards backed by Redis}
   s.email = %q{dczarnecki@agoragames.com}
   s.extra_rdoc_files = [
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     ".rvmrc",
+    "CHANGELOG.markdown",
     "Gemfile",
     "LICENSE.txt",
     "README.rdoc",
@@ -46,18 +47,18 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<redis>, [">= 0"])
+      s.add_runtime_dependency(%q<redis>, ["~> 2.1.1"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
     else
-      s.add_dependency(%q<redis>, [">= 0"])
+      s.add_dependency(%q<redis>, ["~> 2.1.1"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_dependency(%q<rcov>, [">= 0"])
     end
   else
-    s.add_dependency(%q<redis>, [">= 0"])
+    s.add_dependency(%q<redis>, ["~> 2.1.1"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
     s.add_dependency(%q<rcov>, [">= 0"])
