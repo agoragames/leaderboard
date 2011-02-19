@@ -15,8 +15,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "leaderboard"
   gem.homepage = "http://github.com/agoragames/leaderboard"
   gem.license = "MIT"
-  gem.summary = %Q{Leaderboards backed by Redis}
-  gem.description = %Q{Leaderboards backed by Redis}
+  gem.summary = %Q{Leaderboards backed by Redis in Ruby}
+  gem.description = %Q{Leaderboards backed by Redis in Ruby}
   gem.email = "dczarnecki@agoragames.com"
   gem.authors = ["David Czarnecki"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
