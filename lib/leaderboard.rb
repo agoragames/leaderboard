@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.1'.freeze
+  VERSION = '1.0.2'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_REDIS_HOST = 'localhost'
@@ -33,54 +33,102 @@ class Leaderboard
   end
       
   def add_member(member, score)
-    @redis_connection.zadd(@leaderboard_name, score, member)
+    add_member_to(@leaderboard_name, member, score)
+  end
+
+  def add_member_to(leaderboard_name, member, score)
+    @redis_connection.zadd(leaderboard_name, score, member)
   end
   
   def remove_member(member)
-    @redis_connection.zrem(@leaderboard_name, member)
+    remove_member_from(@leaderboard_name, member)
+  end
+  
+  def remove_member_from(leaderboard_name, member)
+    @redis_connection.zrem(leaderboard_name, member)
   end
   
   def total_members
-    @redis_connection.zcard(@leaderboard_name)
+    total_members_in(@leaderboard_name)
+  end
+  
+  def total_members_in(leaderboard_name)
+    @redis_connection.zcard(leaderboard_name)
   end
   
   def total_pages
-    (total_members / @page_size.to_f).ceil
+    total_pages_in(@leaderboard_name)
+  end
+  
+  def total_pages_in(leaderboard_name)
+    (total_members_in(leaderboard_name) / @page_size.to_f).ceil
   end
   
   def total_members_in_score_range(min_score, max_score)
-    @redis_connection.zcount(@leaderboard_name, min_score, max_score)
+    total_members_in_score_range_in(@leaderboard_name, min_score, max_score)
   end
   
-  def change_score_for(member, delta)
-    @redis_connection.zincrby(@leaderboard_name, delta, member)
+  def total_members_in_score_range_in(leaderboard_name, min_score, max_score)
+    @redis_connection.zcount(leaderboard_name, min_score, max_score)
   end
   
-  def rank_for(member, use_zero_index_for_rank = false)    
+  def change_score_for(member, delta)    
+    change_score_for_member_in(@leaderboard_name, member, delta)
+  end
+  
+  def change_score_for_member_in(leaderboard_name, member, delta)
+    @redis_connection.zincrby(leaderboard_name, delta, member)
+  end
+  
+  def rank_for(member, use_zero_index_for_rank = false)
+    rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  end
+  
+  def rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
     if use_zero_index_for_rank
-      return @redis_connection.zrevrank(@leaderboard_name, member)
+      return @redis_connection.zrevrank(leaderboard_name, member)
     else
-      return @redis_connection.zrevrank(@leaderboard_name, member) + 1 rescue nil
+      return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
     end
   end
   
   def score_for(member)
-    @redis_connection.zscore(@leaderboard_name, member).to_f
+    score_for_in(@leaderboard_name, member)
   end
   
+  def score_for_in(leaderboard_name, member)
+    @redis_connection.zscore(leaderboard_name, member).to_f
+  end
+
   def check_member?(member)
-    !@redis_connection.zscore(@leaderboard_name, member).nil?
+    check_member_in?(@leaderboard_name, member)
+  end
+  
+  def check_member_in?(leaderboard_name, member)
+    !@redis_connection.zscore(leaderboard_name, member).nil?
   end
   
   def score_and_rank_for(member, use_zero_index_for_rank = false)
-    {:member => member, :score => score_for(member), :rank => rank_for(member, use_zero_index_for_rank)}    
+    score_and_rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  end
+
+  def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
+    {:member => member, :score => score_for_in(leaderboard_name, member), :rank => rank_for_in(leaderboard_name, member, use_zero_index_for_rank)}    
   end
   
   def remove_members_in_score_range(min_score, max_score)
-    @redis_connection.zremrangebyscore(@leaderboard_name, min_score, max_score)
+    remove_members_in_score_range_in(@leaderboard_name, min_score, max_score)
+  end
+  
+  def remove_members_in_score_range_in(leaderboard_name, min_score, max_score)
+    @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
   
   def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
+    leaders_in(@leaderboard_name, current_page, with_scores, with_rank, use_zero_index_for_rank)
+  end
+
+  def leaders_in(leaderboard_name, current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     if current_page < 1
       current_page = 1
     end
@@ -98,16 +146,20 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    raw_leader_data = @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
-      massage_leader_data(raw_leader_data, with_rank, use_zero_index_for_rank)
+      massage_leader_data(leaderboard_name, raw_leader_data, with_rank, use_zero_index_for_rank)
     else
       return nil
     end
   end
   
   def around_me(member, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
-    reverse_rank_for_member = @redis_connection.zrevrank(@leaderboard_name, member)
+    around_me_in(@leaderboard_name, member, with_scores, with_rank, use_zero_index_for_rank)
+  end
+  
+  def around_me_in(leaderboard_name, member, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
+    reverse_rank_for_member = @redis_connection.zrevrank(leaderboard_name, member)
     
     starting_offset = reverse_rank_for_member - (@page_size / 2)
     if starting_offset < 0
@@ -116,22 +168,26 @@ class Leaderboard
     
     ending_offset = (starting_offset + @page_size) - 1
     
-    raw_leader_data = @redis_connection.zrevrange(@leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
-      massage_leader_data(raw_leader_data, with_rank, use_zero_index_for_rank)
+      massage_leader_data(leaderboard_name, raw_leader_data, with_rank, use_zero_index_for_rank)
     else
       return nil
     end
   end
   
   def ranked_in_list(members, with_scores = true, use_zero_index_for_rank = false)
+    ranked_in_list_in(@leaderboard_name, members, with_scores, use_zero_index_for_rank)
+  end
+  
+  def ranked_in_list_in(leaderboard_name, members, with_scores = true, use_zero_index_for_rank = false)
     ranks_for_members = []
     
     members.each do |member|
       data = {}
       data[:member] = member
-      data[:rank] = rank_for(member, use_zero_index_for_rank)
-      data[:score] = score_for(member) if with_scores
+      data[:rank] = rank_for_in(leaderboard_name, member, use_zero_index_for_rank)
+      data[:score] = score_for_in(leaderboard_name, member) if with_scores
       
       ranks_for_members << data
     end
@@ -141,7 +197,7 @@ class Leaderboard
   
   private 
   
-  def massage_leader_data(leaders, with_rank, use_zero_index_for_rank)
+  def massage_leader_data(leaderboard_name, leaders, with_rank, use_zero_index_for_rank)
     member_attribute = true    
     leader_data = []
     
@@ -151,7 +207,7 @@ class Leaderboard
         data[:member] = leader_data_item
       else
         data[:score] = leader_data_item.to_f
-        data[:rank] = rank_for(data[:member], use_zero_index_for_rank) if with_rank
+        data[:rank] = rank_for_in(leaderboard_name, data[:member], use_zero_index_for_rank) if with_rank
         leader_data << data
         data = {}     
       end

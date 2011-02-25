@@ -1,7 +1,7 @@
 require 'helper'
 
 class TestLeaderboard < Test::Unit::TestCase
-  def setup
+  def setup    
     @leaderboard = Leaderboard.new('name')
     @redis_connection = Redis.new
   end
@@ -11,7 +11,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '1.0.1', Leaderboard::VERSION
+    assert_equal '1.0.2', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  

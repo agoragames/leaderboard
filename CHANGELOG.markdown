@@ -1,3 +1,7 @@
+# leaderboard 1.0.2 (in progress)
+
+ * Adding `XXX_to`, `XXX_for`, `XXX_in` and `XXX_from` methods that will allow you to set the leaderboard name to interact with outside of creating a new object
+
 # leaderboard 1.0.1 (2011-02-16)
 
  * `redis_options` can be passed in the initializer to pass options for the connection to Redis
