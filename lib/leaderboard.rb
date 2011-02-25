@@ -195,6 +195,16 @@ class Leaderboard
     ranks_for_members
   end
   
+  # Merge leaderboards given by keys with this leaderboard into destination
+  def merge_leaderboards(destination, keys, options = {:aggregate => :min})
+    @redis_connection.zunionstore(destination, keys.insert(0, @leaderboard_name), options)
+  end
+  
+  # Intersect leaderboards given by keys with this leaderboard into destination
+  def intersect_leaderboards(destination, keys, options = {:aggregate => :min})
+    @redis_connection.zinterstore(destination, keys.insert(0, @leaderboard_name), options)
+  end
+  
   private 
   
   def massage_leader_data(leaderboard_name, leaders, with_rank, use_zero_index_for_rank)

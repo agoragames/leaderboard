@@ -204,6 +204,51 @@ class TestLeaderboard < Test::Unit::TestCase
     end
   end
   
+  def test_merge_leaderboards
+    foo = Leaderboard.new('foo')
+    bar = Leaderboard.new('bar')
+    
+    foo.add_member('foo_1', 1)
+    foo.add_member('foo_2', 2)
+    bar.add_member('bar_1', 3)
+    bar.add_member('bar_2', 4)
+    bar.add_member('bar_3', 5)
+    
+    foobar_keys = foo.merge_leaderboards('foobar', ['bar'])
+    assert_equal 5, foobar_keys
+    
+    foobar = Leaderboard.new('foobar')  
+    assert_equal 5, foobar.total_members
+    
+    first_leader_in_foobar = foobar.leaders(1).first
+    assert_equal 1, first_leader_in_foobar[:rank]
+    assert_equal 'bar_3', first_leader_in_foobar[:member]
+    assert_equal 5, first_leader_in_foobar[:score]
+  end
+  
+  def test_intersect_leaderboards
+    foo = Leaderboard.new('foo')
+    bar = Leaderboard.new('bar')
+    
+    foo.add_member('foo_1', 1)
+    foo.add_member('foo_2', 2)
+    foo.add_member('bar_3', 6)
+    bar.add_member('bar_1', 3)
+    bar.add_member('foo_1', 4)
+    bar.add_member('bar_3', 5)
+    
+    foobar_keys = foo.intersect_leaderboards('foobar', ['bar'], {:aggregate => :max})    
+    assert_equal 2, foobar_keys
+    
+    foobar = Leaderboard.new('foobar')
+    assert_equal 2, foobar.total_members
+    
+    first_leader_in_foobar = foobar.leaders(1).first
+    assert_equal 1, first_leader_in_foobar[:rank]
+    assert_equal 'bar_3', first_leader_in_foobar[:member]
+    assert_equal 6, first_leader_in_foobar[:score]
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)

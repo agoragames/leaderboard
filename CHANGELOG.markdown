@@ -1,6 +1,8 @@
 # leaderboard 1.0.2 (in progress)
 
  * Adding `XXX_to`, `XXX_for`, `XXX_in` and `XXX_from` methods that will allow you to set the leaderboard name to interact with outside of creating a new object
+ * Added `merge_leaderboards(destination, keys, options = {:aggregate => :min})` method to merge leaderboards given by keys with this leaderboard into destination
+ * Added `intersect_leaderboards(destination, keys, options = {:aggregate => :min})` method to intersect leaderboards given by keys with this leaderboard into destination
 
 # leaderboard 1.0.1 (2011-02-16)
 
