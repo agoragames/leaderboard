@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{leaderboard}
-  s.version = "1.0.1"
+  s.version = "1.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David Czarnecki"]
-  s.date = %q{2011-02-16}
-  s.description = %q{Leaderboards backed by Redis}
+  s.date = %q{2011-02-25}
+  s.description = %q{Leaderboards backed by Redis in Ruby}
   s.email = %q{dczarnecki@agoragames.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Leaderboards backed by Redis}
+  s.summary = %q{Leaderboards backed by Redis in Ruby}
   s.test_files = [
     "test/helper.rb",
     "test/test_leaderboard.rb"
