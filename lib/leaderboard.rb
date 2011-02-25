@@ -196,12 +196,12 @@ class Leaderboard
   end
   
   # Merge leaderboards given by keys with this leaderboard into destination
-  def merge_leaderboards(destination, keys, options = {:aggregate => :min})
+  def merge_leaderboards(destination, keys, options = {:aggregate => :sum})
     @redis_connection.zunionstore(destination, keys.insert(0, @leaderboard_name), options)
   end
   
   # Intersect leaderboards given by keys with this leaderboard into destination
-  def intersect_leaderboards(destination, keys, options = {:aggregate => :min})
+  def intersect_leaderboards(destination, keys, options = {:aggregate => :sum})
     @redis_connection.zinterstore(destination, keys.insert(0, @leaderboard_name), options)
   end
   
