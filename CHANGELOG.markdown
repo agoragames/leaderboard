@@ -1,3 +1,7 @@
+# leaderboard 1.0.4 (2011-04-26)
+
+ * Minor bug fix
+
 # leaderboard 1.0.3 (2011-04-26)
 
  * Fixing issue using total_pages in leaderboard_in call

@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.3'.freeze
+  VERSION = '1.0.4'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_REDIS_HOST = 'localhost'

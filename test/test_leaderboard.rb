@@ -11,7 +11,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '1.0.3', Leaderboard::VERSION
+    assert_equal '1.0.4', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
