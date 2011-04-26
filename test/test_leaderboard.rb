@@ -254,10 +254,24 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 25, @leaderboard.total_members
 
-    leaders = @leaderboard.leaders(1, false, false)
+    leaders = @leaderboard.leaders(1, false, false, false)
     assert_not_nil leaders[0][:member]
     assert_nil leaders[0][:score]
     assert_nil leaders[0][:rank]
+    
+    @leaderboard.page_size = 25
+    leaders = @leaderboard.leaders(1, false, false, false)
+    assert_equal 25, leaders.size
+
+    @leaderboard.page_size = Leaderboard::DEFAULT_PAGE_SIZE
+    leaders = @leaderboard.leaders(1, true, true, false)
+    assert_not_nil leaders[0][:member]
+    assert_not_nil leaders[0][:score]
+    assert_not_nil leaders[0][:rank]
+    
+    @leaderboard.page_size = 25
+    leaders = @leaderboard.leaders(1, true, true, false)
+    assert_equal 25, leaders.size
   end
   
   private

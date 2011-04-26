@@ -216,13 +216,18 @@ class Leaderboard
       if member_attribute
         data[:member] = leader_data_item
       else
-        data[:score] = leader_data_item.to_f if with_scores
+        data[:score] = leader_data_item.to_f
         data[:rank] = rank_for_in(leaderboard_name, data[:member], use_zero_index_for_rank) if with_rank
         leader_data << data
         data = {}     
       end
-            
-      member_attribute = !member_attribute
+
+      if with_scores
+        member_attribute = !member_attribute
+      else
+        leader_data << data
+        data = {}     
+      end        
     end
     
     leader_data
