@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.2'.freeze
+  VERSION = '1.0.3'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_REDIS_HOST = 'localhost'
@@ -133,8 +133,8 @@ class Leaderboard
       current_page = 1
     end
     
-    if current_page > total_pages
-      current_page = total_pages
+    if current_page > total_pages_in(leaderboard_name)
+      current_page = total_pages_in(leaderboard_name)
     end
     
     index_for_redis = current_page - 1
@@ -148,7 +148,7 @@ class Leaderboard
     
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
-      massage_leader_data(leaderboard_name, raw_leader_data, with_rank, use_zero_index_for_rank)
+      massage_leader_data(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
     else
       return nil
     end
@@ -170,7 +170,7 @@ class Leaderboard
     
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
-      massage_leader_data(leaderboard_name, raw_leader_data, with_rank, use_zero_index_for_rank)
+      massage_leader_data(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
     else
       return nil
     end
@@ -207,7 +207,7 @@ class Leaderboard
   
   private 
   
-  def massage_leader_data(leaderboard_name, leaders, with_rank, use_zero_index_for_rank)
+  def massage_leader_data(leaderboard_name, leaders, with_scores, with_rank, use_zero_index_for_rank)
     member_attribute = true    
     leader_data = []
     
@@ -216,7 +216,7 @@ class Leaderboard
       if member_attribute
         data[:member] = leader_data_item
       else
-        data[:score] = leader_data_item.to_f
+        data[:score] = leader_data_item.to_f if with_scores
         data[:rank] = rank_for_in(leaderboard_name, data[:member], use_zero_index_for_rank) if with_rank
         leader_data << data
         data = {}     

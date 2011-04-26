@@ -1,3 +1,8 @@
+# leaderboard 1.0.3 (2011-04-26)
+
+ * Fixing issue using total_pages in leaderboard_in call
+ * Internal `massage_leader_data` method will now respect `with_scores`
+ 
 # leaderboard 1.0.2 (2011-02-25)
 
  * Adding `XXX_to`, `XXX_for`, `XXX_in` and `XXX_from` methods that will allow you to set the leaderboard name to interact with outside of creating a new object

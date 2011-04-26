@@ -11,7 +11,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '1.0.2', Leaderboard::VERSION
+    assert_equal '1.0.3', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
@@ -247,6 +247,17 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 1, first_leader_in_foobar[:rank]
     assert_equal 'bar_3', first_leader_in_foobar[:member]
     assert_equal 6, first_leader_in_foobar[:score]
+  end
+  
+  def test_massage_leader_data_respects_with_scores
+    add_members_to_leaderboard(25)
+    
+    assert_equal 25, @leaderboard.total_members
+
+    leaders = @leaderboard.leaders(1, false, false)
+    assert_not_nil leaders[0][:member]
+    assert_nil leaders[0][:score]
+    assert_nil leaders[0][:rank]
   end
   
   private
