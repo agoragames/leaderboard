@@ -281,6 +281,24 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 5, @leaderboard.total_pages_in(@leaderboard.leaderboard_name, 5)
   end
   
+  def test_leaders_call_with_new_page_size
+    add_members_to_leaderboard(25)
+    
+    assert_equal 5, @leaderboard.leaders(1, true, true, false, 5).size
+    assert_equal 10, @leaderboard.leaders(1, true, true, false, 10).size
+    assert_equal 10, @leaderboard.leaders(2, true, true, false, 10).size
+    assert_equal 5, @leaderboard.leaders(3, true, true, false, 10).size
+  end
+  
+  def test_around_me_call_with_new_page_size
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    
+    leaders_around_me = @leaderboard.around_me('member_30', true, true, false, 3)
+    assert_equal 3, leaders_around_me.size
+    assert_equal 'member_31', leaders_around_me[0][:member]
+    assert_equal 'member_29', leaders_around_me[2][:member]
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)

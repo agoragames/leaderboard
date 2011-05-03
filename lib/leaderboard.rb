@@ -125,27 +125,29 @@ class Leaderboard
     @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
   
-  def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
-    leaders_in(@leaderboard_name, current_page, with_scores, with_rank, use_zero_index_for_rank)
+  def leaders(current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false, page_size = nil)
+    leaders_in(@leaderboard_name, current_page, with_scores, with_rank, use_zero_index_for_rank, page_size)
   end
 
-  def leaders_in(leaderboard_name, current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
+  def leaders_in(leaderboard_name, current_page, with_scores = true, with_rank = true, use_zero_index_for_rank = false, page_size = nil)
     if current_page < 1
       current_page = 1
     end
     
-    if current_page > total_pages_in(leaderboard_name)
-      current_page = total_pages_in(leaderboard_name)
+    page_size ||= @page_size
+
+    if current_page > total_pages_in(leaderboard_name, page_size)
+      current_page = total_pages_in(leaderboard_name, page_size)
     end
     
     index_for_redis = current_page - 1
 
-    starting_offset = (index_for_redis * @page_size)
+    starting_offset = (index_for_redis * page_size)
     if starting_offset < 0
       starting_offset = 0
     end
     
-    ending_offset = (starting_offset + @page_size) - 1
+    ending_offset = (starting_offset + page_size) - 1
     
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
@@ -155,19 +157,21 @@ class Leaderboard
     end
   end
   
-  def around_me(member, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
-    around_me_in(@leaderboard_name, member, with_scores, with_rank, use_zero_index_for_rank)
+  def around_me(member, with_scores = true, with_rank = true, use_zero_index_for_rank = false, page_size = nil)
+    around_me_in(@leaderboard_name, member, with_scores, with_rank, use_zero_index_for_rank, page_size)
   end
   
-  def around_me_in(leaderboard_name, member, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
+  def around_me_in(leaderboard_name, member, with_scores = true, with_rank = true, use_zero_index_for_rank = false, page_size = nil)
     reverse_rank_for_member = @redis_connection.zrevrank(leaderboard_name, member)
     
-    starting_offset = reverse_rank_for_member - (@page_size / 2)
+    page_size ||= @page_size
+    
+    starting_offset = reverse_rank_for_member - (page_size / 2)
     if starting_offset < 0
       starting_offset = 0
     end
-    
-    ending_offset = (starting_offset + @page_size) - 1
+        
+    ending_offset = (starting_offset + page_size) - 1
     
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
     if raw_leader_data
