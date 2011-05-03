@@ -60,8 +60,9 @@ class Leaderboard
     total_pages_in(@leaderboard_name)
   end
   
-  def total_pages_in(leaderboard_name)
-    (total_members_in(leaderboard_name) / @page_size.to_f).ceil
+  def total_pages_in(leaderboard_name, page_size = nil)
+    page_size ||= @page_size.to_f
+    (total_members_in(leaderboard_name) / page_size.to_f).ceil
   end
   
   def total_members_in_score_range(min_score, max_score)

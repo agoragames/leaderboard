@@ -274,6 +274,13 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 25, leaders.size
   end
   
+  def test_total_pages_in_with_new_page_size
+    add_members_to_leaderboard(25)
+    
+    assert_equal 1, @leaderboard.total_pages_in(@leaderboard.leaderboard_name)
+    assert_equal 5, @leaderboard.total_pages_in(@leaderboard.leaderboard_name, 5)
+  end
+  
   private
   
   def add_members_to_leaderboard(members_to_add = 5)
