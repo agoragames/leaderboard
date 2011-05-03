@@ -58,7 +58,7 @@ REDIS_LOCATION = ENV['REDIS_LOCATION']
 task :default => :run
 
 desc "Run tests and manage server start/stop"
-task :run => [:start, :test, :stop]
+task :run => [:start, :test_rubies, :stop]
 
 desc "Run rcov and manage server start/stop"
 task :rcoverage => [:start, :rcov, :stop]
@@ -86,4 +86,8 @@ task :stop do
     Process.kill "INT", File.read(REDIS_PID).to_i
     FileUtils.rm REDIS_PID
   end
+end
+
+task :test_rubies do
+  system "rvm 1.8.7,1.9.2 rake test"
 end

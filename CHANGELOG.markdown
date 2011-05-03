@@ -1,3 +1,7 @@
+# leaderboard `in development`
+
+ * Updated Rakefile to run tests under ruby 1.8.7 and ruby 1.9.2
+
 # leaderboard 1.0.4 (2011-04-26)
 
  * Minor bug fix
