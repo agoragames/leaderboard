@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{leaderboard}
-  s.version = "1.0.4"
+  s.version = "1.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David Czarnecki"]
-  s.date = %q{2011-04-26}
+  s.date = %q{2011-05-04}
   s.description = %q{Leaderboards backed by Redis in Ruby}
   s.email = %q{dczarnecki@agoragames.com}
   s.extra_rdoc_files = [
