@@ -89,5 +89,5 @@ task :stop do
 end
 
 task :test_rubies do
-  system "rvm 1.8.7,1.9.2 rake test"
+  system "rvm 1.8.7@leaderboard,1.9.2@leaderboard rake test"
 end
