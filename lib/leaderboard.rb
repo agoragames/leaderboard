@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.5'.freeze
+  VERSION = '1.0.6'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_REDIS_HOST = 'localhost'
@@ -30,6 +30,10 @@ class Leaderboard
     @redis_options = redis_options
     
     @redis_connection = Redis.new(@redis_options)
+  end
+  
+  def disconnect
+    @redis_connection.client.disconnect
   end
       
   def add_member(member, score)

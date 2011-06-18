@@ -1,3 +1,7 @@
+# leaderboard 1.0.6 (in progress)
+
+ * Added `disconnect` method
+
 # leaderboard 1.0.5 (2011-05-04)
 
  * Updated Rakefile to run tests under ruby 1.8.7 and ruby 1.9.2

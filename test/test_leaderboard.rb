@@ -8,10 +8,12 @@ class TestLeaderboard < Test::Unit::TestCase
   
   def teardown
     @redis_connection.flushdb
+    @leaderboard.disconnect
+    @redis_connection.client.disconnect
   end
   
   def test_version
-    assert_equal '1.0.5', Leaderboard::VERSION
+    assert_equal '1.0.6', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
@@ -21,10 +23,23 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.page_size
   end
   
+  def test_disconnect
+    assert_equal nil, @leaderboard.disconnect
+  end
+  
+  def test_will_automatically_reconnect_after_a_disconnect
+    assert_equal 0, @leaderboard.total_members
+    add_members_to_leaderboard(5)
+    assert_equal 5, @leaderboard.total_members
+    assert_equal nil, @leaderboard.disconnect
+    assert_equal 5, @leaderboard.total_members
+  end
+  
   def test_page_size_is_default_page_size_if_set_to_invalid_value
-    @leaderboard = Leaderboard.new('name', 'localhost', 6379, 0)
+    some_leaderboard = Leaderboard.new('name', 'localhost', 6379, 0)
     
-    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.page_size
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, some_leaderboard.page_size
+    some_leaderboard.disconnect
   end
   
   def test_add_member_and_total_members
@@ -205,7 +220,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_merge_leaderboards
-    foo = Leaderboard.new('foo')
+    foo = Leaderboard.new('foo')    
     bar = Leaderboard.new('bar')
     
     foo.add_member('foo_1', 1)
@@ -224,6 +239,10 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 1, first_leader_in_foobar[:rank]
     assert_equal 'bar_3', first_leader_in_foobar[:member]
     assert_equal 5, first_leader_in_foobar[:score]
+    
+    foo.disconnect
+    bar.disconnect
+    foobar.disconnect
   end
   
   def test_intersect_leaderboards
@@ -247,6 +266,10 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 1, first_leader_in_foobar[:rank]
     assert_equal 'bar_3', first_leader_in_foobar[:member]
     assert_equal 6, first_leader_in_foobar[:score]
+    
+    foo.disconnect
+    bar.disconnect
+    foobar.disconnect
   end
   
   def test_massage_leader_data_respects_with_scores
