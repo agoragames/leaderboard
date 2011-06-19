@@ -189,6 +189,14 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 5, @leaderboard.leaders(1).size
   end
   
+  def test_cannot_set_page_size_to_invalid_page_size
+    add_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    @leaderboard.page_size = 0
+    assert_equal 1, @leaderboard.total_pages
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.leaders(1).size
+  end
+  
   def test_score_and_rank_for
     add_members_to_leaderboard
     

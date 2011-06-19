@@ -32,6 +32,12 @@ class Leaderboard
     @redis_connection = Redis.new(@redis_options)
   end
   
+  def page_size=(page_size)
+    page_size = DEFAULT_PAGE_SIZE if page_size < 1
+
+    @page_size = page_size
+  end
+  
   def disconnect
     @redis_connection.client.disconnect
   end

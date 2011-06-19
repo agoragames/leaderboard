@@ -1,6 +1,7 @@
 # leaderboard 1.0.6 (in progress)
 
  * Added `disconnect` method
+ * Check for invalid page size when changing
 
 # leaderboard 1.0.5 (2011-05-04)
 
