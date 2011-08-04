@@ -50,6 +50,13 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal false, @redis_connection.exists('name')    
   end
   
+  def test_can_pass_existing_redis_connection_to_initializer
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_REDIS_HOST, Leaderboard::DEFAULT_REDIS_PORT, Leaderboard::DEFAULT_PAGE_SIZE, {:redis_connection => @redis_connection})
+    rank_members_to_leaderboard
+    
+    assert_equal 1, @redis_connection.info["connected_clients"].to_i
+  end
+  
   def test_rank_member_and_total_members
     @leaderboard.rank_member('member', 1)
 

@@ -23,13 +23,18 @@ class Leaderboard
     
     @page_size = page_size
     
+    @redis_connection = redis_options[:redis_connection]
+    unless @redis_connection.nil?
+      redis_options.delete(:redis_connection)
+    end
+    
     redis_options = redis_options.dup
     redis_options[:host] ||= @host
-    redis_options[:port] ||= @port
+    redis_options[:port] ||= @port    
     
     @redis_options = redis_options
     
-    @redis_connection = Redis.new(@redis_options)
+    @redis_connection = Redis.new(@redis_options) if @redis_connection.nil?
   end
   
   def page_size=(page_size)
