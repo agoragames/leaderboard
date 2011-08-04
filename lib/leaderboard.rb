@@ -41,6 +41,14 @@ class Leaderboard
   def disconnect
     @redis_connection.client.disconnect
   end
+  
+  def delete_leaderboard
+    delete_leaderboard_named(@leaderboard_name)
+  end
+  
+  def delete_leaderboard_named(leaderboard_name)
+    @redis_connection.del(leaderboard_name)
+  end
       
   def rank_member(member, score)
     rank_member_in(@leaderboard_name, member, score)

@@ -42,6 +42,14 @@ class TestLeaderboard < Test::Unit::TestCase
     some_leaderboard.disconnect
   end
   
+  def test_delete_leaderboard
+    rank_members_to_leaderboard
+    
+    assert_equal true, @redis_connection.exists('name')
+    @leaderboard.delete_leaderboard
+    assert_equal false, @redis_connection.exists('name')    
+  end
+  
   def test_rank_member_and_total_members
     @leaderboard.rank_member('member', 1)
 
