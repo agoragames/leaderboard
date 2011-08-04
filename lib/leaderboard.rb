@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '1.0.6'.freeze
+  VERSION = '2.0.0'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_REDIS_HOST = 'localhost'
@@ -42,11 +42,11 @@ class Leaderboard
     @redis_connection.client.disconnect
   end
       
-  def add_member(member, score)
-    add_member_to(@leaderboard_name, member, score)
+  def rank_member(member, score)
+    rank_member_in(@leaderboard_name, member, score)
   end
 
-  def add_member_to(leaderboard_name, member, score)
+  def rank_member_in(leaderboard_name, member, score)
     @redis_connection.zadd(leaderboard_name, score, member)
   end
   

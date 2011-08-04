@@ -1,4 +1,8 @@
-# leaderboard 1.0.6 (in progress)
+# leaderboard 2.0.0 (in progress)
+ 
+ * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3
+ 
+# leaderboard 1.0.6 (unreleased)
 
  * Added `disconnect` method
  * Check for invalid page size when changing
