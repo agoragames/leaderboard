@@ -1,6 +1,8 @@
 # leaderboard 2.0.0 (in progress)
  
  * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3
+ * Added `delete_leaderboard` and `delete_leaderboard_named` - https://github.com/agoragames/leaderboard/issues/2
+ * Ability to pass in an existing Redis connection in initializer - https://github.com/agoragames/leaderboard/issues/1
  
 # leaderboard 1.0.6 (unreleased)
 
