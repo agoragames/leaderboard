@@ -36,7 +36,7 @@ class Leaderboard
     
     @redis_connection = Redis.new(@redis_options) if @redis_connection.nil?
   end
-  
+      
   def page_size=(page_size)
     page_size = DEFAULT_PAGE_SIZE if page_size < 1
 
@@ -137,7 +137,17 @@ class Leaderboard
   end
 
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
-    {:member => member, :score => score_for_in(leaderboard_name, member), :rank => rank_for_in(leaderboard_name, member, use_zero_index_for_rank)}    
+    result = @redis_connection.multi do |transaction|
+      transaction.zscore(leaderboard_name, member)
+      transaction.zrevrank(leaderboard_name, member)
+    end
+    
+    result[0] = result[0].to_f
+    if !use_zero_index_for_rank
+      result[1] = result[1] + 1 rescue nil
+    end
+    
+    {:member => member, :score => result[0], :rank => result[1]}    
   end
   
   def remove_members_in_score_range(min_score, max_score)
@@ -171,12 +181,12 @@ class Leaderboard
     end
     
     ending_offset = (starting_offset + page_size) - 1
-    
-    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+        
+    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)    
     if raw_leader_data
-      massage_leader_data(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
     else
-      return nil
+      return []
     end
   end
   
@@ -196,26 +206,50 @@ class Leaderboard
         
     ending_offset = (starting_offset + page_size) - 1
     
-    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => with_scores)
+    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)
     if raw_leader_data
-      massage_leader_data(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, with_scores, with_rank, use_zero_index_for_rank)
     else
-      return nil
+      return []
     end
   end
   
-  def ranked_in_list(members, with_scores = true, use_zero_index_for_rank = false)
-    ranked_in_list_in(@leaderboard_name, members, with_scores, use_zero_index_for_rank)
+  def ranked_in_list(members, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
+    ranked_in_list_in(@leaderboard_name, members, with_scores, with_rank, use_zero_index_for_rank)
   end
   
-  def ranked_in_list_in(leaderboard_name, members, with_scores = true, use_zero_index_for_rank = false)
+  def ranked_in_list_in(leaderboard_name, members, with_scores = true, with_rank = true, use_zero_index_for_rank = false)
     ranks_for_members = []
     
-    members.each do |member|
+    responses = @redis_connection.multi do |transaction|
+      members.each do |member|
+        transaction.zrevrank(leaderboard_name, member)        
+        transaction.zscore(leaderboard_name, member) if with_scores
+      end
+    end
+    
+    members.each_with_index do |member, index|
       data = {}
       data[:member] = member
-      data[:rank] = rank_for_in(leaderboard_name, member, use_zero_index_for_rank)
-      data[:score] = score_for_in(leaderboard_name, member) if with_scores
+      if with_scores
+        if with_rank
+          if use_zero_index_for_rank
+            data[:rank] = responses[index * 2]
+          else
+            data[:rank] = responses[index * 2] + 1
+          end
+        end
+
+        data[:score] = responses[index * 2 + 1].to_f
+      else
+        if with_rank
+          if use_zero_index_for_rank
+            data[:rank] = responses[index]
+          else
+            data[:rank] = responses[index] + 1
+          end
+        end
+      end
       
       ranks_for_members << data
     end
@@ -231,33 +265,5 @@ class Leaderboard
   # Intersect leaderboards given by keys with this leaderboard into destination
   def intersect_leaderboards(destination, keys, options = {:aggregate => :sum})
     @redis_connection.zinterstore(destination, keys.insert(0, @leaderboard_name), options)
-  end
-  
-  private 
-  
-  def massage_leader_data(leaderboard_name, leaders, with_scores, with_rank, use_zero_index_for_rank)
-    member_attribute = true    
-    leader_data = []
-    
-    data = {}        
-    leaders.each do |leader_data_item|
-      if member_attribute
-        data[:member] = leader_data_item
-      else
-        data[:score] = leader_data_item.to_f
-        data[:rank] = rank_for_in(leaderboard_name, data[:member], use_zero_index_for_rank) if with_rank
-        leader_data << data
-        data = {}     
-      end
-
-      if with_scores
-        member_attribute = !member_attribute
-      else
-        leader_data << data
-        data = {}     
-      end        
-    end
-    
-    leader_data
   end
 end

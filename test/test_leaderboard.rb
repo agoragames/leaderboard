@@ -167,6 +167,23 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 10, ranked_members[2][:score]    
   end
   
+  def test_ranked_in_list_without_scores
+    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
+    
+    members = ['member_1', 'member_5', 'member_10']
+    ranked_members = @leaderboard.ranked_in_list(members, false)
+    
+    assert_equal 3, ranked_members.size
+
+    assert_equal 25, ranked_members[0][:rank]
+
+    assert_equal 21, ranked_members[1][:rank]
+
+    assert_equal 16, ranked_members[2][:rank]
+  end
+  
   def test_remove_member
     rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
