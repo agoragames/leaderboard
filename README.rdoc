@@ -110,20 +110,20 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 === Other useful methods
 
   delete_leaderboard: Delete the current leaderboard  
-	remove_member(member): Remove a member from the leaderboard
-	total_members: Total # of members in the leaderboard
-	total_pages: Total # of pages in the leaderboard given the leaderboard's page_size	
-	total_members_in_score_range(min_score, max_score): Count the number of members within a score range in the leaderboard
-	change_score_for(member, delta): Change the score for a member by some amount delta (delta could be positive or negative)
-	rank_for(member): Retrieve the rank for a given member in the leaderboard
-	score_for(member): Retrieve the score for a given member in the leaderboard
-	check_member?(member): Check to see whether member is in the leaderboard
-	score_and_rank_for(member): Retrieve the score and rank for a member in a single call
-	remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
-	merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
-	intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
-	
-	Check the online documentation for more detail, http://rubydoc.info/gems/leaderboard/
+  remove_member(member): Remove a member from the leaderboard
+  total_members: Total # of members in the leaderboard
+  total_pages: Total # of pages in the leaderboard given the leaderboard's page_size	
+  total_members_in_score_range(min_score, max_score): Count the number of members within a score range in the leaderboard
+  change_score_for(member, delta): Change the score for a member by some amount delta (delta could be positive or negative)
+  rank_for(member): Retrieve the rank for a given member in the leaderboard
+  score_for(member): Retrieve the score for a given member in the leaderboard
+  check_member?(member): Check to see whether member is in the leaderboard
+  score_and_rank_for(member): Retrieve the score and rank for a member in a single call
+  remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
+  merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
+  intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
+
+  Check the online documentation for more detail, http://rubydoc.info/gems/leaderboard/
       
 == Performance Metrics
 
