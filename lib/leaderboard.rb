@@ -4,37 +4,34 @@ class Leaderboard
   VERSION = '2.0.0'.freeze
   
   DEFAULT_PAGE_SIZE = 25
+  DEFAULT_OPTIONS = {
+    :page_size => DEFAULT_PAGE_SIZE
+  }
+
   DEFAULT_REDIS_HOST = 'localhost'
-  DEFAULT_REDIS_PORT = 6379
+  DEFAULT_REDIS_PORT = 6379  
+  DEFAULT_REDIS_OPTIONS = {
+    :host => DEFAULT_REDIS_HOST,
+    :port => DEFAULT_REDIS_PORT
+  }  
   
-  attr_reader :host
-  attr_reader :port
   attr_reader :leaderboard_name
   attr_accessor :page_size
   
-  def initialize(leaderboard_name, host = DEFAULT_REDIS_HOST, port = DEFAULT_REDIS_PORT, page_size = DEFAULT_PAGE_SIZE, redis_options = {})
+  def initialize(leaderboard_name, options = DEFAULT_OPTIONS, redis_options = DEFAULT_REDIS_OPTIONS)
     @leaderboard_name = leaderboard_name
-    @host = host
-    @port = port
     
-    if page_size < 1
-      page_size = DEFAULT_PAGE_SIZE
+    @page_size = options[:page_size]
+    if @page_size < 1
+      @page_size = DEFAULT_PAGE_SIZE
     end
-    
-    @page_size = page_size
     
     @redis_connection = redis_options[:redis_connection]
     unless @redis_connection.nil?
       redis_options.delete(:redis_connection)
     end
-    
-    redis_options = redis_options.dup
-    redis_options[:host] ||= @host
-    redis_options[:port] ||= @port    
-    
-    @redis_options = redis_options
-    
-    @redis_connection = Redis.new(@redis_options) if @redis_connection.nil?
+        
+    @redis_connection = Redis.new(redis_options) if @redis_connection.nil?
   end
       
   def page_size=(page_size)
@@ -137,17 +134,17 @@ class Leaderboard
   end
 
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
-    result = @redis_connection.multi do |transaction|
+    responses = @redis_connection.multi do |transaction|
       transaction.zscore(leaderboard_name, member)
       transaction.zrevrank(leaderboard_name, member)
     end
     
-    result[0] = result[0].to_f
+    responses[0] = responses[0].to_f
     if !use_zero_index_for_rank
-      result[1] = result[1] + 1 rescue nil
+      responses[1] = responses[1] + 1 rescue nil
     end
     
-    {:member => member, :score => result[0], :rank => result[1]}    
+    {:member => member, :score => responses[0], :rank => responses[1]}    
   end
   
   def remove_members_in_score_range(min_score, max_score)
@@ -223,7 +220,7 @@ class Leaderboard
     
     responses = @redis_connection.multi do |transaction|
       members.each do |member|
-        transaction.zrevrank(leaderboard_name, member)        
+        transaction.zrevrank(leaderboard_name, member) if with_rank
         transaction.zscore(leaderboard_name, member) if with_scores
       end
     end

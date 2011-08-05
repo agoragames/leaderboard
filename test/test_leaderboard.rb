@@ -18,8 +18,6 @@ class TestLeaderboard < Test::Unit::TestCase
   
   def test_initialize_with_defaults  
     assert_equal 'name', @leaderboard.leaderboard_name
-    assert_equal 'localhost', @leaderboard.host
-    assert_equal 6379, @leaderboard.port
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.page_size
   end
   
@@ -36,7 +34,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_page_size_is_default_page_size_if_set_to_invalid_value
-    some_leaderboard = Leaderboard.new('name', 'localhost', 6379, 0)
+    some_leaderboard = Leaderboard.new('name', {:page_size => 0})
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, some_leaderboard.page_size
     some_leaderboard.disconnect
@@ -51,7 +49,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_can_pass_existing_redis_connection_to_initializer
-    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_REDIS_HOST, Leaderboard::DEFAULT_REDIS_PORT, Leaderboard::DEFAULT_PAGE_SIZE, {:redis_connection => @redis_connection})
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_OPTIONS, {:redis_connection => @redis_connection})
     rank_members_to_leaderboard
     
     assert_equal 1, @redis_connection.info["connected_clients"].to_i
@@ -130,6 +128,19 @@ class TestLeaderboard < Test::Unit::TestCase
     
     leaders = @leaderboard.leaders(10)
     assert_equal 1, leaders.size
+  end
+  
+  def test_leaders_without_retrieving_scores_and_ranks
+    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
+    leaders = @leaderboard.leaders(1, false, false)
+
+    member_25 = {:member => 'member_25'}
+    assert_equal member_25, leaders[0]
+    
+    member_1 = {:member => 'member_1'}
+    assert_equal member_1, leaders[24]
   end
   
   def test_around_me
