@@ -3,8 +3,9 @@
  * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3
  * Added `delete_leaderboard` and `delete_leaderboard_named` - https://github.com/agoragames/leaderboard/issues/2
  * Ability to pass in an existing Redis connection in initializer - https://github.com/agoragames/leaderboard/issues/1
- * Added transaction support for `score_and_rank_for`, `leaders_in`, `around_me` and `ranked_in_list`
+ * Added transaction support for `score_and_rank_for`, `leaders`, `around_me` and `ranked_in_list`
  * Updated initializer to take a leaderboard name, `options` hash and `redis_options` hash
+ * Simplified `leaders`, `around_me` and `ranked_in_list` to use an `options` hash with defaults for the previously individual parameters
  
 # leaderboard 1.0.6 (unreleased)
 

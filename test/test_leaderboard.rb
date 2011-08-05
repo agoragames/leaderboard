@@ -134,7 +134,7 @@ class TestLeaderboard < Test::Unit::TestCase
     rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
-    leaders = @leaderboard.leaders(1, false, false)
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_ranks => false})
 
     member_25 = {:member => 'member_25'}
     assert_equal member_25, leaders[0]
@@ -164,7 +164,7 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     
     members = ['member_1', 'member_5', 'member_10']
-    ranked_members = @leaderboard.ranked_in_list(members, true)
+    ranked_members = @leaderboard.ranked_in_list(members, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
     
     assert_equal 3, ranked_members.size
 
@@ -184,7 +184,7 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     
     members = ['member_1', 'member_5', 'member_10']
-    ranked_members = @leaderboard.ranked_in_list(members, false)
+    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true, :use_zero_index_for_rank => false})
     
     assert_equal 3, ranked_members.size
 
@@ -228,6 +228,7 @@ class TestLeaderboard < Test::Unit::TestCase
     rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     @leaderboard.page_size = 5
+    
     assert_equal 5, @leaderboard.total_pages
     assert_equal 5, @leaderboard.leaders(1).size
   end
@@ -328,23 +329,23 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 25, @leaderboard.total_members
 
-    leaders = @leaderboard.leaders(1, false, false, false)
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
     assert_not_nil leaders[0][:member]
     assert_nil leaders[0][:score]
     assert_nil leaders[0][:rank]
     
     @leaderboard.page_size = 25
-    leaders = @leaderboard.leaders(1, false, false, false)
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
     assert_equal 25, leaders.size
 
     @leaderboard.page_size = Leaderboard::DEFAULT_PAGE_SIZE
-    leaders = @leaderboard.leaders(1, true, true, false)
+    leaders = @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
     assert_not_nil leaders[0][:member]
     assert_not_nil leaders[0][:score]
     assert_not_nil leaders[0][:rank]
     
     @leaderboard.page_size = 25
-    leaders = @leaderboard.leaders(1, true, true, false)
+    leaders = @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
     assert_equal 25, leaders.size
   end
   
@@ -358,16 +359,16 @@ class TestLeaderboard < Test::Unit::TestCase
   def test_leaders_call_with_new_page_size
     rank_members_to_leaderboard(25)
     
-    assert_equal 5, @leaderboard.leaders(1, true, true, false, 5).size
-    assert_equal 10, @leaderboard.leaders(1, true, true, false, 10).size
-    assert_equal 10, @leaderboard.leaders(2, true, true, false, 10).size
-    assert_equal 5, @leaderboard.leaders(3, true, true, false, 10).size
+    assert_equal 5, @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 5})).size
+    assert_equal 10, @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 10})).size
+    assert_equal 10, @leaderboard.leaders(2, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 10})).size
+    assert_equal 5, @leaderboard.leaders(3, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 10})).size
   end
   
   def test_around_me_call_with_new_page_size
     rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
     
-    leaders_around_me = @leaderboard.around_me('member_30', true, true, false, 3)
+    leaders_around_me = @leaderboard.around_me('member_30', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 3}))
     assert_equal 3, leaders_around_me.size
     assert_equal 'member_31', leaders_around_me[0][:member]
     assert_equal 'member_29', leaders_around_me[2][:member]
