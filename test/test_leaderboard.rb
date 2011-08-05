@@ -27,7 +27,7 @@ class TestLeaderboard < Test::Unit::TestCase
   
   def test_will_automatically_reconnect_after_a_disconnect
     assert_equal 0, @leaderboard.total_members
-    rank_members_to_leaderboard(5)
+    rank_members_in_leaderboard(5)
     assert_equal 5, @leaderboard.total_members
     assert_equal nil, @leaderboard.disconnect
     assert_equal 5, @leaderboard.total_members
@@ -41,7 +41,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_delete_leaderboard
-    rank_members_to_leaderboard
+    rank_members_in_leaderboard
     
     assert_equal true, @redis_connection.exists('name')
     @leaderboard.delete_leaderboard
@@ -50,7 +50,7 @@ class TestLeaderboard < Test::Unit::TestCase
   
   def test_can_pass_existing_redis_connection_to_initializer
     @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_OPTIONS, {:redis_connection => @redis_connection})
-    rank_members_to_leaderboard
+    rank_members_in_leaderboard
     
     assert_equal 1, @redis_connection.info["connected_clients"].to_i
   end
@@ -62,38 +62,38 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_total_members_in_score_range
-    rank_members_to_leaderboard(5)
+    rank_members_in_leaderboard(5)
     
     assert_equal 3, @leaderboard.total_members_in_score_range(2, 4)
   end
   
   def test_rank_for
-    rank_members_to_leaderboard(5)
+    rank_members_in_leaderboard(5)
 
     assert_equal 2, @leaderboard.rank_for('member_4')
     assert_equal 1, @leaderboard.rank_for('member_4', true)
   end
   
   def test_score_for
-    rank_members_to_leaderboard(5)
+    rank_members_in_leaderboard(5)
     
     assert_equal 4, @leaderboard.score_for('member_4')
   end
   
   def test_total_pages
-    rank_members_to_leaderboard(10)
+    rank_members_in_leaderboard(10)
     
     assert_equal 1, @leaderboard.total_pages
     
     @redis_connection.flushdb
     
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
     
     assert_equal 2, @leaderboard.total_pages
   end
   
   def test_leaders
-    rank_members_to_leaderboard(25)
+    rank_members_in_leaderboard(25)
     
     assert_equal 25, @leaderboard.total_members
 
@@ -107,7 +107,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_leaders_with_multiple_pages
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
 
@@ -131,7 +131,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_leaders_without_retrieving_scores_and_ranks
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     leaders = @leaderboard.leaders(1, {:with_scores => false, :with_ranks => false})
@@ -144,7 +144,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_around_me
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
 
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1, @leaderboard.total_members
     
@@ -159,7 +159,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_ranked_in_list
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     
@@ -179,7 +179,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_ranked_in_list_without_scores
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     
@@ -196,7 +196,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_remove_member
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     
@@ -225,7 +225,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_can_change_page_size_and_have_it_reflected_in_size_of_result_set
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     @leaderboard.page_size = 5
     
@@ -234,7 +234,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_cannot_set_page_size_to_invalid_page_size
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     @leaderboard.page_size = 0
     assert_equal 1, @leaderboard.total_pages
@@ -242,7 +242,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_score_and_rank_for
-    rank_members_to_leaderboard
+    rank_members_in_leaderboard
     
     data = @leaderboard.score_and_rank_for('member_1')
     assert_equal 'member_1', data[:member]
@@ -251,7 +251,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_remove_members_in_score_range
-    rank_members_to_leaderboard
+    rank_members_in_leaderboard
     
     assert_equal 5, @leaderboard.total_members
     
@@ -325,7 +325,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_massage_leader_data_respects_with_scores
-    rank_members_to_leaderboard(25)
+    rank_members_in_leaderboard(25)
     
     assert_equal 25, @leaderboard.total_members
 
@@ -350,14 +350,14 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_total_pages_in_with_new_page_size
-    rank_members_to_leaderboard(25)
+    rank_members_in_leaderboard(25)
     
     assert_equal 1, @leaderboard.total_pages_in(@leaderboard.leaderboard_name)
     assert_equal 5, @leaderboard.total_pages_in(@leaderboard.leaderboard_name, 5)
   end
   
   def test_leaders_call_with_new_page_size
-    rank_members_to_leaderboard(25)
+    rank_members_in_leaderboard(25)
     
     assert_equal 5, @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 5})).size
     assert_equal 10, @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 10})).size
@@ -366,7 +366,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_around_me_call_with_new_page_size
-    rank_members_to_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
     
     leaders_around_me = @leaderboard.around_me('member_30', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 3}))
     assert_equal 3, leaders_around_me.size
@@ -376,7 +376,7 @@ class TestLeaderboard < Test::Unit::TestCase
   
   private
   
-  def rank_members_to_leaderboard(members_to_add = 5)
+  def rank_members_in_leaderboard(members_to_add = 5)
     1.upto(members_to_add) do |index|
       @leaderboard.rank_member("member_#{index}", index)
     end
