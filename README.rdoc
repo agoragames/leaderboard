@@ -123,7 +123,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 
-  Check the online documentation for more detail, http://rubydoc.info/gems/leaderboard/
+Check the online documentation for more detail, http://rubydoc.info/gems/leaderboard/
       
 == Performance Metrics
 
