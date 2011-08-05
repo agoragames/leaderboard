@@ -1,4 +1,4 @@
-# leaderboard 2.0.0 (in progress)
+# leaderboard 2.0.0 (2011-08-05)
  
  * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3
  * Added `delete_leaderboard` and `delete_leaderboard_named` - https://github.com/agoragames/leaderboard/issues/2
