@@ -129,55 +129,51 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 
 10 million sequential scores insert:
 
-  ruby-1.8.7-p302 > insert_time = Benchmark.measure do
-  ruby-1.8.7-p302 >       1.upto(10000000) do |index|
-  ruby-1.8.7-p302 >           highscore_lb.rank_member("member_#{index}", index)
-  ruby-1.8.7-p302 ?>      end
-  ruby-1.8.7-p302 ?>  end
-   => #<Benchmark::Tms:0x101605660 @label="", @stime=173.61, @total=577.52, @real=911.718175172806, @utime=403.91, @cstime=0.0, @cutime=0.0> 
+  ruby-1.9.2-p180 :003 > highscore_lb = Leaderboard.new('highscores')
+   => #<Leaderboard:0x0000010205fc50 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/0 (Redis v2.2.5)>> 
+  ruby-1.9.2-p180 :004 > insert_time = Benchmark.measure do
+  ruby-1.9.2-p180 :005 >     1.upto(10000000) do |index|
+  ruby-1.9.2-p180 :006 >       highscore_lb.rank_member("member_#{index}", index)
+  ruby-1.9.2-p180 :007?>     end
+  ruby-1.9.2-p180 :008?>   end
+   => 323.070000 148.560000 471.630000 (942.068307)
   
 Average time to request an arbitrary page from the leaderboard:
 
-  ruby-1.8.7-p302 > requests_to_make = 50000
+  ruby-1.9.2-p180 :009 > requests_to_make = 50000
    => 50000 
-  ruby-1.8.7-p302 > lb_request_time = 0
+  ruby-1.9.2-p180 :010 > lb_request_time = 0
    => 0 
-  ruby-1.8.7-p302 > 1.upto(requests_to_make) do
-  ruby-1.8.7-p302 >       lb_request_time += Benchmark.measure do
-  ruby-1.8.7-p302 >           highscore_lb.leaders(rand(highscore_lb.total_pages))
-  ruby-1.8.7-p302 ?>      end.total
-  ruby-1.8.7-p302 ?>  end
+  ruby-1.9.2-p180 :011 > 1.upto(requests_to_make) do
+  ruby-1.9.2-p180 :012 >     lb_request_time += Benchmark.measure do
+  ruby-1.9.2-p180 :013 >       highscore_lb.leaders(rand(highscore_lb.total_pages))
+  ruby-1.9.2-p180 :014?>     end.total
+  ruby-1.9.2-p180 :015?>   end
    => 1 
-  ruby-1.8.7-p302 > 
-  ruby-1.8.7-p302 >   p lb_request_time / requests_to_make
-  0.001808
-   => nil 
-  
+  ruby-1.9.2-p180 :016 > p lb_request_time / requests_to_make
+  0.001513999999999998
+   => 0.001513999999999998 
+     
 10 million random scores insert:
 
-  ruby-1.8.7-p302 > insert_time = Benchmark.measure do
-  ruby-1.8.7-p302 >       1.upto(10000000) do |index|
-  ruby-1.8.7-p302 >           highscore_lb.rank_member("member_#{index}", rand(50000000))
-  ruby-1.8.7-p302 ?>      end
-  ruby-1.8.7-p302 ?>  end
-   => #<Benchmark::Tms:0x10164ebf8 @label="", @stime=172.94, @total=577.91, @real=1356.57155895233, @utime=404.97, @cstime=0.0, @cutime=0.0> 
+  ruby-1.9.2-p180 :018 > insert_time = Benchmark.measure do
+  ruby-1.9.2-p180 :019 >     1.upto(10000000) do |index|
+  ruby-1.9.2-p180 :020 >       highscore_lb.rank_member("member_#{index}", rand(50000000))
+  ruby-1.9.2-p180 :021?>     end
+  ruby-1.9.2-p180 :022?>   end
+   => 338.480000 155.200000 493.680000 (2188.702475)
   
 Average time to request an arbitrary page from the leaderboard:
 
-  ruby-1.8.7-p302 > requests_to_make = 50000
-   => 50000 
-  ruby-1.8.7-p302 > lb_request_time = 0
-   => 0 
-  ruby-1.8.7-p302 > 1.upto(requests_to_make) do
-  ruby-1.8.7-p302 >       lb_request_time += Benchmark.measure do
-  ruby-1.8.7-p302 >           highscore_lb.leaders(rand(highscore_lb.total_pages))
-  ruby-1.8.7-p302 ?>      end.total
-  ruby-1.8.7-p302 ?>  end
+  ruby-1.9.2-p180 :007 > 1.upto(requests_to_make) do
+  ruby-1.9.2-p180 :008 >     lb_request_time += Benchmark.measure do
+  ruby-1.9.2-p180 :009 >       highscore_lb.leaders(rand(highscore_lb.total_pages))
+  ruby-1.9.2-p180 :010?>     end.total
+  ruby-1.9.2-p180 :011?>   end
    => 1 
-  ruby-1.8.7-p302 > 
-  ruby-1.8.7-p302 >   p lb_request_time / requests_to_make
-  0.00179680000000001
-   => nil 
+  ruby-1.9.2-p180 :012 > p lb_request_time / requests_to_make
+  0.0014615999999999531
+   => 0.0014615999999999531 
 
 == Future Ideas
 
