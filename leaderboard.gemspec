@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["David Czarnecki"]
-  s.date = %q{2011-08-05}
+  s.authors = [%q{David Czarnecki}]
+  s.date = %q{2011-08-17}
   s.description = %q{Leaderboards backed by Redis in Ruby}
   s.email = %q{dczarnecki@agoragames.com}
   s.extra_rdoc_files = [
@@ -33,9 +33,9 @@ Gem::Specification.new do |s|
     "test/test_leaderboard.rb"
   ]
   s.homepage = %q{http://github.com/agoragames/leaderboard}
-  s.licenses = ["MIT"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.5.3}
+  s.licenses = [%q{MIT}]
+  s.require_paths = [%q{lib}]
+  s.rubygems_version = %q{1.8.6}
   s.summary = %q{Leaderboards backed by Redis in Ruby}
   s.test_files = [
     "test/helper.rb",
