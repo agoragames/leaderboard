@@ -23,7 +23,7 @@ class Leaderboard
   }
   
   attr_reader :leaderboard_name
-  attr_accessor :page_size
+  attr_reader :page_size
   
   def initialize(leaderboard_name, options = DEFAULT_OPTIONS, redis_options = DEFAULT_REDIS_OPTIONS)
     @leaderboard_name = leaderboard_name
