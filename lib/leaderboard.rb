@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '2.0.0'.freeze
+  VERSION = '2.0.1'.freeze
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_OPTIONS = {
@@ -162,16 +162,19 @@ class Leaderboard
     @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
   
-  def leaders(current_page, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def leaders(current_page, options = {})
     leaders_in(@leaderboard_name, current_page, options)
   end
 
-  def leaders_in(leaderboard_name, current_page, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def leaders_in(leaderboard_name, current_page, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+    
     if current_page < 1
       current_page = 1
     end
         
-    page_size = validate_page_size(options[:page_size]) || @page_size
+    page_size = validate_page_size(leaderboard_options[:page_size]) || @page_size
     
     if current_page > total_pages_in(leaderboard_name, page_size)
       current_page = total_pages_in(leaderboard_name, page_size)
@@ -188,20 +191,23 @@ class Leaderboard
         
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)    
     if raw_leader_data
-      return ranked_in_list_in(leaderboard_name, raw_leader_data, options)
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
     else
       return []
     end
   end
   
-  def around_me(member, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def around_me(member, options = {})
     around_me_in(@leaderboard_name, member, options)
   end
   
-  def around_me_in(leaderboard_name, member, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def around_me_in(leaderboard_name, member, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+    
     reverse_rank_for_member = @redis_connection.zrevrank(leaderboard_name, member)
     
-    page_size = validate_page_size(options[:page_size]) || @page_size
+    page_size = validate_page_size(leaderboard_options[:page_size]) || @page_size
     
     starting_offset = reverse_rank_for_member - (page_size / 2)
     if starting_offset < 0
@@ -212,42 +218,47 @@ class Leaderboard
     
     raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)
     if raw_leader_data
-      return ranked_in_list_in(leaderboard_name, raw_leader_data, options)
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
     else
       return []
     end
   end
   
-  def ranked_in_list(members, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def ranked_in_list(members, options = {})
     ranked_in_list_in(@leaderboard_name, members, options)
   end
   
-  def ranked_in_list_in(leaderboard_name, members, options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+  def ranked_in_list_in(leaderboard_name, members, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+    
     ranks_for_members = []
     
     responses = @redis_connection.multi do |transaction|
       members.each do |member|
-        transaction.zrevrank(leaderboard_name, member) if options[:with_rank]
-        transaction.zscore(leaderboard_name, member) if options[:with_scores]
+        transaction.zrevrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+        transaction.zscore(leaderboard_name, member) if leaderboard_options[:with_scores]
       end
     end
     
     members.each_with_index do |member, index|
       data = {}
       data[:member] = member
-      if options[:with_scores]
-        if options[:with_rank]
-          if options[:use_zero_index_for_rank]
+      if leaderboard_options[:with_scores]
+        if leaderboard_options[:with_rank]
+          if leaderboard_options[:use_zero_index_for_rank]
             data[:rank] = responses[index * 2]
           else
             data[:rank] = responses[index * 2] + 1
           end
+          
+          data[:score] = responses[index * 2 + 1].to_f
+        else
+          data[:score] = responses[index].to_f          
         end
-
-        data[:score] = responses[index * 2 + 1].to_f
       else
-        if options[:with_rank]
-          if options[:use_zero_index_for_rank]
+        if leaderboard_options[:with_rank]
+          if leaderboard_options[:use_zero_index_for_rank]
             data[:rank] = responses[index]
           else
             data[:rank] = responses[index] + 1

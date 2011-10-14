@@ -1,3 +1,7 @@
+# leaderboard 2.0.1
+
+ * Allow for only single options to be passed to `leaders`, `around_me` and `ranked_in_list` methods - https://github.com/agoragames/leaderboard/issues/4
+ 
 # leaderboard 2.0.0 (2011-08-05)
  
  * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3

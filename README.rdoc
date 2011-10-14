@@ -8,7 +8,7 @@ Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high
 
 Install the gem:
 
-  gem "leaderboard", "~> 2.0.0"
+  gem "leaderboard", "~> 2.0.1"
 	
 Make sure your redis server is running! Redis configuration is outside the scope of this README, but 
 check out the Redis documentation, http://redis.io/documentation.
@@ -77,10 +77,10 @@ Get page 1 in the leaderboard:
   ruby-1.9.2-p180 :025 > highscore_lb.leaders(1)
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}] 
 	
-You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. Valid options are :with_scores, :with_rank, :use_zero_index_for_rank and :page_size. 
+You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. Valid options are `:with_scores`, `:with_rank`, `:use_zero_index_for_rank` and `:page_size`.
 Below is an example of retrieving the first page in the leaderboard without ranks:
 
-  ruby-1.9.2-p180 :026 > highscore_lb.leaders(1, :with_scores => true, :with_rank => false, :use_zero_index_for_rank => false)
+  ruby-1.9.2-p180 :026 > highscore_lb.leaders(1, :with_rank => false)
    => [{:member=>"member_10", :score=>9.0}, {:member=>"member_9", :score=>7.0}, {:member=>"member_8", :score=>5.0}, {:member=>"member_7", :score=>3.0}, {:member=>"member_6", :score=>1.0}, {:member=>"member_5", :score=>0.0}, {:member=>"member_4", :score=>0.0}, {:member=>"member_3", :score=>0.0}, {:member=>"member_2", :score=>0.0}, {:member=>"member_1", :score=>0.0}] 
 
 Below is an example of retrieving the first page in the leaderboard without scores or ranks:

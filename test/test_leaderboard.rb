@@ -13,7 +13,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '2.0.0', Leaderboard::VERSION
+    assert_equal '2.0.1', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
@@ -134,13 +134,48 @@ class TestLeaderboard < Test::Unit::TestCase
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_ranks => false})
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
 
     member_25 = {:member => 'member_25'}
     assert_equal member_25, leaders[0]
     
     member_1 = {:member => 'member_1'}
     assert_equal member_1, leaders[24]
+  end
+  
+  def test_leaders_with_only_various_options_should_respect_other_defaults
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
+
+    leaders = @leaderboard.leaders(1, :page_size => 1)
+    assert_equal 1, leaders.size
+    
+    leaders = @leaderboard.leaders(1, :with_rank => false)
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
+    member_26 = {:member => 'member_26', :score => 26}
+    member_25 = {:member => 'member_25', :score => 25}
+    member_24 = {:member => 'member_24', :score => 24}
+    assert_equal member_26, leaders[0]
+    assert_equal member_25, leaders[1]    
+    assert_equal member_24, leaders[2]    
+
+    leaders = @leaderboard.leaders(1, :with_scores => false)
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
+    member_26 = {:member => 'member_26', :rank => 1}
+    member_25 = {:member => 'member_25', :rank => 2}
+    assert_equal member_26, leaders[0]
+    assert_equal member_25, leaders[1]
+
+    leaders = @leaderboard.leaders(1, :with_scores => false, :with_rank => false)
+    assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
+    member_26 = {:member => 'member_26'}
+    member_25 = {:member => 'member_25'}
+    assert_equal member_26, leaders[0]
+    assert_equal member_25, leaders[1]
+
+    leaders = @leaderboard.leaders(1, :with_rank => false, :page_size => 1)
+    assert_equal 1, leaders.size
+    member_26 = {:member => 'member_26', :score => 26}
+    assert_equal member_26, leaders[0]
   end
   
   def test_around_me
