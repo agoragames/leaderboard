@@ -162,6 +162,19 @@ class Leaderboard
     @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
   
+  def percentile_for(member)
+    percentile_for_in(@leaderboard_name, member)
+  end
+ 
+  def percentile_for_in(leaderboard_name, member)
+    responses = @redis_connection.multi do |transaction|
+      transaction.zcard(leaderboard_name)     
+      transaction.zrevrank(leaderboard_name, member)
+    end
+       
+    ((responses[0] - responses[1] - 1).to_f / responses[0].to_f * 100).ceil
+  end
+    
   def leaders(current_page, options = {})
     leaders_in(@leaderboard_name, current_page, options)
   end

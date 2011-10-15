@@ -409,6 +409,16 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 'member_29', leaders_around_me[2][:member]
   end
   
+  def test_percentile_for
+    rank_members_in_leaderboard(12)
+    
+    assert_equal 0, @leaderboard.percentile_for('member_1')
+    assert_equal 9, @leaderboard.percentile_for('member_2')
+    assert_equal 17, @leaderboard.percentile_for('member_3')
+    assert_equal 25, @leaderboard.percentile_for('member_4')
+    assert_equal 92, @leaderboard.percentile_for('member_12')
+  end
+  
   private
   
   def rank_members_in_leaderboard(members_to_add = 5)
