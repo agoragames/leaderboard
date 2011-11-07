@@ -1,4 +1,4 @@
-# leaderboard 2.0.1
+# leaderboard 2.0.1 (2011-11-07)
 
  * Allow for only single options to be passed to `leaders`, `around_me` and `ranked_in_list` methods - https://github.com/agoragames/leaderboard/issues/4
  * Added `percentile_for(member)` and `percentile_for_in(leaderboard_name, member)` methods to calculate percentile for a given member
