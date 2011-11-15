@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 
-require 'leaderboard'
+require 'leaderboard-version'
 
 Gem::Specification.new do |s|
   s.name        = "leaderboard"
@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency('redis')
+  s.add_development_dependency('rake')
 end
