@@ -1,7 +1,7 @@
 require 'redis'
 
 class Leaderboard
-  VERSION = '2.0.1'.freeze
+  VERSION = '2.0.1'
   
   DEFAULT_PAGE_SIZE = 25
   DEFAULT_OPTIONS = {
