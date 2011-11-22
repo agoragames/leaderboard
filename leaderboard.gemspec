@@ -5,7 +5,7 @@ require 'leaderboard-version'
 
 Gem::Specification.new do |s|
   s.name        = "leaderboard"
-  s.version     = Leaderboard::VERSION
+  s.version     = Leaderboard::VERSION.dup
   s.authors     = ["David Czarnecki"]
   s.email       = ["dczarnecki@agoragames.com"]
   s.homepage    = "https://github.com/agoragames/leaderboard"
