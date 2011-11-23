@@ -1,5 +1,5 @@
 require 'redis'
-require 'leaderboard-version'
+require 'version'
 
 class Leaderboard
   DEFAULT_PAGE_SIZE = 25
