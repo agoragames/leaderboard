@@ -189,7 +189,8 @@ The following ports have been made of the leaderboard gem.
 * PHP: https://github.com/agoragames/php-leaderboard
 * Python: https://github.com/agoragames/python-leaderboard
 * Scala: https://github.com/agoragames/scala-leaderboard
-  
+* Clojure: https://github.com/agoragames/clojure-leaderboard
+
 == Contributing to leaderboard
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
