@@ -137,6 +137,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 
 ### Other useful methods
 
+```
   delete_leaderboard: Delete the current leaderboard  
   remove_member(member): Remove a member from the leaderboard
   total_members: Total # of members in the leaderboard
@@ -151,6 +152,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   percentile_for(member): Calculate the percentile for a given member
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
+```
 
 Check the online documentation for more detail, http://rubydoc.info/gems/leaderboard/
       
