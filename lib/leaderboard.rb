@@ -3,12 +3,15 @@ require 'leaderboard/version'
 
 class Leaderboard
   DEFAULT_PAGE_SIZE = 25
+  
   DEFAULT_OPTIONS = {
     :page_size => DEFAULT_PAGE_SIZE
   }
 
   DEFAULT_REDIS_HOST = 'localhost'
+  
   DEFAULT_REDIS_PORT = 6379  
+  
   DEFAULT_REDIS_OPTIONS = {
     :host => DEFAULT_REDIS_HOST,
     :port => DEFAULT_REDIS_PORT
@@ -21,9 +24,22 @@ class Leaderboard
     :page_size => nil
   }
   
+  # Name of the leaderboard.
   attr_reader :leaderboard_name
+
+  # Page size to be used when paging through the leaderboard. 
   attr_reader :page_size
   
+  # Create a new instance of a leaderboard.
+  # 
+  # @param leaderboard [String] Name of the leaderboard.
+  # @param options [Hash] Options for the leaderboard such as +:page_size+.
+  # @param redis_options [Hash] Options for configuring Redis.
+  #
+  # Examples
+  #
+  #   leaderboard = Leaderboard.new('highscores')
+  #   leaderboard = Leaderboard.new('highscores', {:page_size => 10})
   def initialize(leaderboard_name, options = DEFAULT_OPTIONS, redis_options = DEFAULT_REDIS_OPTIONS)
     @leaderboard_name = leaderboard_name
     
@@ -39,78 +55,156 @@ class Leaderboard
         
     @redis_connection = Redis.new(redis_options) if @redis_connection.nil?
   end
-      
+  
+  # Set the page size to be used when paging through the leaderboard. This method 
+  # also has the side effect of setting the page size to the +DEFAULT_PAGE_SIZE+ 
+  # if the page size is less than 1.
+  # 
+  # @param page_size [int] Page size.
   def page_size=(page_size)
     page_size = DEFAULT_PAGE_SIZE if page_size < 1
 
     @page_size = page_size
   end
   
+  # Disconnect the Redis connection.
   def disconnect
     @redis_connection.client.disconnect
   end
   
+  # Delete the current leaderboard.
   def delete_leaderboard
     delete_leaderboard_named(@leaderboard_name)
   end
   
+  # Delete the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
   def delete_leaderboard_named(leaderboard_name)
     @redis_connection.del(leaderboard_name)
   end
       
+  # Rank a member in the leaderboard.
+  # 
+  # @param member [String] Member name.
+  # @param score [float] Member score.
   def rank_member(member, score)
     rank_member_in(@leaderboard_name, member, score)
   end
 
+  # Rank a member in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param score [float] Member score.
   def rank_member_in(leaderboard_name, member, score)
     @redis_connection.zadd(leaderboard_name, score, member)
   end
   
+  # Remove a member from the leaderboard.
+  #
+  # @param member [String] Member name.
   def remove_member(member)
     remove_member_from(@leaderboard_name, member)
   end
   
+  # Remove a member from the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
   def remove_member_from(leaderboard_name, member)
     @redis_connection.zrem(leaderboard_name, member)
   end
   
+  # Retrieve the total number of members in the leaderboard.
+  # 
+  # @return total number of members in the leaderboard.
   def total_members
     total_members_in(@leaderboard_name)
   end
   
+  # Retrieve the total number of members in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  #
+  # @return the total number of members in the named leaderboard.
   def total_members_in(leaderboard_name)
     @redis_connection.zcard(leaderboard_name)
   end
   
+  # Retrieve the total number of pages in the leaderboard.
+  #
+  # @return the total number of pages in the leaderboard.
   def total_pages
     total_pages_in(@leaderboard_name)
   end
   
+  # Retrieve the total number of pages in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param page_size [int] Page size to be used when paging through the leaderboard.
+  # 
+  # @return the total number of pages in the named leaderboard.
   def total_pages_in(leaderboard_name, page_size = nil)
     page_size ||= @page_size.to_f
     (total_members_in(leaderboard_name) / page_size.to_f).ceil
   end
   
+  # Retrieve the total members in a given score range from the leaderboard.
+  #
+  # @param min_score [float] Minimum score.
+  # @param max_score [float] Maximum score.
+  #
+  # @return the total members in a given score range from the leaderboard.
   def total_members_in_score_range(min_score, max_score)
     total_members_in_score_range_in(@leaderboard_name, min_score, max_score)
   end
   
+  # Retrieve the total members in a given score range from the named leaderboard.
+  #
+  # @param leaderboard_name Name of the leaderboard.
+  # @param min_score [float] Minimum score.
+  # @param max_score [float] Maximum score.
+  #
+  # @return the total members in a given score range from the named leaderboard.
   def total_members_in_score_range_in(leaderboard_name, min_score, max_score)
     @redis_connection.zcount(leaderboard_name, min_score, max_score)
   end
   
+  # Change the score for a member in the leaderboard by a score delta which can be positive or negative.
+  #
+  # @param member [String] Member name.
+  # @param delta [float] Score change.
   def change_score_for(member, delta)    
     change_score_for_member_in(@leaderboard_name, member, delta)
   end
   
+  # Change the score for a member in the named leaderboard by a delta which can be positive or negative.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param delta [float] Score change.
   def change_score_for_member_in(leaderboard_name, member, delta)
     @redis_connection.zincrby(leaderboard_name, delta, member)
   end
   
+  # Retrieve the rank for a member in the leaderboard.
+  # 
+  # @param member [String] Member name.
+  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
+  # 
+  # @return the rank for a member in the leaderboard.
   def rank_for(member, use_zero_index_for_rank = false)
     rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
   end
   
+  # Retrieve the rank for a member in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
+  # 
+  # @return the rank for a member in the leaderboard.
   def rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
     if use_zero_index_for_rank
       return @redis_connection.zrevrank(leaderboard_name, member)
@@ -119,26 +213,61 @@ class Leaderboard
     end
   end
   
+  # Retrieve the score for a member in the leaderboard.
+  # 
+  # @param member Member name.
+  #
+  # @return the score for a member in the leaderboard.
   def score_for(member)
     score_for_in(@leaderboard_name, member)
   end
   
+  # Retrieve the score for a member in the named leaderboard.
+  # 
+  # @param leaderboard_name Name of the leaderboard.
+  # @param member [String] Member name.
+  #
+  # @return the score for a member in the leaderboard.
   def score_for_in(leaderboard_name, member)
     @redis_connection.zscore(leaderboard_name, member).to_f
   end
 
+  # Check to see if a member exists in the leaderboard.
+  #
+  # @param member [String] Member name.
+  #
+  # @return +true+ if the member exists in the leaderboard, +false+ otherwise.
   def check_member?(member)
     check_member_in?(@leaderboard_name, member)
   end
   
+  # Check to see if a member exists in the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  #
+  # @return +true+ if the member exists in the named leaderboard, +false+ otherwise.
   def check_member_in?(leaderboard_name, member)
     !@redis_connection.zscore(leaderboard_name, member).nil?
   end
   
+  # Retrieve the score and rank for a member in the leaderboard.
+  #
+  # @param member [String] Member name.
+  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
+  #
+  # @return the score and rank for a member in the leaderboard as a Hash.
   def score_and_rank_for(member, use_zero_index_for_rank = false)
     score_and_rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
   end
 
+  # Retrieve the score and rank for a member in the named leaderboard.
+  #
+  # @param leaderboard_name [String]Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
+  #
+  # @return the score and rank for a member in the named leaderboard as a Hash.
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
     responses = @redis_connection.multi do |transaction|
       transaction.zscore(leaderboard_name, member)
@@ -153,18 +282,38 @@ class Leaderboard
     {:member => member, :score => responses[0], :rank => responses[1]}    
   end
   
+  # Remove members from the leaderboard in a given score range.
+  #
+  # @param min_score [float] Minimum score.
+  # @param max_score [float] Maximum score.
   def remove_members_in_score_range(min_score, max_score)
     remove_members_in_score_range_in(@leaderboard_name, min_score, max_score)
   end
   
+  # Remove members from the named leaderboard in a given score range.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param min_score [float] Minimum score.
+  # @param max_score [float] Maximum score.
   def remove_members_in_score_range_in(leaderboard_name, min_score, max_score)
     @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
   
+  # Retrieve the percentile for a member in the leaderboard.
+  # 
+  # @param member [String] Member name.
+  # 
+  # @return the percentile for a member in the leaderboard.
   def percentile_for(member)
     percentile_for_in(@leaderboard_name, member)
   end
  
+  # Retrieve the percentile for a member in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # 
+  # @return the percentile for a member in the named leaderboard.
   def percentile_for_in(leaderboard_name, member)
     responses = @redis_connection.multi do |transaction|
       transaction.zcard(leaderboard_name)     
@@ -174,10 +323,23 @@ class Leaderboard
     ((responses[0] - responses[1] - 1).to_f / responses[0].to_f * 100).ceil
   end
     
+  # Retrieve a page of leaders from the leaderboard.
+  # 
+  # @param current_page [int] Page to retrieve from the leaderboard.
+  # @param options [Hash] Options to be used when retrieving the page from the leaderboard.
+  # 
+  # @return a page of leaders from the leaderboard.
   def leaders(current_page, options = {})
     leaders_in(@leaderboard_name, current_page, options)
   end
 
+  # Retrieve a page of leaders from the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param current_page [int] Page to retrieve from the named leaderboard.
+  # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
+  # 
+  # @return a page of leaders from the named leaderboard.
   def leaders_in(leaderboard_name, current_page, options = {})
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
@@ -209,10 +371,23 @@ class Leaderboard
     end
   end
   
+  # Retrieve a page of leaders from the leaderboard around a given member.
+  #
+  # @param member [String] Member name.
+  # @param options [Hash] Options to be used when retrieving the page from the leaderboard.
+  # 
+  # @return a page of leaders from the leaderboard around a given member.
   def around_me(member, options = {})
     around_me_in(@leaderboard_name, member, options)
   end
   
+  # Retrieve a page of leaders from the named leaderboard around a given member.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
+  # 
+  # @return a page of leaders from the named leaderboard around a given member.
   def around_me_in(leaderboard_name, member, options = {})
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
@@ -236,10 +411,23 @@ class Leaderboard
     end
   end
   
+  # Retrieve a page of leaders from the leaderboard for a given list of members.
+  # 
+  # @param members [Array] Member names.
+  # @param options [Hash] Options to be used when retrieving the page from the leaderboard.
+  # 
+  # @return a page of leaders from the leaderboard for a given list of members.
   def ranked_in_list(members, options = {})
     ranked_in_list_in(@leaderboard_name, members, options)
   end
   
+  # Retrieve a page of leaders from the named leaderboard for a given list of members.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param members [Array] Member names.
+  # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
+  # 
+  # @return a page of leaders from the named leaderboard for a given list of members.
   def ranked_in_list_in(leaderboard_name, members, options = {})
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
@@ -284,18 +472,31 @@ class Leaderboard
     ranks_for_members
   end
   
-  # Merge leaderboards given by keys with this leaderboard into destination
+  # Merge leaderboards given by keys with this leaderboard into a named destination leaderboard.
+  #
+  # @param destination [String] Destination leaderboard name.
+  # @param keys [Array] Leaderboards to be merged with the current leaderboard.
+  # @param options [Hash] Options for merging the leaderboards. 
   def merge_leaderboards(destination, keys, options = {:aggregate => :sum})
     @redis_connection.zunionstore(destination, keys.insert(0, @leaderboard_name), options)
   end
   
-  # Intersect leaderboards given by keys with this leaderboard into destination
+  # Intersect leaderboards given by keys with this leaderboard into a named destination leaderboard.
+  # 
+  # @param destination [String] Destination leaderboard name.
+  # @param keys [Array] Leaderboards to be merged with the current leaderboard.
+  # @param options [Hash] Options for intersecting the leaderboards.
   def intersect_leaderboards(destination, keys, options = {:aggregate => :sum})
     @redis_connection.zinterstore(destination, keys.insert(0, @leaderboard_name), options)
   end
   
   private 
   
+  # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
+  #
+  # @param page_size [int] Page size.
+  #
+  # @return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
   def validate_page_size(page_size)
     if page_size && page_size < 1
       page_size = DEFAULT_PAGE_SIZE
