@@ -154,7 +154,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 ```
 
-Check the online documentation for more detail on each method, [http://rubydoc.info/github/agoragames/leaderboard/master/frames](http://rubydoc.info/github/agoragames/leaderboard/master/frames).
+Check the [online documentation](http://rubydoc.info/github/agoragames/leaderboard/master/frames) for more detail on each method.
       
 ## Performance Metrics
 
