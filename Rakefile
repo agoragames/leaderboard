@@ -17,7 +17,7 @@ REDIS_LOCATION = ENV['REDIS_LOCATION']
 task :default => :run
 
 desc "Run tests and manage server start/stop"
-task :run => [:start, :test_rubies, :stop]
+task :run => [:start, :test, :stop]
 
 desc "Run rcov and manage server start/stop"
 task :rcoverage => [:start, :rcov, :stop]
@@ -48,5 +48,7 @@ task :stop do
 end
 
 task :test_rubies do
+  Rake::Task['start'].execute
   system "rvm 1.8.7@leaderboard_gem,1.9.2@leaderboard_gem,1.9.3@leaderboard_gem do rake test"
+  Rake::Task['stop'].execute
 end
