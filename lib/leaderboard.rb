@@ -303,7 +303,7 @@ class Leaderboard
   # 
   # @param member [String] Member name.
   # 
-  # @return the percentile for a member in the leaderboard.
+  # @return the percentile for a member in the leaderboard. Return +nil+ for a non-existent member.
   def percentile_for(member)
     percentile_for_in(@leaderboard_name, member)
   end
@@ -389,7 +389,7 @@ class Leaderboard
   # @param member [String] Member name.
   # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
   # 
-  # @return a page of leaders from the named leaderboard around a given member.
+  # @return a page of leaders from the named leaderboard around a given member. Returns an empty array for a non-existent member.
   def around_me_in(leaderboard_name, member, options = {})
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
