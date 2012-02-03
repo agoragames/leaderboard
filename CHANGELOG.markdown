@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## leaderboard 2.0.2 (2012-02-03)
+
+ * Fix for checking to see if a member actually exists in the leaderboard for the `around_me` calls
+ * Return appropriate `nil` in data returned for calls such as `percentile_for` and `ranked_in_list` for non-existent members
+
 ## leaderboard 2.0.1 (2011-11-07)
 
  * Allow for only single options to be passed to `leaders`, `around_me` and `ranked_in_list` methods - https://github.com/agoragames/leaderboard/issues/4

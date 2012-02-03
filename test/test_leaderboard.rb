@@ -13,7 +13,7 @@ class TestLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '2.0.1', Leaderboard::VERSION
+    assert_equal '2.0.2', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
@@ -418,7 +418,44 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal 25, @leaderboard.percentile_for('member_4')
     assert_equal 92, @leaderboard.percentile_for('member_12')
   end
+
+  def test_around_me_for_invalid_member
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
+    
+    leaders_around_me = @leaderboard.around_me('jones', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 3}))
+    assert_equal 0, leaders_around_me.size
+  end
+
+  def test_score_and_rank_for_non_existent_member
+    score_and_rank_for_member = @leaderboard.score_and_rank_for('jones')
   
+    assert_equal 'jones', score_and_rank_for_member[:member]
+    assert_equal 0.0, score_and_rank_for_member[:score]
+    assert_nil score_and_rank_for_member[:rank]
+  end
+
+  def test_ranked_in_list_for_non_existent_member
+    rank_members_in_leaderboard
+
+    members = ['member_1', 'member_5', 'jones']
+    ranked_members = @leaderboard.ranked_in_list(members)
+
+    assert_equal 3, ranked_members.size    
+    assert_nil ranked_members[2][:rank]
+  end
+
+  def test_percentile_for_non_existent_member
+    percentile = @leaderboard.percentile_for('jones')
+
+    assert_nil percentile
+  end
+
+  def test_change_score_for_non_existent_member
+    assert_equal 0.0, @leaderboard.score_for('jones')
+    @leaderboard.change_score_for('jones', 5)
+    assert_equal 5.0, @leaderboard.score_for('jones')
+  end
+
   private
   
   def rank_members_in_leaderboard(members_to_add = 5)

@@ -315,6 +315,8 @@ class Leaderboard
   # 
   # @return the percentile for a member in the named leaderboard.
   def percentile_for_in(leaderboard_name, member)
+    return nil unless check_member_in?(leaderboard_name, member)
+
     responses = @redis_connection.multi do |transaction|
       transaction.zcard(leaderboard_name)     
       transaction.zrevrank(leaderboard_name, member)
@@ -393,6 +395,8 @@ class Leaderboard
     leaderboard_options.merge!(options)
     
     reverse_rank_for_member = @redis_connection.zrevrank(leaderboard_name, member)
+
+    return [] unless reverse_rank_for_member
     
     page_size = validate_page_size(leaderboard_options[:page_size]) || @page_size
     
@@ -449,7 +453,7 @@ class Leaderboard
           if leaderboard_options[:use_zero_index_for_rank]
             data[:rank] = responses[index * 2]
           else
-            data[:rank] = responses[index * 2] + 1
+            data[:rank] = responses[index * 2] + 1 rescue nil
           end
           
           data[:score] = responses[index * 2 + 1].to_f
@@ -461,7 +465,7 @@ class Leaderboard
           if leaderboard_options[:use_zero_index_for_rank]
             data[:rank] = responses[index]
           else
-            data[:rank] = responses[index] + 1
+            data[:rank] = responses[index] + 1 rescue nil
           end
         end
       end
