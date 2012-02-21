@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class TestLeaderboard < Test::Unit::TestCase
+class TestRevLeaderboard < Test::Unit::TestCase
   def setup    
     @redis_connection = Redis.new(:host => "127.0.0.1")
-    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1")
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:reverse => true}), :host => "127.0.0.1")
   end
   
   def teardown
@@ -70,8 +70,8 @@ class TestLeaderboard < Test::Unit::TestCase
   def test_rank_for
     rank_members_in_leaderboard(5)
 
-    assert_equal 2, @leaderboard.rank_for('member_4')
-    assert_equal 1, @leaderboard.rank_for('member_4', true)
+    assert_equal 4, @leaderboard.rank_for('member_4')
+    assert_equal 3, @leaderboard.rank_for('member_4', true)
   end
   
   def test_score_for
@@ -100,10 +100,10 @@ class TestLeaderboard < Test::Unit::TestCase
     leaders = @leaderboard.leaders(1)
         
     assert_equal 25, leaders.size
-    assert_equal 'member_25', leaders[0][:member]
-    assert_equal 'member_2', leaders[-2][:member]
-    assert_equal 'member_1', leaders[-1][:member]
-    assert_equal 1, leaders[-1][:score].to_i
+    assert_equal 'member_1', leaders[0][:member]
+    assert_equal 'member_24', leaders[-2][:member]
+    assert_equal 'member_25', leaders[-1][:member]
+    assert_equal 25, leaders[-1][:score].to_i
   end
   
   def test_leaders_with_multiple_pages
@@ -136,11 +136,11 @@ class TestLeaderboard < Test::Unit::TestCase
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.total_members
     leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
 
-    member_25 = {:member => 'member_25'}
-    assert_equal member_25, leaders[0]
-    
     member_1 = {:member => 'member_1'}
-    assert_equal member_1, leaders[24]
+    assert_equal member_1, leaders[0]
+    
+    member_25 = {:member => 'member_25'}
+    assert_equal member_25, leaders[24]
   end
   
   def test_leaders_with_only_various_options_should_respect_other_defaults
@@ -151,31 +151,31 @@ class TestLeaderboard < Test::Unit::TestCase
     
     leaders = @leaderboard.leaders(1, :with_rank => false)
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
-    member_26 = {:member => 'member_26', :score => 26}
-    member_25 = {:member => 'member_25', :score => 25}
-    member_24 = {:member => 'member_24', :score => 24}
-    assert_equal member_26, leaders[0]
-    assert_equal member_25, leaders[1]    
-    assert_equal member_24, leaders[2]    
+    member_1 = {:member => 'member_1', :score => 1}
+    member_2 = {:member => 'member_2', :score => 2}
+    member_3 = {:member => 'member_3', :score => 3}
+    assert_equal member_1, leaders[0]
+    assert_equal member_2, leaders[1]    
+    assert_equal member_3, leaders[2]    
 
     leaders = @leaderboard.leaders(1, :with_scores => false)
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
-    member_26 = {:member => 'member_26', :rank => 1}
-    member_25 = {:member => 'member_25', :rank => 2}
-    assert_equal member_26, leaders[0]
-    assert_equal member_25, leaders[1]
+    member_1 = {:member => 'member_1', :rank => 1}
+    member_2 = {:member => 'member_2', :rank => 2}
+    assert_equal member_1, leaders[0]
+    assert_equal member_2, leaders[1]
 
     leaders = @leaderboard.leaders(1, :with_scores => false, :with_rank => false)
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, leaders.size
-    member_26 = {:member => 'member_26'}
-    member_25 = {:member => 'member_25'}
-    assert_equal member_26, leaders[0]
-    assert_equal member_25, leaders[1]
+    member_1 = {:member => 'member_1'}
+    member_2 = {:member => 'member_2'}
+    assert_equal member_1, leaders[0]
+    assert_equal member_2, leaders[1]
 
     leaders = @leaderboard.leaders(1, :with_rank => false, :page_size => 1)
     assert_equal 1, leaders.size
-    member_26 = {:member => 'member_26', :score => 26}
-    assert_equal member_26, leaders[0]
+    member_1 = {:member => 'member_1', :score => 1}
+    assert_equal member_1, leaders[0]
   end
   
   def test_around_me
@@ -186,10 +186,10 @@ class TestLeaderboard < Test::Unit::TestCase
     leaders_around_me = @leaderboard.around_me('member_30')
     assert_equal @leaderboard.page_size / 2, leaders_around_me.size / 2
     
-    leaders_around_me = @leaderboard.around_me('member_1')
+    leaders_around_me = @leaderboard.around_me('member_76')
     assert_equal @leaderboard.page_size / 2 + 1, leaders_around_me.size
     
-    leaders_around_me = @leaderboard.around_me('member_76')
+    leaders_around_me = @leaderboard.around_me('member_1')
     assert_equal @leaderboard.page_size / 2, leaders_around_me.size / 2
   end
   
@@ -203,13 +203,13 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 3, ranked_members.size
 
-    assert_equal 25, ranked_members[0][:rank]
+    assert_equal 1, ranked_members[0][:rank]
     assert_equal 1, ranked_members[0][:score]
 
-    assert_equal 21, ranked_members[1][:rank]
+    assert_equal 5, ranked_members[1][:rank]
     assert_equal 5, ranked_members[1][:score]
 
-    assert_equal 16, ranked_members[2][:rank]
+    assert_equal 10, ranked_members[2][:rank]
     assert_equal 10, ranked_members[2][:score]    
   end
   
@@ -223,11 +223,11 @@ class TestLeaderboard < Test::Unit::TestCase
     
     assert_equal 3, ranked_members.size
 
-    assert_equal 25, ranked_members[0][:rank]
+    assert_equal 1, ranked_members[0][:rank]
 
-    assert_equal 21, ranked_members[1][:rank]
+    assert_equal 5, ranked_members[1][:rank]
 
-    assert_equal 16, ranked_members[2][:rank]
+    assert_equal 10, ranked_members[2][:rank]
   end
   
   def test_remove_member
@@ -282,7 +282,7 @@ class TestLeaderboard < Test::Unit::TestCase
     data = @leaderboard.score_and_rank_for('member_1')
     assert_equal 'member_1', data[:member]
     assert_equal 1, data[:score]
-    assert_equal 5, data[:rank]
+    assert_equal 1, data[:rank]
   end
   
   def test_remove_members_in_score_range
@@ -405,18 +405,18 @@ class TestLeaderboard < Test::Unit::TestCase
     
     leaders_around_me = @leaderboard.around_me('member_30', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:page_size => 3}))
     assert_equal 3, leaders_around_me.size
-    assert_equal 'member_31', leaders_around_me[0][:member]
-    assert_equal 'member_29', leaders_around_me[2][:member]
+    assert_equal 'member_31', leaders_around_me[2][:member]
+    assert_equal 'member_29', leaders_around_me[0][:member]
   end
   
   def test_percentile_for
     rank_members_in_leaderboard(12)
     
-    assert_equal 0, @leaderboard.percentile_for('member_1')
-    assert_equal 9, @leaderboard.percentile_for('member_2')
-    assert_equal 17, @leaderboard.percentile_for('member_3')
-    assert_equal 25, @leaderboard.percentile_for('member_4')
-    assert_equal 92, @leaderboard.percentile_for('member_12')
+    assert_equal 100, @leaderboard.percentile_for('member_1')
+    assert_equal 91, @leaderboard.percentile_for('member_2')
+    assert_equal 83, @leaderboard.percentile_for('member_3')
+    assert_equal 75, @leaderboard.percentile_for('member_4')
+    assert_equal 8, @leaderboard.percentile_for('member_12')
   end
 
   def test_around_me_for_invalid_member

@@ -5,7 +5,8 @@ class Leaderboard
   DEFAULT_PAGE_SIZE = 25
   
   DEFAULT_OPTIONS = {
-    :page_size => DEFAULT_PAGE_SIZE
+    :page_size => DEFAULT_PAGE_SIZE,
+    :reverse => false
   }
 
   DEFAULT_REDIS_HOST = 'localhost'
@@ -43,8 +44,9 @@ class Leaderboard
   def initialize(leaderboard_name, options = DEFAULT_OPTIONS, redis_options = DEFAULT_REDIS_OPTIONS)
     @leaderboard_name = leaderboard_name
     
+    @reverse   = options[:reverse]
     @page_size = options[:page_size]
-    if @page_size < 1
+    if @page_size.nil? || @page_size < 1
       @page_size = DEFAULT_PAGE_SIZE
     end
     
@@ -206,10 +208,18 @@ class Leaderboard
   # 
   # @return the rank for a member in the leaderboard.
   def rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
-    if use_zero_index_for_rank
-      return @redis_connection.zrevrank(leaderboard_name, member)
+    if @reverse
+      if use_zero_index_for_rank
+        return @redis_connection.zrank(leaderboard_name, member)
+      else
+        return @redis_connection.zrank(leaderboard_name, member) + 1 rescue nil
+      end
     else
-      return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
+      if use_zero_index_for_rank
+        return @redis_connection.zrevrank(leaderboard_name, member)
+      else
+        return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
+      end
     end
   end
   
@@ -271,7 +281,11 @@ class Leaderboard
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
     responses = @redis_connection.multi do |transaction|
       transaction.zscore(leaderboard_name, member)
-      transaction.zrevrank(leaderboard_name, member)
+      if @reverse
+        transaction.zrank(leaderboard_name, member)
+      else
+        transaction.zrevrank(leaderboard_name, member)
+      end
     end
     
     responses[0] = responses[0].to_f
@@ -321,8 +335,13 @@ class Leaderboard
       transaction.zcard(leaderboard_name)     
       transaction.zrevrank(leaderboard_name, member)
     end
-       
-    ((responses[0] - responses[1] - 1).to_f / responses[0].to_f * 100).ceil
+    
+    percentile = ((responses[0] - responses[1] - 1).to_f / responses[0].to_f * 100).ceil
+    if @reverse
+      100 - percentile
+    else
+      percentile
+    end
   end
     
   # Retrieve a page of leaders from the leaderboard.
@@ -364,8 +383,13 @@ class Leaderboard
     end
     
     ending_offset = (starting_offset + page_size) - 1
-        
-    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)    
+    
+    if @reverse
+      raw_leader_data = @redis_connection.zrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)    
+    else    
+      raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)    
+    end
+
     if raw_leader_data
       return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
     else
@@ -394,7 +418,9 @@ class Leaderboard
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
     
-    reverse_rank_for_member = @redis_connection.zrevrank(leaderboard_name, member)
+    reverse_rank_for_member = @reverse ? 
+      @redis_connection.zrank(leaderboard_name, member) : 
+      @redis_connection.zrevrank(leaderboard_name, member)
 
     return [] unless reverse_rank_for_member
     
@@ -407,7 +433,10 @@ class Leaderboard
         
     ending_offset = (starting_offset + page_size) - 1
     
-    raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)
+    raw_leader_data = @reverse ? 
+      @redis_connection.zrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false) :
+      @redis_connection.zrevrange(leaderboard_name, starting_offset, ending_offset, :with_scores => false)
+
     if raw_leader_data
       return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
     else
@@ -440,7 +469,11 @@ class Leaderboard
     
     responses = @redis_connection.multi do |transaction|
       members.each do |member|
-        transaction.zrevrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+        if @reverse
+          transaction.zrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+        else
+          transaction.zrevrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+        end
         transaction.zscore(leaderboard_name, member) if leaderboard_options[:with_scores]
       end
     end
