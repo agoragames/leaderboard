@@ -6,10 +6,12 @@ Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high
 
 ## Installation
 
-Install the gem:
+`gem install leaderboard`
+
+or in your `Gemfile`
 
 ```ruby
-gem "leaderboard"
+gem 'leaderboard'
 ```
 
 Make sure your redis server is running! Redis configuration is outside the scope of this README, but 
