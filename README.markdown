@@ -37,6 +37,17 @@ If you need to pass in options for Redis, you can do this in the initializer:
    => #<Leaderboard:0x00000103095200 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/1 (Redis v2.2.5)>> 
 ```
 
+The `Leaderboard::DEFAULT_OPTIONS` are as follows:
+
+```ruby
+DEFAULT_OPTIONS = {
+  :page_size => DEFAULT_PAGE_SIZE,
+  :reverse => false
+}
+```
+
+You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest to highest score.
+
 You can pass in an existing connection to Redis using :redis_connection in the Redis options hash:
 
 ```ruby
@@ -240,5 +251,5 @@ The following ports have been made of the leaderboard gem.
 
 ## Copyright
 
-Copyright (c) 2011 David Czarnecki. See LICENSE.txt for further details.
+Copyright (c) 2011-2012 David Czarnecki. See LICENSE.txt for further details.
 

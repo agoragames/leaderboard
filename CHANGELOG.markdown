@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.0.3 (2012-02-22)
+
+ * Added `:reverse => false` to `Leaderboard::DEFAULT_OPTIONS` to support leaderboards sorted from lowest to highest score instead of highest to lowest score. (Thanks @siuying)
+
 ## leaderboard 2.0.2 (2012-02-03)
 
  * Fix for checking to see if a member actually exists in the leaderboard for the `around_me` calls

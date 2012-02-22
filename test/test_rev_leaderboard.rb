@@ -13,7 +13,7 @@ class TestRevLeaderboard < Test::Unit::TestCase
   end
   
   def test_version
-    assert_equal '2.0.2', Leaderboard::VERSION
+    assert_equal '2.0.3', Leaderboard::VERSION
   end
   
   def test_initialize_with_defaults  
