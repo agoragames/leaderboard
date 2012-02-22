@@ -7,6 +7,7 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
+  # test.warning = true
 end
 
 REDIS_DIR = File.expand_path(File.join("..", "test"), __FILE__)
