@@ -1,8 +1,7 @@
-require 'bundler'
-Bundler::GemHelper.install_tasks
-
+require 'bundler/gem_tasks'
 require 'rake'
 require 'rake/testtask'
+
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
@@ -19,9 +18,6 @@ task :default => :run
 
 desc "Run tests and manage server start/stop"
 task :run => [:start, :test, :stop]
-
-desc "Run rcov and manage server start/stop"
-task :rcoverage => [:start, :rcov, :stop]
 
 desc "Start the Redis server"
 task :start do
