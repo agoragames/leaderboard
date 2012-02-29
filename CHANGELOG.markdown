@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.0.4 (2012-02-29)
+
+ * Added `page_for(member, page_size = DEFAULT_PAGE_SIZE)` and `page_for_in(leaderboard_name, member, page_size = DEFAULT_PAGE_SIZE)` calls to allow you to determine the page where a member falls in the leaderboard
+
 ## leaderboard 2.0.3 (2012-02-22)
 
  * Added `:reverse => false` to `Leaderboard::DEFAULT_OPTIONS` to support leaderboards sorted from lowest to highest score instead of highest to lowest score. (Thanks @siuying)

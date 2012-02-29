@@ -343,6 +343,37 @@ class Leaderboard
       percentile
     end
   end
+
+  # Determine the page where a member falls in the leaderboard.
+  #
+  # @param member [String] Member name.
+  # @param page_size [int] Page size to be used in determining page location.
+  #
+  # @return the page where a member falls in the leaderboard.
+  def page_for(member, page_size = DEFAULT_PAGE_SIZE)
+    page_for_in(@leaderboard_name, member, page_size)
+  end
+
+  # Determine the page where a member falls in the named leaderboard.
+  #
+  # @param leaderboard [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param page_size [int] Page size to be used in determining page location.
+  #
+  # @return the page where a member falls in the leaderboard.
+  def page_for_in(leaderboard_name, member, page_size = DEFAULT_PAGE_SIZE)
+    rank_for_member = @reverse ? 
+      @redis_connection.zrank(leaderboard_name, member) : 
+      @redis_connection.zrevrank(leaderboard_name, member)
+
+    if rank_for_member.nil?
+      rank_for_member = 0
+    else
+      rank_for_member += 1
+    end
+
+    (rank_for_member.to_f / page_size.to_f).ceil    
+  end
     
   # Retrieve a page of leaders from the leaderboard.
   # 

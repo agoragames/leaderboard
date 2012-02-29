@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TestRevLeaderboard < Test::Unit::TestCase
+class TestRevLeaderboard < LeaderboardTest
   def setup    
     @redis_connection = Redis.new(:host => "127.0.0.1")
     @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS.merge({:reverse => true}), :host => "127.0.0.1")
@@ -11,11 +11,7 @@ class TestRevLeaderboard < Test::Unit::TestCase
     @leaderboard.disconnect
     @redis_connection.client.disconnect
   end
-  
-  def test_version
-    assert_equal '2.0.3', Leaderboard::VERSION
-  end
-  
+    
   def test_initialize_with_defaults  
     assert_equal 'name', @leaderboard.leaderboard_name
     assert_equal Leaderboard::DEFAULT_PAGE_SIZE, @leaderboard.page_size
@@ -456,11 +452,19 @@ class TestRevLeaderboard < Test::Unit::TestCase
     assert_equal 5.0, @leaderboard.score_for('jones')
   end
 
-  private
-  
-  def rank_members_in_leaderboard(members_to_add = 5)
-    1.upto(members_to_add) do |index|
-      @leaderboard.rank_member("member_#{index}", index)
-    end
+  def test_page_for
+    assert_equal 0, @leaderboard.page_for('jones')
+
+    rank_members_in_leaderboard(20)
+
+    assert_equal 1, @leaderboard.page_for('member_17')
+    assert_equal 1, @leaderboard.page_for('member_11')
+    assert_equal 1, @leaderboard.page_for('member_10')
+    assert_equal 1, @leaderboard.page_for('member_1')
+
+    assert_equal 1, @leaderboard.page_for('member_10', 10)
+    assert_equal 1, @leaderboard.page_for('member_1', 10)
+    assert_equal 2, @leaderboard.page_for('member_17', 10)
+    assert_equal 2, @leaderboard.page_for('member_11', 10)
   end
 end

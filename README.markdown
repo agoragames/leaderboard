@@ -163,6 +163,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   score_and_rank_for(member): Retrieve the score and rank for a member in a single call
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
+  page_for(member, page_size): Determine the page where a member falls in the leaderboard
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 ```
