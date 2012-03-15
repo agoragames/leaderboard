@@ -102,6 +102,29 @@ class Leaderboard
   def rank_member_in(leaderboard_name, member, score)
     @redis_connection.zadd(leaderboard_name, score, member)
   end
+
+  # Rank an array of members in the leaderboard.
+  # 
+  # @param members_and_scores [Splat or Array] Variable list of members and scores
+  def rank_members(*members_and_scores)
+    rank_members_in(@leaderboard_name, *members_and_scores)
+  end
+
+  # Rank an array of members in the named leaderboard.
+  # 
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param members_and_scores [Splat or Array] Variable list of members and scores
+  def rank_members_in(leaderboard_name, *members_and_scores)
+    if members_and_scores.is_a?(Array)
+      members_and_scores.flatten!
+    end
+
+    @redis_connection.multi do |transaction|
+      members_and_scores.each_slice(2) do |member_and_score|
+        transaction.zadd(leaderboard_name, member_and_score[1], member_and_score[0])
+      end
+    end
+  end
   
   # Remove a member from the leaderboard.
   #

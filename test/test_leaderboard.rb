@@ -467,4 +467,18 @@ class TestLeaderboard < LeaderboardTest
     assert_equal 2, @leaderboard.page_for('member_10', 10)
     assert_equal 2, @leaderboard.page_for('member_1', 10)
   end
+
+  def test_rank_members
+    assert_equal 0, @leaderboard.total_members
+    @leaderboard.rank_members('member_1', 1, 'member_10', 10)
+    assert_equal 2, @leaderboard.total_members
+    assert_equal 'member_10', @leaderboard.leaders(1).first[:member]
+  end
+
+  def test_rank_members_with_array
+    assert_equal 0, @leaderboard.total_members
+    @leaderboard.rank_members(['member_1', 1, 'member_10', 10])
+    assert_equal 2, @leaderboard.total_members
+    assert_equal 'member_10', @leaderboard.leaders(1).first[:member]
+  end
 end

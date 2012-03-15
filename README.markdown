@@ -146,7 +146,23 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 ```ruby
   ruby-1.9.2-p180 :034 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'])
    => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_67", :rank=>29, :score=>67.0}]
-```   
+```
+
+Insert multiple data items for members and their associated scores:
+
+As a splat:
+
+```ruby
+highscore_lb.rank_members('member_1', 1, 'member_5', 5, 'member_10', 10)
+```
+
+Or as an array:
+
+```ruby
+highscore_lb.rank_members(['member_1', 1, 'member_5', 5, 'member_10', 10])
+```
+
+Use this method to do bulk insert of data, but be mindful of the amount of data you are inserting since a single transaction can get quite large.
 
 ### Other useful methods
 
@@ -164,6 +180,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
   page_for(member, page_size): Determine the page where a member falls in the leaderboard
+  rank_members(members_and_scores): Rank an array of members in the leaderboard where you can call via (member_name, score) or pass in an array of [member_name, score]
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 ```
@@ -228,9 +245,38 @@ Average time to request an arbitrary page from the leaderboard:
    => 0.0014615999999999531 
 ```
 
+Bulk insert performance:
+
+Ranking individual members:
+
+```ruby
+1.9.3p0 :015 > insert_time = Benchmark.measure do
+1.9.3p0 :016 >     1.upto(1000000) do |index|
+1.9.3p0 :017 >       highscore_lb.rank_member("member_#{index}", index)
+1.9.3p0 :018?>     end
+1.9.3p0 :019?>   end
+ =>  29.340000  15.050000  44.390000 ( 81.673507)
+```
+
+Ranking multiple members at once:
+
+```ruby
+1.9.3p0 :020 > member_data = []
+ => [] 
+1.9.3p0 :021 > 1.upto(1000000) do |index|
+1.9.3p0 :022 >   member_data << "member_#{index}"
+1.9.3p0 :023?>   member_data << index
+1.9.3p0 :024?> end
+ => 1 
+1.9.3p0 :025 > insert_time = Benchmark.measure do
+1.9.3p0 :026 >   highscore_lb.rank_members(member_data)
+1.9.3p0 :027?> end
+ =>  22.390000   6.380000  28.770000 ( 31.144027)
+```
+
 ## Future Ideas
 
-* Bulk insert
+* Ideas?
 
 ## Ports
 
