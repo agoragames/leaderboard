@@ -473,5 +473,12 @@ class TestRevLeaderboard < LeaderboardTest
     @leaderboard.rank_members('member_1', 1, 'member_10', 10)
     assert_equal 2, @leaderboard.total_members
     assert_equal 'member_1', @leaderboard.leaders(1).first[:member]
-  end  
+  end
+
+  def test_rank_members_with_array
+    assert_equal 0, @leaderboard.total_members
+    @leaderboard.rank_members(['member_1', 1, 'member_10', 10])
+    assert_equal 2, @leaderboard.total_members
+    assert_equal 'member_1', @leaderboard.leaders(1).first[:member]
+  end
 end
