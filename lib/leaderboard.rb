@@ -116,7 +116,7 @@ class Leaderboard
   # @param members_and_scores [Splat or Array] Variable list of members and scores
   def rank_members_in(leaderboard_name, *members_and_scores)
     if members_and_scores.is_a?(Array)
-      members_and_scores = members_and_scores.flatten
+      members_and_scores.flatten!
     end
 
     @redis_connection.multi do |transaction|
