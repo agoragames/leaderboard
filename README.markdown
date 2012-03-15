@@ -245,6 +245,35 @@ Average time to request an arbitrary page from the leaderboard:
    => 0.0014615999999999531 
 ```
 
+Bulk insert performance:
+
+Ranking individual members:
+
+```ruby
+1.9.3p0 :015 > insert_time = Benchmark.measure do
+1.9.3p0 :016 >     1.upto(1000000) do |index|
+1.9.3p0 :017 >       highscore_lb.rank_member("member_#{index}", index)
+1.9.3p0 :018?>     end
+1.9.3p0 :019?>   end
+ =>  29.340000  15.050000  44.390000 ( 81.673507)
+```
+
+Ranking multiple members at once:
+
+```ruby
+1.9.3p0 :020 > member_data = []
+ => [] 
+1.9.3p0 :021 > 1.upto(1000000) do |index|
+1.9.3p0 :022 >   member_data << "member_#{index}"
+1.9.3p0 :023?>   member_data << index
+1.9.3p0 :024?> end
+ => 1 
+1.9.3p0 :025 > insert_time = Benchmark.measure do
+1.9.3p0 :026 >   highscore_lb.rank_members(member_data)
+1.9.3p0 :027?> end
+ =>  22.390000   6.380000  28.770000 ( 31.144027)
+```
+
 ## Future Ideas
 
 * Ideas?
