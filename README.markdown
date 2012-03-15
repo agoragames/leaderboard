@@ -146,7 +146,23 @@ Get rank and score for an arbitrary list of members (e.g. friends):
 ```ruby
   ruby-1.9.2-p180 :034 > highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'])
    => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_67", :rank=>29, :score=>67.0}]
-```   
+```
+
+Insert multiple data items for members and their associated scores:
+
+As a splat:
+
+```ruby
+highscore_lb.rank_members('member_1', 1, 'member_5', 5, 'member_10', 10)
+```
+
+Or as an array:
+
+```ruby
+highscore_lb.rank_members(['member_1', 1, 'member_5', 5, 'member_10', 10])
+```
+
+Use this method to do bulk insert of data, but be mindful of the amount of data you are inserting since a single transaction can get quite large.
 
 ### Other useful methods
 
@@ -164,6 +180,7 @@ Get rank and score for an arbitrary list of members (e.g. friends):
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
   page_for(member, page_size): Determine the page where a member falls in the leaderboard
+  rank_members(members_and_scores): Rank an array of members in the leaderboard where you can call via (member_name, score) or pass in an array of [member_name, score]
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 ```
