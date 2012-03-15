@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.0.5 (2012-03-14)
+
+* Added `rank_members(members_and_scores)` and `rank_members_in(leaderboard_name, members_and_scores)` allowing you to pass in an array of `member_name, score, member_name, score` and so on. Use this method to do bulk insert of data, but be mindful of the amount of data you are inserting since a single transaction can get quite large.
+
 ## leaderboard 2.0.4 (2012-02-29)
 
  * Added `page_for(member, page_size = DEFAULT_PAGE_SIZE)` and `page_for_in(leaderboard_name, member, page_size = DEFAULT_PAGE_SIZE)` calls to allow you to determine the page where a member falls in the leaderboard

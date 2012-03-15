@@ -6,7 +6,7 @@ require 'leaderboard'
 class LeaderboardTest < Test::Unit::TestCase
 
   def test_version
-    assert_equal '2.0.4', Leaderboard::VERSION
+    assert_equal '2.0.5', Leaderboard::VERSION
   end
 
   private

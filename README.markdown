@@ -230,7 +230,7 @@ Average time to request an arbitrary page from the leaderboard:
 
 ## Future Ideas
 
-* Bulk insert
+* Ideas?
 
 ## Ports
 

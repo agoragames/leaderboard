@@ -467,4 +467,11 @@ class TestRevLeaderboard < LeaderboardTest
     assert_equal 2, @leaderboard.page_for('member_17', 10)
     assert_equal 2, @leaderboard.page_for('member_11', 10)
   end
+
+  def test_rank_members
+    assert_equal 0, @leaderboard.total_members
+    @leaderboard.rank_members('member_1', 1, 'member_10', 10)
+    assert_equal 2, @leaderboard.total_members
+    assert_equal 'member_1', @leaderboard.leaders(1).first[:member]
+  end  
 end
