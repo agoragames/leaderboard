@@ -1,6 +1,17 @@
 require 'spec_helper'
 
-describe Leaderboard do
+describe 'Leaderboard' do
+  before(:each) do
+    @redis_connection = Redis.new(:host => "127.0.0.1")
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1")
+  end
+
+  after(:each) do
+    @redis_connection.flushdb
+    @leaderboard.disconnect
+    @redis_connection.client.disconnect
+  end
+
   it 'should be initialized with defaults' do
     @leaderboard.leaderboard_name.should == 'name'
     @leaderboard.page_size.should == Leaderboard::DEFAULT_PAGE_SIZE 
