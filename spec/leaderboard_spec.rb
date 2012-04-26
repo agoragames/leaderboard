@@ -478,4 +478,26 @@ describe 'Leaderboard' do
     @leaderboard.total_members.should be(2)
     @leaderboard.leaders(1).first[:member].should == 'member_10'
   end
+
+  it 'should allow you to set reverse after creating a leaderboard to see results in highest-to-lowest or lowest-to-highest order' do
+    rank_members_in_leaderboard(25)
+
+    leaders = @leaderboard.leaders(1)
+        
+    leaders.size.should be(25)
+    leaders[0][:member].should == 'member_25'
+    leaders[-2][:member].should == 'member_2'
+    leaders[-1][:member].should == 'member_1'
+    leaders[-1][:score].to_i.should be(1)
+
+    @leaderboard.reverse = true
+
+    leaders = @leaderboard.leaders(1)
+        
+    leaders.size.should be(25)
+    leaders[0][:member].should == 'member_1'
+    leaders[-2][:member].should == 'member_24'
+    leaders[-1][:member].should == 'member_25'
+    leaders[-1][:score].to_i.should be(25)
+  end
 end

@@ -48,7 +48,10 @@ DEFAULT_OPTIONS = {
 }
 ```
 
-You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest to highest score.
+The +DEFAULT_PAGE_SIZE+ is 25. 
+
+You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You 
+may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard.
 
 You can pass in an existing connection to Redis using :redis_connection in the Redis options hash:
 

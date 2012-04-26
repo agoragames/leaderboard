@@ -1,23 +1,36 @@
 require 'redis'
 require 'leaderboard/version'
 
-class Leaderboard
+class Leaderboard 
+  # Default page size: 25
   DEFAULT_PAGE_SIZE = 25
   
+  # Default options when creating a leaderboard. Page size is 25 and reverse
+  # is set to false, meaning various methods will return results in
+  # highest-to-lowest order.
   DEFAULT_OPTIONS = {
     :page_size => DEFAULT_PAGE_SIZE,
     :reverse => false
   }
 
+  # Default Redis host: localhost
   DEFAULT_REDIS_HOST = 'localhost'
   
+  # Default Redis post: 6379
   DEFAULT_REDIS_PORT = 6379  
   
+  # Default Redis options when creating a connection to Redis. The
+  # +DEFAULT_REDIS_HOST+ and +DEFAULT_REDIS_PORT+ will be passed.
   DEFAULT_REDIS_OPTIONS = {
     :host => DEFAULT_REDIS_HOST,
     :port => DEFAULT_REDIS_PORT
   }
   
+  # Default options when requesting data from a leaderboard.
+  # +:with_scores+ true: Return scores along with the member names.
+  # +:with_rank+ true: Return ranks along with the member names.
+  # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
+  # +:page_size+ nil: The default page size will be used.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true, 
     :with_rank => true, 
@@ -30,6 +43,11 @@ class Leaderboard
 
   # Page size to be used when paging through the leaderboard. 
   attr_reader :page_size
+
+  # Determines whether or not various leaderboard methods return their
+  # data in highest-to-lowest (+:reverse+ false) or 
+  # lowest-to-highest (+:reverse+ true)
+  attr_accessor :reverse
   
   # Create a new instance of a leaderboard.
   # 

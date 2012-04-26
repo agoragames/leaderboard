@@ -1,3 +1,4 @@
 class Leaderboard
-  VERSION = '2.0.5'.freeze
+  # Leaderboard version
+  VERSION = '2.0.6'.freeze
 end
