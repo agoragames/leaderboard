@@ -326,8 +326,8 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to intersect leaderboards' do
-    foo = Leaderboard.new('foo')
-    bar = Leaderboard.new('bar')
+    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     
     foo.rank_member('foo_1', 1)
     foo.rank_member('foo_2', 2)
@@ -339,7 +339,7 @@ describe 'Leaderboard' do
     foobar_keys = foo.intersect_leaderboards('foobar', ['bar'], {:aggregate => :max})    
     foobar_keys.should be(2)
     
-    foobar = Leaderboard.new('foobar')
+    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     foobar.total_members.should be(2)
     
     first_leader_in_foobar = foobar.leaders(1).first
