@@ -2,7 +2,7 @@
 
 ## leaderboard 2.0.6 (2012-04-26)
 
-* Added accessor for +reverse+ option so that you can set reverse after creating a leaderboard to see results in either highest-to-lowest or lowest-to-highest order.
+* Added accessor for `reverse` option so that you can set reverse after creating a leaderboard to see results in either highest-to-lowest or lowest-to-highest order.
 
 ## leaderboard 2.0.5 (2012-03-14)
 
