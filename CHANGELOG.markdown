@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.0.6 (2012-04-26)
+
+* Added accessor for +reverse+ option so that you can set reverse after creating a leaderboard to see results in either highest-to-lowest or lowest-to-highest order.
+
 ## leaderboard 2.0.5 (2012-03-14)
 
 * Added `rank_members(members_and_scores)` and `rank_members_in(leaderboard_name, members_and_scores)` allowing you to pass in some variable number of `member_name, score` and so on or an actual array of those data items. Use this method to do bulk insert of data, but be mindful of the amount of data you are inserting since a single transaction can get quite large.

@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'Leaderboard' do
   before(:each) do
-    @redis_connection = Redis.new(:host => "127.0.0.1")
-    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1")
+    @redis_connection = Redis.new(:host => "127.0.0.1", :db => 15)
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
   end
 
   after(:each) do
@@ -300,8 +300,8 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to merge leaderboards' do
-    foo = Leaderboard.new('foo')    
-    bar = Leaderboard.new('bar')
+    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     
     foo.rank_member('foo_1', 1)
     foo.rank_member('foo_2', 2)
@@ -312,7 +312,7 @@ describe 'Leaderboard' do
     foobar_keys = foo.merge_leaderboards('foobar', ['bar'])
     foobar_keys.should be(5)
     
-    foobar = Leaderboard.new('foobar')  
+    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     foobar.total_members.should be(5)
     
     first_leader_in_foobar = foobar.leaders(1).first
@@ -326,8 +326,8 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to intersect leaderboards' do
-    foo = Leaderboard.new('foo')
-    bar = Leaderboard.new('bar')
+    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     
     foo.rank_member('foo_1', 1)
     foo.rank_member('foo_2', 2)
@@ -339,7 +339,7 @@ describe 'Leaderboard' do
     foobar_keys = foo.intersect_leaderboards('foobar', ['bar'], {:aggregate => :max})    
     foobar_keys.should be(2)
     
-    foobar = Leaderboard.new('foobar')
+    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     foobar.total_members.should be(2)
     
     first_leader_in_foobar = foobar.leaders(1).first
@@ -477,5 +477,27 @@ describe 'Leaderboard' do
     @leaderboard.rank_members(['member_1', 1, 'member_10', 10])
     @leaderboard.total_members.should be(2)
     @leaderboard.leaders(1).first[:member].should == 'member_10'
+  end
+
+  it 'should allow you to set reverse after creating a leaderboard to see results in highest-to-lowest or lowest-to-highest order' do
+    rank_members_in_leaderboard(25)
+
+    leaders = @leaderboard.leaders(1)
+        
+    leaders.size.should be(25)
+    leaders[0][:member].should == 'member_25'
+    leaders[-2][:member].should == 'member_2'
+    leaders[-1][:member].should == 'member_1'
+    leaders[-1][:score].to_i.should be(1)
+
+    @leaderboard.reverse = true
+
+    leaders = @leaderboard.leaders(1)
+        
+    leaders.size.should be(25)
+    leaders[0][:member].should == 'member_1'
+    leaders[-2][:member].should == 'member_24'
+    leaders[-1][:member].should == 'member_25'
+    leaders[-1][:score].to_i.should be(25)
   end
 end

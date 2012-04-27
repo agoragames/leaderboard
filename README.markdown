@@ -48,9 +48,12 @@ DEFAULT_OPTIONS = {
 }
 ```
 
-You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest to highest score.
+The `DEFAULT_PAGE_SIZE` is 25. 
 
-You can pass in an existing connection to Redis using :redis_connection in the Redis options hash:
+You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You 
+may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard.
+
+You can pass in an existing connection to Redis using `:redis_connection` in the Redis options hash:
 
 ```ruby
   redis = Redis.new
@@ -70,7 +73,7 @@ You can set the page size to something other than the default page size (25):
    => #<Leaderboard:0x000001028791e8 @leaderboard_name="highscores", @page_size=5, @redis_connection=#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>> 
 ```
   
-Add members to your leaderboard using rank_member:
+Add members to your leaderboard using `rank_member`:
 
 ```ruby
   1.upto(10) do |index|
@@ -79,7 +82,7 @@ Add members to your leaderboard using rank_member:
    => 1 
 ```
 
-You can call rank_member with the same member and the leaderboard will be updated automatically.
+You can call `rank_member` with the same member and the leaderboard will be updated automatically.
 
 Get some information about your leaderboard:
 
@@ -134,14 +137,14 @@ Add more members to your leaderboard:
    => 3 
 ```
   
-Get an "Around Me" leaderboard for a member:
+Get an "Around Me" leaderboard page for a given member, which pulls members above and below the given member:
 
 ```ruby
   highscore_lb.around_me('member_53')
    => [{:member=>"member_65", :rank=>31, :score=>65.0}, {:member=>"member_64", :rank=>32, :score=>64.0}, {:member=>"member_63", :rank=>33, :score=>63.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_61", :rank=>35, :score=>61.0}, {:member=>"member_60", :rank=>36, :score=>60.0}, {:member=>"member_59", :rank=>37, :score=>59.0}, {:member=>"member_58", :rank=>38, :score=>58.0}, {:member=>"member_57", :rank=>39, :score=>57.0}, {:member=>"member_56", :rank=>40, :score=>56.0}, {:member=>"member_55", :rank=>41, :score=>55.0}, {:member=>"member_54", :rank=>42, :score=>54.0}, {:member=>"member_53", :rank=>43, :score=>53.0}, {:member=>"member_52", :rank=>44, :score=>52.0}, {:member=>"member_51", :rank=>45, :score=>51.0}, {:member=>"member_50", :rank=>46, :score=>50.0}, {:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_9", :rank=>48, :score=>9.0}, {:member=>"member_8", :rank=>49, :score=>8.0}, {:member=>"member_7", :rank=>50, :score=>7.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_5", :rank=>52, :score=>5.0}, {:member=>"member_4", :rank=>53, :score=>4.0}, {:member=>"member_3", :rank=>54, :score=>3.0}, {:member=>"member_2", :rank=>55, :score=>2.0}] 
 ```
 	
-Get rank and score for an arbitrary list of members (e.g. friends):
+Get rank and score for an arbitrary list of members (e.g. friends) from the leaderboard:
 
 ```ruby
   highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'])
