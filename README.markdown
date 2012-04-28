@@ -64,6 +64,18 @@ You can pass in an existing connection to Redis using `:redis_connection` in the
    => #<Leaderboard:0x000001028791e8 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>> 
 ```
  
+To use the same connection for multiple leaderboards, reset the options hash before instantiating more leaderboards:
+
+```ruby
+redis = Redis.new
+ => #<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)> 
+redis_options = {:redis_connection => redis}
+ => {:redis_connection=>#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>} 
+highscore_lb = Leaderboard.new('highscores', Leaderboard::DEFAULT_OPTIONS, redis_options)
+redis_options = {:redis_connection => redis}
+other_highscore_lb = Leaderboard.new('other_highscores', Leaderboard::DEFAULT_OPTIONS, redis_options)
+```
+
 You can set the page size to something other than the default page size (25):
 
 ```ruby
@@ -72,7 +84,7 @@ You can set the page size to something other than the default page size (25):
   highscore_lb
    => #<Leaderboard:0x000001028791e8 @leaderboard_name="highscores", @page_size=5, @redis_connection=#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>> 
 ```
-  
+
 Add members to your leaderboard using `rank_member`:
 
 ```ruby
@@ -189,7 +201,7 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
 ```
 
 Check the [online documentation](http://rubydoc.info/github/agoragames/leaderboard/master/frames) for more detail on each method.
-      
+
 ## Performance Metrics
 
 10 million sequential scores insert:
