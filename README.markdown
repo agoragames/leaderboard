@@ -19,7 +19,9 @@ check out the Redis documentation, http://redis.io/documentation.
 
 ## Compatibility
 
-The gem has been built and tested under Ruby 1.8.7, Ruby 1.9.2 and Ruby 1.9.3
+The gem has been built and tested under Ruby 1.8.7, Ruby 1.9.2 and Ruby 1.9.3.
+
+The gem is compatible with Redis 2.4.x and Redis 2.6.x.
 	
 ## Usage
 
