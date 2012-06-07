@@ -124,9 +124,9 @@ class Leaderboard
   end
 
   def add_member_data_in(leaderboard_name, member, data={})
-    data.each do |key,val|
-      @redis_connection.hset(data_key_for_member_in(leaderboard_name, member), key, val)
-    end if data
+    if data && data.size > 0
+      @redis_connection.hmset(data_key_for_member_in(leaderboard_name, member), *data.flatten)
+    end
   end
 
   def data_for_member_in(leaderboard_name, member)
