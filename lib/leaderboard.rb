@@ -34,6 +34,7 @@ class Leaderboard
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true, 
     :with_rank => true, 
+    :with_data => false,
     :use_zero_index_for_rank => false,
     :page_size => nil
   }
@@ -108,8 +109,8 @@ class Leaderboard
   # 
   # @param member [String] Member name.
   # @param score [float] Member score.
-  def rank_member(member, score)
-    rank_member_in(@leaderboard_name, member, score)
+  def rank_member(member, score, data=nil)
+    rank_member_in(@leaderboard_name, member, score, data)
   end
 
   # Rank a member in the named leaderboard.
@@ -117,8 +118,23 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   # @param score [float] Member score.
-  def rank_member_in(leaderboard_name, member, score)
+  def rank_member_in(leaderboard_name, member, score, data)
     @redis_connection.zadd(leaderboard_name, score, member)
+    add_member_data_in(leaderboard_name, member, data)
+  end
+
+  def add_member_data_in(leaderboard_name, member, data={})
+    data.each do |key,val|
+      @redis_connection.hset(data_key_for_member_in(leaderboard_name, member), key, val)
+    end if data
+  end
+
+  def data_for_member_in(leaderboard_name, member)
+    @redis_connection.hgetall(data_key_for_member_in(leaderboard_name, member))
+  end 
+
+  def data_key_for_member_in(leaderboard_name, member)
+    "#{leaderboard_name}:data:#{member}" 
   end
 
   # Rank an array of members in the leaderboard.
@@ -157,6 +173,7 @@ class Leaderboard
   # @param member [String] Member name.
   def remove_member_from(leaderboard_name, member)
     @redis_connection.zrem(leaderboard_name, member)
+    @redis_connection.del(data_key_for_member_in(leaderboard_name, member))
   end
   
   # Retrieve the total number of members in the leaderboard.
@@ -573,6 +590,11 @@ class Leaderboard
             data[:rank] = responses[index] + 1 rescue nil
           end
         end
+      end
+
+      if leaderboard_options[:with_data]
+        extra_data = data_for_member_in(leaderboard_name, member)
+        data[:data] = extra_data if extra_data && extra_data.size > 0
       end
       
       ranks_for_members << data

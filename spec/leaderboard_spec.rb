@@ -139,6 +139,20 @@ describe 'Leaderboard' do
     leaders[24].should == member_1
   end
 
+  it 'should allow you to retrieve leaders with extra data' do
+    Time.stub(:now).and_return(123)
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+    
+    @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false, :with_data=>true})
+
+    member_25 = {:member => 'member_25', :data=>{ "date"=>"123" }}
+    leaders[0].should == member_25
+    
+    member_1 = {:member => 'member_1', :data=>{ "date"=>"123" }}
+    leaders[24].should == member_1
+  end
+
   it 'should allow you to call leaders with various options that respect the defaults for the options not passed in' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
 
