@@ -184,7 +184,9 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
 ### Other useful methods
 
 ```
-  delete_leaderboard: Delete the current leaderboard  
+  delete_leaderboard: Delete the current leaderboard
+  member_data_for(member): Retrieve the optional member data for a given member in the leaderboard
+  update_member_data(member, member_data): Update the optional member data for a given member in the leaderboard
   remove_member(member): Remove a member from the leaderboard
   total_members: Total # of members in the leaderboard
   total_pages: Total # of pages in the leaderboard given the leaderboard's page_size	
