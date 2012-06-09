@@ -106,6 +106,30 @@ Get some information about your leaderboard:
   highscore_lb.total_pages
    => 1 
 ```
+
+The `rank_member` call will also accept an optional hash of member data that could 
+be used to store other information about a given member in the leaderboard. This 
+may be useful in situations where you are storing member IDs in the leaderboard and 
+you want to be able to store a member name for display. Example:
+
+```ruby
+highscore_lb.rank_member('84849292', 1, {'username' => 'member_name'})
+```
+
+You can retrieve, update and remove the optional member data using the 
+`member_data_for`, `update_member_data` and `remove_member_data` calls. Example: 
+
+```ruby
+highscore_lb.member_data_for('84849292')
+ => {"username"=>"member_name"}
+
+highscore_lb.update_member_data('84849292', {'last_updated' => Time.now, 'username' => 'updated_member_name'})
+ => "OK" 
+highscore_lb.member_data_for('84849292')
+ => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
+
+highscore_lb.remove_member_data('84849292')
+```
   
 Get some information about a specific member(s) in the leaderboard:
 
