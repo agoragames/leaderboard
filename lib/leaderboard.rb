@@ -125,7 +125,7 @@ class Leaderboard
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
       if member_data
-        transaction.hmset(member_data_key(leaderboard_name, member), *member_data.flatten)
+        transaction.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
       end
     end
   end
@@ -163,7 +163,22 @@ class Leaderboard
   # @param member [String] Member name.
   # @param member_data [Hash] Optional member data.
   def update_member_data_in(leaderboard_name, member, member_data)
-    @redis_connection.hmset(member_data_key(leaderboard_name, member), *member_data.flatten)
+    @redis_connection.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
+  end
+
+  # Remove the optional member data for a given member in the leaderboard.
+  #
+  # @param member [String] Member name.
+  def remove_member_data(member)
+    remove_member_data_in(@leaderboard_name, member)
+  end
+
+  # Remove the optional member data for a given member in the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  def remove_member_data_in(leaderboard_name, member)
+    @redis_connection.del(member_data_key(leaderboard_name, member))
   end
 
   # Rank an array of members in the leaderboard.

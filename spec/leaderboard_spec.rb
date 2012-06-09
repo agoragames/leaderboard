@@ -167,6 +167,14 @@ describe 'Leaderboard' do
     @leaderboard.member_data_for('member_id').should == {'username' => 'member_name', 'other_data_key' => 'other_data_value'}
   end
 
+  it 'should allow you to remove optional member data' do
+    @leaderboard.rank_member('member_id', 1, {'username' => 'member_name'})
+
+    @leaderboard.member_data_for('member_id').should == {'username' => 'member_name'}
+    @leaderboard.remove_member_data('member_id')
+    @leaderboard.member_data_for('member_id').should == {}
+  end
+
   it 'should allow you to call leaders with various options that respect the defaults for the options not passed in' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE + 1)
 
