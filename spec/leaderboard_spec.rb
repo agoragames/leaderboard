@@ -143,7 +143,7 @@ describe 'Leaderboard' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false, :with_data => true})
+    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false, :with_member_data => true})
 
     member_25 = {:member => 'member_25', :member_data => { "member_name" => "Leaderboard member 25" }}
     leaders[0].should == member_25

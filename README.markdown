@@ -150,7 +150,7 @@ Get page 1 in the leaderboard:
 ```
 	
 You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
-Valid options are `:with_scores`, `:with_rank`, `:with_data`, `:use_zero_index_for_rank` 
+Valid options are `:with_scores`, `:with_rank`, `:with_member_data`, `:use_zero_index_for_rank` 
 and `:page_size`. Below is an example of retrieving the first page in the leaderboard 
 without ranks:
 

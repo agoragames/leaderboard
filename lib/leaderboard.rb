@@ -29,13 +29,13 @@ class Leaderboard
   # Default options when requesting data from a leaderboard.
   # +:with_scores+ true: Return scores along with the member names.
   # +:with_rank+ true: Return ranks along with the member names.
-  # +:with_data+ false: Return member data along with the member names.
+  # +:with_member_data+ false: Return member data along with the member names.
   # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
   # +:page_size+ nil: The default page size will be used.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true, 
     :with_rank => true, 
-    :with_data => false,
+    :with_member_data => false,
     :use_zero_index_for_rank => false,
     :page_size => nil
   }
@@ -638,7 +638,7 @@ class Leaderboard
         end
       end
 
-      if leaderboard_options[:with_data]
+      if leaderboard_options[:with_member_data]
         data[:member_data] = member_data_for_in(leaderboard_name, member)
       end
       
