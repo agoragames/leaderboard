@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## leaderboard 2.1.0 (2012-06-11)
+
+* Added ability to store optional member data alongside the leaderboard data.
+* `:with_member_data` is now a valid request option when retrieving leader data.
+
 ## leaderboard 2.0.6 (2012-04-26)
 
 * Added accessor for `reverse` option so that you can set reverse after creating a leaderboard to see results in either highest-to-lowest or lowest-to-highest order.
