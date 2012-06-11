@@ -25,6 +25,8 @@ The gem is compatible with Redis 2.4.x and Redis 2.6.x.
 	
 ## Usage
 
+### Creating a leaderboard
+
 Create a new leaderboard or attach to an existing leaderboard named 'highscores':
 
 ```ruby
@@ -40,6 +42,8 @@ If you need to pass in options for Redis, you can do this in the initializer:
   highscore_lb = Leaderboard.new('highscores', Leaderboard::DEFAULT_OPTIONS, redis_options)
    => #<Leaderboard:0x00000103095200 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/1 (Redis v2.2.5)>> 
 ```
+
+### Defining leaderboard options
 
 The `Leaderboard::DEFAULT_OPTIONS` are as follows:
 
@@ -86,6 +90,8 @@ You can set the page size to something other than the default page size (25):
   highscore_lb
    => #<Leaderboard:0x000001028791e8 @leaderboard_name="highscores", @page_size=5, @redis_connection=#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>> 
 ```
+
+### Ranking members in the leaderboard
 
 Add members to your leaderboard using `rank_member`:
 
@@ -141,7 +147,9 @@ Get some information about a specific member(s) in the leaderboard:
   highscore_lb.rank_for('member_10')
    => 1 
 ```
-  
+
+### Retrieving members from the leaderboard 
+
 Get page 1 in the leaderboard:
 
 ```ruby
@@ -190,6 +198,8 @@ Get rank and score for an arbitrary list of members (e.g. friends) from the lead
   highscore_lb.ranked_in_list(['member_1', 'member_62', 'member_67'])
    => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_67", :rank=>29, :score=>67.0}]
 ```
+
+### Ranking multiple members in a leaderboard at once 
 
 Insert multiple data items for members and their associated scores:
 
@@ -292,7 +302,7 @@ Average time to request an arbitrary page from the leaderboard:
    => 0.0014615999999999531 
 ```
 
-Bulk insert performance:
+### Bulk insert performance
 
 Ranking individual members:
 
@@ -320,10 +330,6 @@ insert_time = Benchmark.measure do
 end
  =>  22.390000   6.380000  28.770000 ( 31.144027)
 ```
-
-## Future Ideas
-
-* Ideas?
 
 ## Ports
 
