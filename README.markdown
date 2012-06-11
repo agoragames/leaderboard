@@ -25,6 +25,8 @@ The gem is compatible with Redis 2.4.x and Redis 2.6.x.
 	
 ## Usage
 
+### Creating a leaderboard
+
 Create a new leaderboard or attach to an existing leaderboard named 'highscores':
 
 ```ruby
@@ -40,6 +42,8 @@ If you need to pass in options for Redis, you can do this in the initializer:
   highscore_lb = Leaderboard.new('highscores', Leaderboard::DEFAULT_OPTIONS, redis_options)
    => #<Leaderboard:0x00000103095200 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/1 (Redis v2.2.5)>> 
 ```
+
+### Defining leaderboard options
 
 The `Leaderboard::DEFAULT_OPTIONS` are as follows:
 
@@ -87,6 +91,8 @@ You can set the page size to something other than the default page size (25):
    => #<Leaderboard:0x000001028791e8 @leaderboard_name="highscores", @page_size=5, @redis_connection=#<Redis client v2.2.2 connected to redis://127.0.0.1:6379/0 (Redis v2.2.5)>> 
 ```
 
+### Ranking members in the leaderboard
+
 Add members to your leaderboard using `rank_member`:
 
 ```ruby
@@ -106,6 +112,30 @@ Get some information about your leaderboard:
   highscore_lb.total_pages
    => 1 
 ```
+
+The `rank_member` call will also accept an optional hash of member data that could 
+be used to store other information about a given member in the leaderboard. This 
+may be useful in situations where you are storing member IDs in the leaderboard and 
+you want to be able to store a member name for display. Example:
+
+```ruby
+highscore_lb.rank_member('84849292', 1, {'username' => 'member_name'})
+```
+
+You can retrieve, update and remove the optional member data using the 
+`member_data_for`, `update_member_data` and `remove_member_data` calls. Example: 
+
+```ruby
+highscore_lb.member_data_for('84849292')
+ => {"username"=>"member_name"}
+
+highscore_lb.update_member_data('84849292', {'last_updated' => Time.now, 'username' => 'updated_member_name'})
+ => "OK" 
+highscore_lb.member_data_for('84849292')
+ => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
+
+highscore_lb.remove_member_data('84849292')
+```
   
 Get some information about a specific member(s) in the leaderboard:
 
@@ -117,7 +147,9 @@ Get some information about a specific member(s) in the leaderboard:
   highscore_lb.rank_for('member_10')
    => 1 
 ```
-  
+
+### Retrieving members from the leaderboard 
+
 Get page 1 in the leaderboard:
 
 ```ruby
@@ -125,8 +157,10 @@ Get page 1 in the leaderboard:
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}] 
 ```
 	
-You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. Valid options are `:with_scores`, `:with_rank`, `:use_zero_index_for_rank` and `:page_size`.
-Below is an example of retrieving the first page in the leaderboard without ranks:
+You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
+Valid options are `:with_scores`, `:with_rank`, `:with_member_data`, `:use_zero_index_for_rank` 
+and `:page_size`. Below is an example of retrieving the first page in the leaderboard 
+without ranks:
 
 ```ruby
   highscore_lb.leaders(1, :with_rank => false)
@@ -165,6 +199,8 @@ Get rank and score for an arbitrary list of members (e.g. friends) from the lead
    => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_67", :rank=>29, :score=>67.0}]
 ```
 
+### Ranking multiple members in a leaderboard at once 
+
 Insert multiple data items for members and their associated scores:
 
 As a splat:
@@ -184,7 +220,10 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
 ### Other useful methods
 
 ```
-  delete_leaderboard: Delete the current leaderboard  
+  delete_leaderboard: Delete the current leaderboard
+  member_data_for(member): Retrieve the optional member data for a given member in the leaderboard
+  update_member_data(member, member_data): Update the optional member data for a given member in the leaderboard
+  remove_member_data(member): Remove the optional member data for a given member in the leaderboard
   remove_member(member): Remove a member from the leaderboard
   total_members: Total # of members in the leaderboard
   total_pages: Total # of pages in the leaderboard given the leaderboard's page_size	
@@ -263,7 +302,7 @@ Average time to request an arbitrary page from the leaderboard:
    => 0.0014615999999999531 
 ```
 
-Bulk insert performance:
+### Bulk insert performance
 
 Ranking individual members:
 
@@ -291,10 +330,6 @@ insert_time = Benchmark.measure do
 end
  =>  22.390000   6.380000  28.770000 ( 31.144027)
 ```
-
-## Future Ideas
-
-* Ideas?
 
 ## Ports
 

@@ -8,3 +8,4 @@ pkg
 Gemfile.lock
 test/db/*
 *.rdb
+spec/db/*.pid

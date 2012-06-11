@@ -29,11 +29,13 @@ class Leaderboard
   # Default options when requesting data from a leaderboard.
   # +:with_scores+ true: Return scores along with the member names.
   # +:with_rank+ true: Return ranks along with the member names.
+  # +:with_member_data+ false: Return member data along with the member names.
   # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
   # +:page_size+ nil: The default page size will be used.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true, 
     :with_rank => true, 
+    :with_member_data => false,
     :use_zero_index_for_rank => false,
     :page_size => nil
   }
@@ -108,8 +110,9 @@ class Leaderboard
   # 
   # @param member [String] Member name.
   # @param score [float] Member score.
-  def rank_member(member, score)
-    rank_member_in(@leaderboard_name, member, score)
+  # @param member_data [Hash] Optional member data.
+  def rank_member(member, score, member_data = nil)
+    rank_member_in(@leaderboard_name, member, score, member_data)
   end
 
   # Rank a member in the named leaderboard.
@@ -117,8 +120,65 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   # @param score [float] Member score.
-  def rank_member_in(leaderboard_name, member, score)
-    @redis_connection.zadd(leaderboard_name, score, member)
+  # @param member_data [Hash] Optional member data.
+  def rank_member_in(leaderboard_name, member, score, member_data)
+    @redis_connection.multi do |transaction|
+      transaction.zadd(leaderboard_name, score, member)
+      if member_data
+        transaction.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
+      end
+    end
+  end
+
+  # Retrieve the optional member data for a given member in the leaderboard.
+  #
+  # @param member [String] Member name.
+  #
+  # @return Hash of optional member data.
+  def member_data_for(member)
+    member_data_for_in(@leaderboard_name, member)
+  end
+
+  # Retrieve the optional member data for a given member in the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  #
+  # @return Hash of optional member data.
+  def member_data_for_in(leaderboard_name, member)
+    @redis_connection.hgetall(member_data_key(leaderboard_name, member))
+  end
+
+  # Update the optional member data for a given member in the leaderboard.
+  # 
+  # @param member [String] Member name.
+  # @param member_data [Hash] Optional member data.
+  def update_member_data(member, member_data)
+    update_member_data_in(@leaderboard_name, member, member_data)
+  end
+
+  # Update the optional member data for a given member in the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param member_data [Hash] Optional member data.
+  def update_member_data_in(leaderboard_name, member, member_data)
+    @redis_connection.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
+  end
+
+  # Remove the optional member data for a given member in the leaderboard.
+  #
+  # @param member [String] Member name.
+  def remove_member_data(member)
+    remove_member_data_in(@leaderboard_name, member)
+  end
+
+  # Remove the optional member data for a given member in the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  def remove_member_data_in(leaderboard_name, member)
+    @redis_connection.del(member_data_key(leaderboard_name, member))
   end
 
   # Rank an array of members in the leaderboard.
@@ -156,7 +216,10 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   def remove_member_from(leaderboard_name, member)
-    @redis_connection.zrem(leaderboard_name, member)
+    @redis_connection.multi do |transaction|
+      transaction.zrem(leaderboard_name, member)
+      transaction.del(member_data_key(leaderboard_name, member))
+    end
   end
   
   # Retrieve the total number of members in the leaderboard.
@@ -574,6 +637,10 @@ class Leaderboard
           end
         end
       end
+
+      if leaderboard_options[:with_member_data]
+        data[:member_data] = member_data_for_in(leaderboard_name, member)
+      end
       
       ranks_for_members << data
     end
@@ -601,6 +668,16 @@ class Leaderboard
   
   private 
   
+  # Key for retrieving optional member data.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # 
+  # @return a key in the form of +leaderboard_name:data:member+
+  def member_data_key(leaderboard_name, member)
+    "#{leaderboard_name}:member_data:#{member}" 
+  end
+
   # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
   #
   # @param page_size [int] Page size.
