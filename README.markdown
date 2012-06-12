@@ -199,6 +199,13 @@ Get rank and score for an arbitrary list of members (e.g. friends) from the lead
    => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_62", :rank=>34, :score=>62.0}, {:member=>"member_67", :rank=>29, :score=>67.0}]
 ```
 
+Retrieve members from the leaderboard in a given score range:
+
+```ruby
+leaders = highscore_lb.leaders_from_score_range(4, 19)
+ => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_9", :rank=>48, :score=>9.0}, {:member=>"member_8", :rank=>49, :score=>8.0}, {:member=>"member_7", :rank=>50, :score=>7.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_5", :rank=>52, :score=>5.0}, {:member=>"member_4", :rank=>53, :score=>4.0}] 
+```
+
 ### Ranking multiple members in a leaderboard at once 
 
 Insert multiple data items for members and their associated scores:

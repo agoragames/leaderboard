@@ -33,6 +33,26 @@ describe 'Leaderboard (reverse option)' do
     leaders[-1][:score].to_i.should be(25)
   end
 
+  it 'should allow you to retrieve leaders in a given score range' do
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+
+    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
+
+    member_10 = {:member => 'member_10'}
+    leaders[0].should == member_10
+
+    member_15 = {:member => 'member_15'}
+    leaders[5].should == member_15
+
+    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
+
+    member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
+    leaders[0].should == member_10
+
+    member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
+    leaders[5].should == member_15
+  end
+
   it 'should allow you to retrieve leaders without scores and ranks' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     
