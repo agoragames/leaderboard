@@ -101,6 +101,14 @@ describe 'Leaderboard (reverse option)' do
     leaders[0].should == member_1
   end
 
+  it 'should return a single leader when calling leader_at' do
+    rank_members_in_leaderboard(50)
+    @leaderboard.leader_at(1)[:rank].should == 1
+    @leaderboard.leader_at(26)[:rank].should == 26 
+    @leaderboard.leader_at(50)[:rank].should == 50
+    @leaderboard.leader_at(51).should be_nil
+  end
+
   it 'should return the correct information when calling around_me' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
 

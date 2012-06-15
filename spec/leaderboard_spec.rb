@@ -235,6 +235,7 @@ describe 'Leaderboard' do
     @leaderboard.leader_at(1)[:rank].should == 1
     @leaderboard.leader_at(26)[:rank].should == 26 
     @leaderboard.leader_at(50)[:rank].should == 50 
+    @leaderboard.leader_at(51).should be_nil
   end
 
   it 'should return the correct information when calling around_me' do
