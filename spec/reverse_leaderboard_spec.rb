@@ -33,24 +33,38 @@ describe 'Leaderboard (reverse option)' do
     leaders[-1][:score].to_i.should be(25)
   end
 
-  it 'should allow you to retrieve leaders in a given score range' do
+  it 'should return the correct list when calling members' do
+    rank_members_in_leaderboard(25)
+    
+    @leaderboard.total_members.should be(25)
+
+    members = @leaderboard.members(1)
+        
+    members.size.should be(25)
+    members[0][:member].should == 'member_1'
+    members[-2][:member].should == 'member_24'
+    members[-1][:member].should == 'member_25'
+    members[-1][:score].to_i.should be(25)
+  end
+
+  it 'should allow you to retrieve members in a given score range' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
 
-    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
+    members = @leaderboard.members_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
 
     member_10 = {:member => 'member_10'}
-    leaders[0].should == member_10
+    members[0].should == member_10
 
     member_15 = {:member => 'member_15'}
-    leaders[5].should == member_15
+    members[5].should == member_15
 
-    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
+    members = @leaderboard.members_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
 
     member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
-    leaders[0].should == member_10
+    members[0].should == member_10
 
     member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
-    leaders[5].should == member_15
+    members[5].should == member_15
   end
 
   it 'should allow you to retrieve leaders without scores and ranks' do
@@ -99,6 +113,17 @@ describe 'Leaderboard (reverse option)' do
     leaders.size.should be(1)
     member_1 = {:member => 'member_1', :score => 1}
     leaders[0].should == member_1
+  end
+
+  it 'should return a single member when calling member_at' do
+    rank_members_in_leaderboard(50)
+    @leaderboard.member_at(1)[:rank].should == 1
+    @leaderboard.member_at(1)[:score].should == 1.0
+    @leaderboard.member_at(26)[:rank].should == 26
+    @leaderboard.member_at(50)[:rank].should == 50
+    @leaderboard.member_at(51).should be_nil
+    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {'member_name' => 'Leaderboard member 1'}
+    @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should == 0
   end
 
   it 'should return the correct information when calling around_me' do
