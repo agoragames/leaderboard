@@ -572,7 +572,7 @@ class Leaderboard
   # @param options [Hash] Options to be used when retrieving the leader from the leaderboard.
   # 
   # @return a page of leaders from the named leaderboard.
-  def leader_at(position, options={})
+  def leader_at(position, options = {})
     leader_at_in(@leaderboard_name, position, options)
   end
 
@@ -583,7 +583,7 @@ class Leaderboard
   # @param options [Hash] Options to be used when retrieving the leader from the named leaderboard.
   # 
   # @return a page of leaders from the named leaderboard.
-  def leader_at_in(leaderboard_name, position, options)
+  def leader_at_in(leaderboard_name, position, options = {})
     if position <= total_members
       leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
       leaderboard_options.merge!(options)
