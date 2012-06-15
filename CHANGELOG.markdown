@@ -2,8 +2,9 @@
 
 ## leaderboard 2.2.0 (in progress)
 
-* Added `leaders_from_score_range` and `leaders_from_score_range_in` methods and specs. This will retrieve leaders from the leaderboard that fall within a given score range.
-* Add `leader_at` and `leader_at_in` methods.
+* Added `members_from_score_range` and `members_from_score_range_in` methods. These will retrieve members from the leaderboard that fall within a given score range.
+* Add `member_at` and `member_at_in` methods. These will retrieve a given member from the leaderboard at the specified position.
+* `members` and `members_in` are now aliases for the `leaders` and `leaders_in` methods.
 
 ## leaderboard 2.1.0 (2012-06-11)
 

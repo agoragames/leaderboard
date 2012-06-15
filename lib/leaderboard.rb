@@ -489,6 +489,8 @@ class Leaderboard
     leaders_in(@leaderboard_name, current_page, options)
   end
 
+  alias_method :members, :leaders
+
   # Retrieve a page of leaders from the named leaderboard.
   # 
   # @param leaderboard_name [String] Name of the leaderboard.
@@ -532,26 +534,28 @@ class Leaderboard
     end
   end
 
-  # Retrieve leaders from the leaderboard within a given score range.
+  alias_method :members_in, :leaders_in
+
+  # Retrieve members from the leaderboard within a given score range.
   #
   # @param minimum_score [float] Minimum score (inclusive).
   # @param maximum_score [float] Maximum score (inclusive).
   # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
   #
-  # @return leaders from the leaderboard that fall within the given score range.
-  def leaders_from_score_range(minimum_score, maximum_score, options = {})
-    leaders_from_score_range_in(@leaderboard_name, minimum_score, maximum_score, options)
+  # @return members from the leaderboard that fall within the given score range.
+  def members_from_score_range(minimum_score, maximum_score, options = {})
+    members_from_score_range_in(@leaderboard_name, minimum_score, maximum_score, options)
   end
 
-  # Retrieve leaders from the named leaderboard within a given score range.
+  # Retrieve members from the named leaderboard within a given score range.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param minimum_score [float] Minimum score (inclusive).
   # @param maximum_score [float] Maximum score (inclusive).
   # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
   #
-  # @return leaders from the leaderboard that fall within the given score range.
-  def leaders_from_score_range_in(leaderboard_name, minimum_score, maximum_score, options = {})
+  # @return members from the leaderboard that fall within the given score range.
+  def members_from_score_range_in(leaderboard_name, minimum_score, maximum_score, options = {})
     leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
     leaderboard_options.merge!(options)
 
@@ -566,24 +570,24 @@ class Leaderboard
     end
   end
 
-  # Retrieve a leader from the leaderboard.
+  # Retrieve a member at the specified index from the leaderboard.
   # 
   # @param position [int] Position in leaderboard.
-  # @param options [Hash] Options to be used when retrieving the leader from the leaderboard.
+  # @param options [Hash] Options to be used when retrieving the member from the leaderboard.
   # 
-  # @return a page of leaders from the named leaderboard.
-  def leader_at(position, options = {})
-    leader_at_in(@leaderboard_name, position, options)
+  # @return a member from the leaderboard.
+  def member_at(position, options = {})
+    member_at_in(@leaderboard_name, position, options)
   end
 
-  # Retrieve a leader at the specified index from the leaderboard.
+  # Retrieve a member at the specified index from the leaderboard.
   # 
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param position [int] Position in named leaderboard.
-  # @param options [Hash] Options to be used when retrieving the leader from the named leaderboard.
+  # @param options [Hash] Options to be used when retrieving the member from the named leaderboard.
   # 
   # @return a page of leaders from the named leaderboard.
-  def leader_at_in(leaderboard_name, position, options = {})
+  def member_at_in(leaderboard_name, position, options = {})
     if position <= total_members_in(leaderboard_name)
       leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
       leaderboard_options.merge!(options)

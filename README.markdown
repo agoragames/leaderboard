@@ -174,6 +174,8 @@ Below is an example of retrieving the first page in the leaderboard without scor
    => [{:member=>"member_10"}, {:member=>"member_9"}, {:member=>"member_8"}, {:member=>"member_7"}, {:member=>"member_6"}, {:member=>"member_5"}, {:member=>"member_4"}, {:member=>"member_3"}, {:member=>"member_2"}, {:member=>"member_1"}] 
 ```
 
+`members` and `members_in` are aliases for the `leaders` and `leaders_in` methods.
+
 Add more members to your leaderboard:
 
 ```ruby
@@ -202,14 +204,14 @@ Get rank and score for an arbitrary list of members (e.g. friends) from the lead
 Retrieve members from the leaderboard in a given score range:
 
 ```ruby
-leaders = highscore_lb.leaders_from_score_range(4, 19)
+members = highscore_lb.members_from_score_range(4, 19)
  => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_9", :rank=>48, :score=>9.0}, {:member=>"member_8", :rank=>49, :score=>8.0}, {:member=>"member_7", :rank=>50, :score=>7.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_5", :rank=>52, :score=>5.0}, {:member=>"member_4", :rank=>53, :score=>4.0}] 
 ```
 
-Retrieve a single leader from the leaderboard at a given position:
+Retrieve a single member from the leaderboard at a given position:
 
 ```ruby
-leader = highscore_lb.leader_at(4)
+members = highscore_lb.member_at(4)
  => {:member=>"member_92", :rank=>4, :score=>92.0}
 ```
 
