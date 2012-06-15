@@ -126,6 +126,26 @@ describe 'Leaderboard' do
     leaders.size.should be(1)
   end
 
+  it 'should allow you to retrieve leaders in a given score range' do
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+
+    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
+
+    member_15 = {:member => 'member_15'}
+    leaders[0].should == member_15
+
+    member_10 = {:member => 'member_10'}
+    leaders[5].should == member_10
+
+    leaders = @leaderboard.leaders_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
+
+    member_15 = {:member => 'member_15', :rank => 11, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
+    leaders[0].should == member_15
+
+    member_10 = {:member => 'member_10', :rank => 16, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
+    leaders[5].should == member_10
+  end
+
   it 'should allow you to retrieve leaders without scores and ranks' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
     

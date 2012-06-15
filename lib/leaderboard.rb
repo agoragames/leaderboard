@@ -531,6 +531,40 @@ class Leaderboard
       return []
     end
   end
+
+  # Retrieve leaders from the leaderboard within a given score range.
+  #
+  # @param minimum_score [float] Minimum score (inclusive).
+  # @param maximum_score [float] Maximum score (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return leaders from the leaderboard that fall within the given score range.
+  def leaders_from_score_range(minimum_score, maximum_score, options = {})
+    leaders_from_score_range_in(@leaderboard_name, minimum_score, maximum_score, options)
+  end
+
+  # Retrieve leaders from the named leaderboard within a given score range.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param minimum_score [float] Minimum score (inclusive).
+  # @param maximum_score [float] Maximum score (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return leaders from the leaderboard that fall within the given score range.
+  def leaders_from_score_range_in(leaderboard_name, minimum_score, maximum_score, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+
+    raw_leader_data = @reverse ? 
+      @redis_connection.zrangebyscore(leaderboard_name, minimum_score, maximum_score, :with_scores => false) :
+      @redis_connection.zrevrangebyscore(leaderboard_name, maximum_score, minimum_score, :with_scores => false)
+
+    if raw_leader_data
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
+    else
+      return []
+    end
+  end
   
   # Retrieve a page of leaders from the leaderboard around a given member.
   #
