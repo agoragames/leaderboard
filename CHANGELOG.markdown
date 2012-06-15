@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## leaderboard 2.2.0 (in progress)
+
+* Added `leaders_from_score_range` and `leaders_from_score_range_in` methods and specs. This will retrieve leaders from the leaderboard that fall within a given score range.
+* Add `leader_at` and `leader_at_in` methods.
+
 ## leaderboard 2.1.0 (2012-06-11)
 
 * Added ability to store optional member data alongside the leaderboard data.

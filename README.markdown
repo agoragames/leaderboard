@@ -206,6 +206,13 @@ leaders = highscore_lb.leaders_from_score_range(4, 19)
  => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_9", :rank=>48, :score=>9.0}, {:member=>"member_8", :rank=>49, :score=>8.0}, {:member=>"member_7", :rank=>50, :score=>7.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_5", :rank=>52, :score=>5.0}, {:member=>"member_4", :rank=>53, :score=>4.0}] 
 ```
 
+Retrieve a single leader from the leaderboard at a given position:
+
+```ruby
+leader = highscore_lb.leader_at(4)
+ => {:member=>"member_92", :rank=>4, :score=>92.0}
+```
+
 ### Ranking multiple members in a leaderboard at once 
 
 Insert multiple data items for members and their associated scores:

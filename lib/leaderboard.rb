@@ -566,9 +566,9 @@ class Leaderboard
     end
   end
 
-  # Retrieve a leader from the leaderboard
+  # Retrieve a leader from the leaderboard.
   # 
-  # @param position [int] Position in leaderboard
+  # @param position [int] Position in leaderboard.
   # @param options [Hash] Options to be used when retrieving the leader from the leaderboard.
   # 
   # @return a page of leaders from the named leaderboard.
@@ -576,15 +576,15 @@ class Leaderboard
     leader_at_in(@leaderboard_name, position, options)
   end
 
-  # Retrieve a leader at the specified index from the leaderboard
+  # Retrieve a leader at the specified index from the leaderboard.
   # 
   # @param leaderboard_name [String] Name of the leaderboard.
-  # @param position [int] Position in named leaderboard
+  # @param position [int] Position in named leaderboard.
   # @param options [Hash] Options to be used when retrieving the leader from the named leaderboard.
   # 
   # @return a page of leaders from the named leaderboard.
   def leader_at_in(leaderboard_name, position, options = {})
-    if position <= total_members
+    if position <= total_members_in(leaderboard_name)
       leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
       leaderboard_options.merge!(options)
       page_size = validate_page_size(leaderboard_options[:page_size]) || @page_size

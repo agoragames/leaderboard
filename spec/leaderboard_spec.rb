@@ -233,9 +233,12 @@ describe 'Leaderboard' do
   it 'should return a single leader when calling leader_at' do
     rank_members_in_leaderboard(50)
     @leaderboard.leader_at(1)[:rank].should == 1
-    @leaderboard.leader_at(26)[:rank].should == 26 
-    @leaderboard.leader_at(50)[:rank].should == 50 
+    @leaderboard.leader_at(1)[:score].should == 50.0
+    @leaderboard.leader_at(26)[:rank].should == 26
+    @leaderboard.leader_at(50)[:rank].should == 50
     @leaderboard.leader_at(51).should be_nil
+    @leaderboard.leader_at(1, :with_member_data => true)[:member_data].should == {'member_name' => 'Leaderboard member 50'}
+    @leaderboard.leader_at(1, :use_zero_index_for_rank => true)[:rank].should == 0
   end
 
   it 'should return the correct information when calling around_me' do
