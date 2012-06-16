@@ -174,7 +174,7 @@ Below is an example of retrieving the first page in the leaderboard without scor
    => [{:member=>"member_10"}, {:member=>"member_9"}, {:member=>"member_8"}, {:member=>"member_7"}, {:member=>"member_6"}, {:member=>"member_5"}, {:member=>"member_4"}, {:member=>"member_3"}, {:member=>"member_2"}, {:member=>"member_1"}] 
 ```
 
-`members` and `members_in` are aliases for the `leaders` and `leaders_in` methods.
+You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
 Add more members to your leaderboard:
 
