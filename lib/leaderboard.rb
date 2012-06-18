@@ -560,8 +560,8 @@ class Leaderboard
     leaderboard_options.merge!(options)
 
     raw_leader_data = @reverse ? 
-      @redis_connection.zrangebyscore(leaderboard_name, minimum_score, maximum_score, :with_scores => false) :
-      @redis_connection.zrevrangebyscore(leaderboard_name, maximum_score, minimum_score, :with_scores => false)
+      @redis_connection.zrangebyscore(leaderboard_name, minimum_score, maximum_score) :
+      @redis_connection.zrevrangebyscore(leaderboard_name, maximum_score, minimum_score)
 
     if raw_leader_data
       return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)

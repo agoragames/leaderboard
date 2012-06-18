@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.2.1 (2012-06-18)
+
+* Fix for #17 - Leaderboard not compatible with redis 2.1.1. Redis' `zrangebyscore` and `zrevrangebyscore` methods do not return scores by default. No need to pass the option in the initial call.
+
 ## leaderboard 2.2.0 (2012-06-18)
 
 * Added `members_from_score_range` and `members_from_score_range_in` methods. These will retrieve members from the leaderboard that fall within a given score range.
