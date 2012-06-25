@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.2.2 (unreleased)
+
+* Added optional `page_size` parameter to the `total_pages` method.
+
 ## leaderboard 2.2.1 (2012-06-18)
 
 * Fix for #17 - Leaderboard not compatible with redis 2.1.1. Redis' `zrangebyscore` and `zrevrangebyscore` methods do not return scores by default. No need to pass the option in the initial call.

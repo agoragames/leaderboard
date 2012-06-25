@@ -240,15 +240,17 @@ class Leaderboard
   
   # Retrieve the total number of pages in the leaderboard.
   #
+  # @param page_size [int, nil] Page size to be used when calculating the total number of pages.
+  #
   # @return the total number of pages in the leaderboard.
-  def total_pages
-    total_pages_in(@leaderboard_name)
+  def total_pages(page_size = nil)
+    total_pages_in(@leaderboard_name, page_size)
   end
   
   # Retrieve the total number of pages in the named leaderboard.
   # 
   # @param leaderboard_name [String] Name of the leaderboard.
-  # @param page_size [int] Page size to be used when paging through the leaderboard.
+  # @param page_size [int, nil] Page size to be used when calculating the total number of pages.
   # 
   # @return the total number of pages in the named leaderboard.
   def total_pages_in(leaderboard_name, page_size = nil)

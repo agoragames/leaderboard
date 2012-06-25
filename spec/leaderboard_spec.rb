@@ -80,6 +80,7 @@ describe 'Leaderboard' do
     rank_members_in_leaderboard(10)
     
     @leaderboard.total_pages.should be(1)
+    @leaderboard.total_pages(5).should be(2)
     
     @redis_connection.flushdb
     
