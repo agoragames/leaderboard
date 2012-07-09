@@ -1,7 +1,9 @@
 # CHANGELOG
 
-## leaderboard 2.2.2 (unreleased)
+## leaderboard 2.3.0 (2012-07-09)
 
+* Added `expire_leaderboard(seconds)` to expire the leaderboard in a set number of seconds.
+* Added `expire_leaderboard_at(timestamp)` to expire the leaderboard at a specific UNIX timestamp.
 * Added optional `page_size` parameter to the `total_pages` method.
 
 ## leaderboard 2.2.1 (2012-06-18)
@@ -44,16 +46,16 @@
 
  * Allow for only single options to be passed to `leaders`, `around_me` and `ranked_in_list` methods - https://github.com/agoragames/leaderboard/issues/4
  * Added `percentile_for(member)` and `percentile_for_in(leaderboard_name, member)` methods to calculate percentile for a given member
- 
+
 ## leaderboard 2.0.0 (2011-08-05)
- 
+
  * Change `add_member` to `rank_member` - https://github.com/agoragames/leaderboard/issues/3
  * Added `delete_leaderboard` and `delete_leaderboard_named` - https://github.com/agoragames/leaderboard/issues/2
  * Ability to pass in an existing Redis connection in initializer - https://github.com/agoragames/leaderboard/issues/1
  * Added transaction support for `score_and_rank_for`, `leaders`, `around_me` and `ranked_in_list`
  * Updated initializer to take a leaderboard name, `options` hash and `redis_options` hash
  * Simplified `leaders`, `around_me` and `ranked_in_list` to use an `options` hash with defaults for the previously individual parameters
- 
+
 ## leaderboard 1.0.6 (unreleased)
 
  * Added `disconnect` method
@@ -73,7 +75,7 @@
 
  * Fixing issue using total_pages in leaderboard_in call
  * Internal `massage_leader_data` method will now respect `with_scores`
- 
+
 ## leaderboard 1.0.2 (2011-02-25)
 
  * Adding `XXX_to`, `XXX_for`, `XXX_in` and `XXX_from` methods that will allow you to set the leaderboard name to interact with outside of creating a new object
