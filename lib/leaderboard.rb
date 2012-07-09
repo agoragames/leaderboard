@@ -480,6 +480,44 @@ class Leaderboard
 
     (rank_for_member.to_f / page_size.to_f).ceil    
   end
+
+  # Expire the current leaderboard in a set number of seconds. Do not use this with 
+  # leaderboards that utilize member data as there is no facility to cascade the 
+  # expiration out to the keys for the member data.
+  #
+  # @param seconds [int] Number of seconds after which the leaderboard will be expired.
+  def expire_leaderboard(seconds)
+    expire_leaderboard_for(@leaderboard_name, seconds)
+  end
+
+  # Expire the given leaderboard in a set number of seconds. Do not use this with 
+  # leaderboards that utilize member data as there is no facility to cascade the 
+  # expiration out to the keys for the member data.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param seconds [int] Number of seconds after which the leaderboard will be expired.
+  def expire_leaderboard_for(leaderboard_name, seconds)
+    @redis_connection.expire(leaderboard_name, seconds)
+  end
+
+  # Expire the current leaderboard at a specific UNIX timestamp. Do not use this with 
+  # leaderboards that utilize member data as there is no facility to cascade the 
+  # expiration out to the keys for the member data.
+  #
+  # @param timestamp [int] UNIX timestamp at which the leaderboard will be expired.
+  def expire_leaderboard_at(timestamp)
+    expire_leaderboard_at_for(@leaderboard_name, timestamp)
+  end
+
+  # Expire the given leaderboard at a specific UNIX timestamp. Do not use this with 
+  # leaderboards that utilize member data as there is no facility to cascade the 
+  # expiration out to the keys for the member data.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param timestamp [int] UNIX timestamp at which the leaderboard will be expired.
+  def expire_leaderboard_at_for(leaderboard_name, timestamp)
+    @redis_connection.expireat(leaderboard_name, timestamp)
+  end
     
   # Retrieve a page of leaders from the leaderboard.
   # 

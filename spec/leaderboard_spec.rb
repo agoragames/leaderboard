@@ -547,6 +547,26 @@ describe 'Leaderboard' do
     @leaderboard.page_for('member_1', 10).should be(2)
   end
 
+  it 'should set an expire on the leaderboard' do
+    rank_members_in_leaderboard
+
+    @leaderboard.expire_leaderboard(3)    
+    @redis_connection.ttl(@leaderboard.leaderboard_name).tap do |ttl|
+      ttl.should be > 1
+      ttl.should be <= 3
+    end
+  end
+
+  it 'should set an expire on the leaderboard using a timestamp' do
+    rank_members_in_leaderboard
+
+    @leaderboard.expire_leaderboard_at((Time.now + 10).to_i)
+    @redis_connection.ttl(@leaderboard.leaderboard_name).tap do |ttl|
+      ttl.should be > 1
+      ttl.should be <= 10
+    end
+  end
+
   it 'should allow you to rank multiple members with a variable number of arguments' do
     @leaderboard.total_members.should be(0)
     @leaderboard.rank_members('member_1', 1, 'member_10', 10)

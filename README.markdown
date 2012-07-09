@@ -252,6 +252,8 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
   page_for(member, page_size): Determine the page where a member falls in the leaderboard
+  expire_leaderboard(seconds): Expire the leaderboard in a set number of seconds.
+  expire_leaderboard_at(timestamp): Expire the leaderboard at a specific UNIX timestamp.
   rank_members(members_and_scores): Rank an array of members in the leaderboard where you can call via (member_name, score) or pass in an array of [member_name, score]
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
