@@ -576,6 +576,42 @@ class Leaderboard
 
   alias_method :members_in, :leaders_in
 
+  # Retrieve all leaders from the leaderboard.
+  #
+  # @param options [Hash] Options to be used when retrieving the page from the leaderboard.
+  #
+  # @return the leaders from the leaderboard.
+  def all_leaders(options = {})
+    all_leaders_from(@leaderboard_name, options)
+  end
+
+  alias_method :all_members, :all_leaders
+
+  # Retrieves all leaders from the named leaderboard.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
+  #
+  # @return the named leaderboard.
+  def all_leaders_from(leaderboard_name, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+
+    if @reverse
+      raw_leader_data = @redis_connection.zrange(leaderboard_name, 0, -1, :with_scores => false)
+    else
+      raw_leader_data = @redis_connection.zrevrange(leaderboard_name, 0, -1, :with_scores => false)
+    end
+
+    if raw_leader_data
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
+    else
+      return []
+    end
+  end
+
+  alias_method :all_members_from, :all_leaders_from
+
   # Retrieve members from the leaderboard within a given score range.
   #
   # @param minimum_score [float] Minimum score (inclusive).

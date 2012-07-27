@@ -141,6 +141,22 @@ describe 'Leaderboard' do
     leaders.size.should be(1)
   end
 
+  %w(members leaders).each do |method|
+    it "should return the entire leaderboard when you call 'all_#{method}'" do
+      rank_members_in_leaderboard(27)
+
+      @leaderboard.total_members.should be(27)
+
+      members = @leaderboard.send("all_#{method}")
+
+      members.size.should be(27)
+      members[0][:member].should == 'member_27'
+      members[-2][:member].should == 'member_2'
+      members[-1][:member].should == 'member_1'
+      members[-1][:score].to_i.should be(1)
+    end
+  end
+
   it 'should allow you to retrieve members in a given score range' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
 
