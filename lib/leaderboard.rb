@@ -578,7 +578,7 @@ class Leaderboard
 
   # Retrieve all leaders from the leaderboard.
   #
-  # @param options [Hash] Options to be used when retrieving the page from the leaderboard.
+  # @param options [Hash] Options to be used when retrieving the leaders from the leaderboard.
   #
   # @return the leaders from the leaderboard.
   def all_leaders(options = {})
@@ -590,7 +590,7 @@ class Leaderboard
   # Retrieves all leaders from the named leaderboard.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
-  # @param options [Hash] Options to be used when retrieving the page from the named leaderboard.
+  # @param options [Hash] Options to be used when retrieving the leaders from the named leaderboard.
   #
   # @return the named leaderboard.
   def all_leaders_from(leaderboard_name, options = {})

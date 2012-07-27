@@ -176,6 +176,9 @@ Below is an example of retrieving the first page in the leaderboard without scor
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
+There are also a few convenience methods to be able to retrieve all leaders from a given leaderboard. They are `all_leaders` and `all_leaders_from`. You 
+may also use the aliases `all_members` or `all_members_from`. Use any of these methods sparingly as all the information in the leaderboard will be returned. 
+
 Add more members to your leaderboard:
 
 ```ruby
