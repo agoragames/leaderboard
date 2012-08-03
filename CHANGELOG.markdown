@@ -2,7 +2,7 @@
 
 ## leaderboard 2.4.0 (2012-07-30)
 
-* Added `all_leaders` and `all_leaders_from` methods to retreive all members from a leaderboard. You may also use the aliases `all_members` or `all_members_from`.
+* Added `all_leaders` and `all_leaders_from` methods to retrieve all members from a leaderboard. You may also use the aliases `all_members` or `all_members_from`.
 
 ## leaderboard 2.3.0 (2012-07-09)
 
