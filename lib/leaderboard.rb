@@ -297,7 +297,7 @@ class Leaderboard
   # Retrieve the rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  #
+  # 
   # @return the rank for a member in the leaderboard.
   def rank_for(member)
     rank_for_in(@leaderboard_name, member)
@@ -307,7 +307,7 @@ class Leaderboard
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
-  #
+  # 
   # @return the rank for a member in the leaderboard.
   def rank_for_in(leaderboard_name, member)
     if @reverse
