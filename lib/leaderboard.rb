@@ -103,7 +103,10 @@ class Leaderboard
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   def delete_leaderboard_named(leaderboard_name)
-    @redis_connection.del(leaderboard_name)
+    @redis_connection.multi do |transaction|
+      transaction.del(leaderboard_name)
+      transaction.del(member_data_key(leaderboard_name))
+    end
   end
 
   # Rank a member in the leaderboard.
@@ -124,9 +127,7 @@ class Leaderboard
   def rank_member_in(leaderboard_name, member, score, member_data)
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
-      if member_data
-        transaction.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
-      end
+      transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
     end
   end
 
@@ -146,7 +147,7 @@ class Leaderboard
   #
   # @return Hash of optional member data.
   def member_data_for_in(leaderboard_name, member)
-    @redis_connection.hgetall(member_data_key(leaderboard_name, member))
+    @redis_connection.hget(member_data_key(leaderboard_name), member)
   end
 
   # Update the optional member data for a given member in the leaderboard.
@@ -163,7 +164,7 @@ class Leaderboard
   # @param member [String] Member name.
   # @param member_data [Hash] Optional member data.
   def update_member_data_in(leaderboard_name, member, member_data)
-    @redis_connection.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
+    @redis_connection.hset(member_data_key(leaderboard_name), member, member_data)
   end
 
   # Remove the optional member data for a given member in the leaderboard.
@@ -178,7 +179,7 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   def remove_member_data_in(leaderboard_name, member)
-    @redis_connection.del(member_data_key(leaderboard_name, member))
+    @redis_connection.hdel(member_data_key(leaderboard_name), member)
   end
 
   # Rank an array of members in the leaderboard.
@@ -218,7 +219,7 @@ class Leaderboard
   def remove_member_from(leaderboard_name, member)
     @redis_connection.multi do |transaction|
       transaction.zrem(leaderboard_name, member)
-      transaction.del(member_data_key(leaderboard_name, member))
+      transaction.del(member_data_key(leaderboard_name), member)
     end
   end
 
@@ -815,11 +816,10 @@ class Leaderboard
   # Key for retrieving optional member data.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
-  # @param member [String] Member name.
-  #
-  # @return a key in the form of +leaderboard_name:data:member+
-  def member_data_key(leaderboard_name, member)
-    "#{leaderboard_name}:member_data:#{member}"
+  # 
+  # @return a key in the form of +leaderboard_name:member_data+
+  def member_data_key(leaderboard_name)
+    "#{leaderboard_name}:member_data" 
   end
 
   # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
