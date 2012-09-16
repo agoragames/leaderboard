@@ -16,7 +16,6 @@ describe 'Leaderboard (reverse option)' do
     rank_members_in_leaderboard(5)
 
     @leaderboard.rank_for('member_4').should be(4)
-    @leaderboard.rank_for('member_4', true).should be(3)
   end
 
   it 'should return the correct list when calling leaders' do
@@ -122,8 +121,7 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.member_at(26)[:rank].should eql(26)
     @leaderboard.member_at(50)[:rank].should eql(50)
     @leaderboard.member_at(51).should be_nil
-    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should eql({'member_name' => 'Leaderboard member 1'})
-    @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should eql(0)
+    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {'member_name' => 'Leaderboard member 1'}
   end
 
   it 'should return the correct information when calling around_me' do
@@ -167,8 +165,7 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
 
     members = ['member_1', 'member_5', 'member_10']
-    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true, :use_zero_index_for_rank => false})
-
+    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true})
     ranked_members.size.should be(3)
 
     ranked_members[0][:rank].should be(1)

@@ -30,13 +30,11 @@ class Leaderboard
   # +:with_scores+ true: Return scores along with the member names.
   # +:with_rank+ true: Return ranks along with the member names.
   # +:with_member_data+ false: Return member data along with the member names.
-  # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
   # +:page_size+ nil: The default page size will be used.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true,
     :with_rank => true,
     :with_member_data => false,
-    :use_zero_index_for_rank => false,
     :page_size => nil
   }
 
@@ -299,33 +297,23 @@ class Leaderboard
   # Retrieve the rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the rank for a member in the leaderboard.
-  def rank_for(member, use_zero_index_for_rank = false)
-    rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  def rank_for(member)
+    rank_for_in(@leaderboard_name, member)
   end
 
   # Retrieve the rank for a member in the named leaderboard.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the rank for a member in the leaderboard.
-  def rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
+  def rank_for_in(leaderboard_name, member)
     if @reverse
-      if use_zero_index_for_rank
-        return @redis_connection.zrank(leaderboard_name, member)
-      else
-        return @redis_connection.zrank(leaderboard_name, member) + 1 rescue nil
-      end
+      return @redis_connection.zrank(leaderboard_name, member) + 1 rescue nil
     else
-      if use_zero_index_for_rank
-        return @redis_connection.zrevrank(leaderboard_name, member)
-      else
-        return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
-      end
+      return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
     end
   end
 
@@ -370,21 +358,19 @@ class Leaderboard
   # Retrieve the score and rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the score and rank for a member in the leaderboard as a Hash.
-  def score_and_rank_for(member, use_zero_index_for_rank = false)
-    score_and_rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  def score_and_rank_for(member)
+    score_and_rank_for_in(@leaderboard_name, member)
   end
 
   # Retrieve the score and rank for a member in the named leaderboard.
   #
   # @param leaderboard_name [String]Name of the leaderboard.
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the score and rank for a member in the named leaderboard as a Hash.
-  def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
+  def score_and_rank_for_in(leaderboard_name, member)
     responses = @redis_connection.multi do |transaction|
       transaction.zscore(leaderboard_name, member)
       if @reverse
@@ -395,11 +381,9 @@ class Leaderboard
     end
 
     responses[0] = responses[0].to_f
-    if !use_zero_index_for_rank
-      responses[1] = responses[1] + 1 rescue nil
-    end
-
-    {:member => member, :score => responses[0], :rank => responses[1]}
+    responses[1] = responses[1] + 1 rescue nil
+    
+    {:member => member, :score => responses[0], :rank => responses[1]}    
   end
 
   # Remove members from the leaderboard in a given score range.
@@ -762,23 +746,14 @@ class Leaderboard
       data[:member] = member
       if leaderboard_options[:with_scores]
         if leaderboard_options[:with_rank]
-          if leaderboard_options[:use_zero_index_for_rank]
-            data[:rank] = responses[index * 2]
-          else
-            data[:rank] = responses[index * 2] + 1 rescue nil
-          end
-
+          data[:rank] = responses[index * 2] + 1 rescue nil
           data[:score] = responses[index * 2 + 1].to_f
         else
           data[:score] = responses[index].to_f
         end
       else
         if leaderboard_options[:with_rank]
-          if leaderboard_options[:use_zero_index_for_rank]
-            data[:rank] = responses[index]
-          else
-            data[:rank] = responses[index] + 1 rescue nil
-          end
+          data[:rank] = responses[index] + 1 rescue nil
         end
       end
 
