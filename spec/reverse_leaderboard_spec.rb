@@ -60,10 +60,10 @@ describe 'Leaderboard (reverse option)' do
 
     members = @leaderboard.members_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
 
-    member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
+    member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {:member_name => 'Leaderboard member 10'}.to_s}
     members[0].should == member_10
 
-    member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
+    member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {:member_name => 'Leaderboard member 15'}.to_s}
     members[5].should == member_15
   end
 
@@ -122,7 +122,7 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.member_at(26)[:rank].should == 26
     @leaderboard.member_at(50)[:rank].should == 50
     @leaderboard.member_at(51).should be_nil
-    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {'member_name' => 'Leaderboard member 1'}
+    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {:member_name => 'Leaderboard member 1'}.to_s
     @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should == 0
   end
 

@@ -113,29 +113,33 @@ Get some information about your leaderboard:
    => 1 
 ```
 
-The `rank_member` call will also accept an optional hash of member data that could 
+The `rank_member` call will also accept an optional string member data that could 
 be used to store other information about a given member in the leaderboard. This 
 may be useful in situations where you are storing member IDs in the leaderboard and 
-you want to be able to store a member name for display. Example:
+you want to be able to store a member name for display. You could use JSON to 
+encode a Hash of member data. Example:
 
 ```ruby
-highscore_lb.rank_member('84849292', 1, {'username' => 'member_name'})
+require 'json'
+highscore_lb.rank_member('84849292', 1, JSON.generate({'username' => 'member_name'})
 ```
 
 You can retrieve, update and remove the optional member data using the 
 `member_data_for`, `update_member_data` and `remove_member_data` calls. Example: 
 
 ```ruby
-highscore_lb.member_data_for('84849292')
+JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"member_name"}
 
-highscore_lb.update_member_data('84849292', {'last_updated' => Time.now, 'username' => 'updated_member_name'})
+highscore_lb.update_member_data('84849292', JSON.generate({'last_updated' => Time.now, 'username' => 'updated_member_name'}))
  => "OK" 
-highscore_lb.member_data_for('84849292')
+JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
 
 highscore_lb.remove_member_data('84849292')
 ```
+
+If you delete the leaderboard, ALL of the member data is deleted as well.
   
 Get some information about a specific member(s) in the leaderboard:
 
