@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 2.5.0 (2012-10-12)
+
+* Added `members_from_rank_range` and `members_from_rank_range_in` methods to be able to retrieve members from a leaderboard in a given rank range.
+
 ## leaderboard 2.4.0 (2012-07-30)
 
 * Added `all_leaders` and `all_leaders_from` methods to retrieve all members from a leaderboard. You may also use the aliases `all_members` or `all_members_from`.

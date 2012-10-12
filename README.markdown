@@ -224,6 +224,13 @@ members = highscore_lb.member_at(4)
  => {:member=>"member_92", :rank=>4, :score=>92.0}
 ```
 
+Retrieve a range of members from the leaderboard within a given rank range:
+
+```ruby
+members = highscore_lb.members_from_rank_range(1, 5)
+ => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}] 
+```
+
 ### Ranking multiple members in a leaderboard at once
 
 Insert multiple data items for members and their associated scores:
