@@ -618,4 +618,20 @@ describe 'Leaderboard' do
     leaders[-1][:member].should eql('member_25')
     leaders[-1][:score].to_i.should be(25)
   end
+
+  it 'should allow you to retrieve a given set of members from the leaderboard in a rank range' do
+    rank_members_in_leaderboard(25)
+
+    members = @leaderboard.members_from_rank_range(5, 9)
+    members.size.should be(5)
+    members[0][:member].should eql('member_21')
+    members[0][:score].to_i.should be(21)    
+    members[4][:member].should eql('member_17')
+
+    members = @leaderboard.members_from_rank_range(-1, 26)
+    members.size.should be(25)
+    members[0][:member].should eql('member_25')
+    members[0][:score].to_i.should be(25)
+    members[24][:member].should eql('member_1')
+  end
 end

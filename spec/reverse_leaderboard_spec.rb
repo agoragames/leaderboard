@@ -334,4 +334,20 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.total_members.should be(2)
     @leaderboard.leaders(1).first[:member].should eql('member_1')
   end
+
+  it 'should allow you to retrieve a given set of members from the leaderboard in a rank range' do
+    rank_members_in_leaderboard(25)
+
+    members = @leaderboard.members_from_rank_range(5, 9)
+    members.size.should be(5)
+    members[0][:member].should eql('member_5')
+    members[0][:score].to_i.should be(5)    
+    members[4][:member].should eql('member_9')
+
+    members = @leaderboard.members_from_rank_range(-1, 26)
+    members.size.should be(25)
+    members[0][:member].should eql('member_1')
+    members[0][:score].to_i.should be(1)    
+    members[24][:member].should eql('member_25')
+  end
 end
