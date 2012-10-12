@@ -344,6 +344,10 @@ describe 'Leaderboard (reverse option)' do
     members[0][:score].to_i.should be(5)    
     members[4][:member].should eql('member_9')
 
+    members = @leaderboard.members_from_rank_range(1, 1)
+    members.size.should be(1)
+    members[0][:member].should eql('member_1')
+
     members = @leaderboard.members_from_rank_range(-1, 26)
     members.size.should be(25)
     members[0][:member].should eql('member_1')

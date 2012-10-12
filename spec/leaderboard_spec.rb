@@ -628,6 +628,10 @@ describe 'Leaderboard' do
     members[0][:score].to_i.should be(21)    
     members[4][:member].should eql('member_17')
 
+    members = @leaderboard.members_from_rank_range(1, 1)
+    members.size.should be(1)
+    members[0][:member].should eql('member_25')
+
     members = @leaderboard.members_from_rank_range(-1, 26)
     members.size.should be(25)
     members[0][:member].should eql('member_25')
