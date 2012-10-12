@@ -646,6 +646,52 @@ class Leaderboard
     end
   end
 
+  # Retrieve members from the leaderboard within a given rank range.
+  #
+  # @param starting_rank [int] Starting rank (inclusive).
+  # @param ending_rank [int] Ending rank (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return members from the leaderboard that fall within the given rank range.
+  def members_from_rank_range(starting_rank, ending_rank, options = {})
+    members_from_rank_range_in(@leaderboard_name, starting_rank, ending_rank, options)
+  end
+
+  # Retrieve members from the named leaderboard within a given rank range.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param starting_rank [int] Starting rank (inclusive).
+  # @param ending_rank [int] Ending rank (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return members from the leaderboard that fall within the given rank range.
+  def members_from_rank_range_in(leaderboard_name, starting_rank, ending_rank, options = {})
+    leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
+    leaderboard_options.merge!(options)
+
+    starting_rank -= 1
+    if starting_rank < 0
+      starting_rank = 0
+    end
+
+    ending_rank -= 1
+    if ending_rank > total_members_in(leaderboard_name)
+      ending_rank = total_members_in(leaderboard_name) - 1
+    end
+
+    if @reverse
+      raw_leader_data = @redis_connection.zrange(leaderboard_name, starting_rank, ending_rank, :with_scores => false)
+    else
+      raw_leader_data = @redis_connection.zrevrange(leaderboard_name, starting_rank, ending_rank, :with_scores => false)
+    end
+
+    if raw_leader_data
+      return ranked_in_list_in(leaderboard_name, raw_leader_data, leaderboard_options)
+    else
+      return []
+    end
+  end
+
   # Retrieve a member at the specified index from the leaderboard.
   #
   # @param position [int] Position in leaderboard.
