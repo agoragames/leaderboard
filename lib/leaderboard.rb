@@ -32,12 +32,14 @@ class Leaderboard
   # +:with_member_data+ false: Return member data along with the member names.
   # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
   # +:page_size+ nil: The default page size will be used.
+  # +:sort_by+ :none: The default sort for a call to `ranked_in_list`.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_scores => true,
     :with_rank => true,
     :with_member_data => false,
     :use_zero_index_for_rank => false,
-    :page_size => nil
+    :page_size => nil,
+    :sort_by => :none
   }
 
   # Name of the leaderboard.
@@ -833,6 +835,13 @@ class Leaderboard
       end
 
       ranks_for_members << data
+    end
+
+    case leaderboard_options[:sort_by]
+    when :rank
+      ranks_for_members = ranks_for_members.sort_by { |member| member[:rank] }
+    when :score
+      ranks_for_members = ranks_for_members.sort_by { |member| member[:score] }
     end
 
     ranks_for_members
