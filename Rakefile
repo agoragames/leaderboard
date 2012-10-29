@@ -10,6 +10,7 @@ end
 
 task :default => :spec
 
+desc "Run the specs against Ruby 1.8.7, 1.9.2 and 1.9.3"
 task :test_rubies do
   system "rvm 1.8.7@leaderboard_gem,1.9.2@leaderboard_gem,1.9.3@leaderboard_gem do rake spec"
 end
