@@ -40,8 +40,10 @@ describe 'Leaderboard' do
     rank_members_in_leaderboard
 
     @redis_connection.exists('name').should be_true
+    @redis_connection.exists('name:member_data').should be_true
     @leaderboard.delete_leaderboard
     @redis_connection.exists('name').should be_false
+    @redis_connection.exists('name:member_data').should be_false
   end
 
   it 'should allow you to pass in an existing redis connection in the initializer' do
@@ -170,11 +172,11 @@ describe 'Leaderboard' do
 
     members = @leaderboard.members_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
 
-    member_15 = {:member => 'member_15', :rank => 11, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
-    members[0].should eql(member_15)
+    member_15 = {:member => 'member_15', :rank => 11, :score => 15.0, :member_data => {:member_name => 'Leaderboard member 15'}.to_s}
+    members[0].should == member_15
 
-    member_10 = {:member => 'member_10', :rank => 16, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
-    members[5].should eql(member_10)
+    member_10 = {:member => 'member_10', :rank => 16, :score => 10.0, :member_data => {:member_name => 'Leaderboard member 10'}.to_s}
+    members[5].should == member_10
   end
 
   it 'should allow you to retrieve leaders without scores and ranks' do
@@ -196,34 +198,34 @@ describe 'Leaderboard' do
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
     leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false, :with_member_data => true})
 
-    member_25 = {:member => 'member_25', :member_data => { "member_name" => "Leaderboard member 25" }}
-    leaders[0].should eql(member_25)
-
-    member_1 = {:member => 'member_1', :member_data => { "member_name" => "Leaderboard member 1" }}
-    leaders[24].should eql(member_1)
+    member_25 = {:member => 'member_25', :member_data => { :member_name => "Leaderboard member 25" }.to_s }
+    leaders[0].should == member_25
+    
+    member_1 = {:member => 'member_1', :member_data => { :member_name => "Leaderboard member 1" }.to_s }
+    leaders[24].should == member_1
   end
 
   it 'should allow you to retrieve optional member data' do
     @leaderboard.rank_member('member_id', 1, {'username' => 'member_name', 'other_data_key' => 'other_data_value'})
 
-    @leaderboard.member_data_for('unknown_member').should eql({})
-    @leaderboard.member_data_for('member_id').should eql({'username' => 'member_name', 'other_data_key' => 'other_data_value'})
+    @leaderboard.member_data_for('unknown_member').should be_nil
+    @leaderboard.member_data_for('member_id').should == {'username' => 'member_name', 'other_data_key' => 'other_data_value'}.to_s
   end
 
   it 'should allow you to update optional member data' do
     @leaderboard.rank_member('member_id', 1, {'username' => 'member_name'})
 
-    @leaderboard.member_data_for('member_id').should eql({'username' => 'member_name'})
-    @leaderboard.update_member_data('member_id', {'other_data_key' => 'other_data_value'})
-    @leaderboard.member_data_for('member_id').should eql({'username' => 'member_name', 'other_data_key' => 'other_data_value'})
+    @leaderboard.member_data_for('member_id').should == {'username' => 'member_name'}.to_s
+    @leaderboard.update_member_data('member_id', {'username' => 'member_name', 'other_data_key' => 'other_data_value'})
+    @leaderboard.member_data_for('member_id').should == {'username' => 'member_name', 'other_data_key' => 'other_data_value'}.to_s
   end
 
   it 'should allow you to remove optional member data' do
     @leaderboard.rank_member('member_id', 1, {'username' => 'member_name'})
 
-    @leaderboard.member_data_for('member_id').should eql({'username' => 'member_name'})
+    @leaderboard.member_data_for('member_id').should == {'username' => 'member_name'}.to_s
     @leaderboard.remove_member_data('member_id')
-    @leaderboard.member_data_for('member_id').should eql({})
+    @leaderboard.member_data_for('member_id').should be_nil
   end
 
   it 'should allow you to call leaders with various options that respect the defaults for the options not passed in' do
@@ -268,8 +270,8 @@ describe 'Leaderboard' do
     @leaderboard.member_at(26)[:rank].should eql(26)
     @leaderboard.member_at(50)[:rank].should eql(50)
     @leaderboard.member_at(51).should be_nil
-    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should eql({'member_name' => 'Leaderboard member 50'})
-    @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should eql(0)
+    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {:member_name => 'Leaderboard member 50'}.to_s
+    @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should == 0
   end
 
   it 'should return the correct information when calling around_me' do
