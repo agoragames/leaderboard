@@ -637,4 +637,40 @@ describe 'Leaderboard' do
     members[0][:score].to_i.should be(25)
     members[24][:member].should eql('member_1')
   end
+
+  it 'should sort by rank if the :sort_by option is set to :rank' do
+    rank_members_in_leaderboard(25)
+
+    members = ['member_5', 'member_1', 'member_10']
+    ranked_members = @leaderboard.ranked_in_list(members, :sort_by => :rank)
+
+    ranked_members.size.should be(3)
+
+    ranked_members[0][:rank].should be(16)
+    ranked_members[0][:score].should eql(10.0)
+
+    ranked_members[1][:rank].should be(21)
+    ranked_members[1][:score].should eql(5.0)
+
+    ranked_members[2][:rank].should be(25)
+    ranked_members[2][:score].should eql(1.0)
+  end
+
+  it 'should sort by score if the :sort_by option is set to :score' do
+    rank_members_in_leaderboard(25)
+
+    members = ['member_5', 'member_1', 'member_10']
+    ranked_members = @leaderboard.ranked_in_list(members, :sort_by => :score)
+
+    ranked_members.size.should be(3)
+
+    ranked_members[0][:rank].should be(25)
+    ranked_members[0][:score].should eql(1.0)
+
+    ranked_members[1][:rank].should be(21)
+    ranked_members[1][:score].should eql(5.0)
+
+    ranked_members[2][:rank].should be(16)
+    ranked_members[2][:score].should eql(10.0)
+  end
 end
