@@ -166,10 +166,10 @@ Get page 1 in the leaderboard:
   highscore_lb.leaders(1)
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}]
 ```
-
-You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`.
-Valid options are `:with_scores`, `:with_rank`, `:with_member_data`, `:use_zero_index_for_rank`
-and `:page_size`. Below is an example of retrieving the first page in the leaderboard
+	
+You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
+Valid options are `:with_scores`, `:with_rank`, `:with_member_data`  
+and `:page_size`. Below is an example of retrieving the first page in the leaderboard 
 without ranks:
 
 ```ruby
