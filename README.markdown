@@ -168,21 +168,8 @@ Get page 1 in the leaderboard:
 ```
 	
 You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
-Valid options are `:with_scores`, `:with_rank`, `:with_member_data`  
-and `:page_size`. Below is an example of retrieving the first page in the leaderboard 
-without ranks:
-
-```ruby
-  highscore_lb.leaders(1, :with_rank => false)
-   => [{:member=>"member_10", :score=>9.0}, {:member=>"member_9", :score=>7.0}, {:member=>"member_8", :score=>5.0}, {:member=>"member_7", :score=>3.0}, {:member=>"member_6", :score=>1.0}, {:member=>"member_5", :score=>0.0}, {:member=>"member_4", :score=>0.0}, {:member=>"member_3", :score=>0.0}, {:member=>"member_2", :score=>0.0}, {:member=>"member_1", :score=>0.0}]
-```
-
-Below is an example of retrieving the first page in the leaderboard without scores or ranks:
-
-```ruby
-  highscore_lb.leaders(1, :with_scores => false, :with_rank => false)
-   => [{:member=>"member_10"}, {:member=>"member_9"}, {:member=>"member_8"}, {:member=>"member_7"}, {:member=>"member_6"}, {:member=>"member_5"}, {:member=>"member_4"}, {:member=>"member_3"}, {:member=>"member_2"}, {:member=>"member_1"}]
-```
+Valid options are `:with_member_data`, `:page_size` and `:sort_option`. Valid values for 
+`:sort_option` are `:none` (default), `:score` and `:rank`. 
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
@@ -233,6 +220,20 @@ Retrieve a range of members from the leaderboard within a given rank range:
 ```ruby
 members = highscore_lb.members_from_rank_range(1, 5)
  => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}] 
+```
+
+The option `:sort_option` is useful for retrieving an arbitrary list of 
+members from a given leaderboard where you would like the data sorted 
+when returned. The follow examples demonstrate its use:
+
+```ruby
+friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :rank)
+ => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_1", :rank=>56, :score=>1.0}] 
+```
+
+```ruby
+friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :score)
+ => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
 ```
 
 ### Ranking multiple members in a leaderboard at once

@@ -27,14 +27,10 @@ class Leaderboard
   }
 
   # Default options when requesting data from a leaderboard.
-  # +:with_scores+ true: Return scores along with the member names.
-  # +:with_rank+ true: Return ranks along with the member names.
   # +:with_member_data+ false: Return member data along with the member names.
   # +:page_size+ nil: The default page size will be used.
   # +:sort_by+ :none: The default sort for a call to `ranked_in_list`.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
-    :with_scores => true,
-    :with_rank => true,
     :with_member_data => false,
     :page_size => nil,
     :sort_by => :none
@@ -782,29 +778,19 @@ class Leaderboard
     responses = @redis_connection.multi do |transaction|
       members.each do |member|
         if @reverse
-          transaction.zrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+          transaction.zrank(leaderboard_name, member)
         else
-          transaction.zrevrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+          transaction.zrevrank(leaderboard_name, member)
         end
-        transaction.zscore(leaderboard_name, member) if leaderboard_options[:with_scores]
+        transaction.zscore(leaderboard_name, member)
       end
     end
 
     members.each_with_index do |member, index|
       data = {}
       data[:member] = member
-      if leaderboard_options[:with_scores]
-        if leaderboard_options[:with_rank]
-          data[:rank] = responses[index * 2] + 1 rescue nil
-          data[:score] = responses[index * 2 + 1].to_f
-        else
-          data[:score] = responses[index].to_f
-        end
-      else
-        if leaderboard_options[:with_rank]
-          data[:rank] = responses[index] + 1 rescue nil
-        end
-      end
+      data[:rank] = responses[index * 2] + 1 rescue nil
+      data[:score] = responses[index * 2 + 1].to_f
 
       if leaderboard_options[:with_member_data]
         data[:member_data] = member_data_for_in(leaderboard_name, member)

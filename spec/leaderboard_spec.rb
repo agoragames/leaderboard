@@ -161,15 +161,15 @@ describe 'Leaderboard' do
   it 'should allow you to retrieve members in a given score range' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
 
-    members = @leaderboard.members_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
+    members = @leaderboard.members_from_score_range(10, 15)
 
-    member_15 = {:member => 'member_15'}
+    member_15 = {:member => 'member_15', :score => 15.0, :rank => 11}
     members[0].should eql(member_15)
 
-    member_10 = {:member => 'member_10'}
+    member_10 = {:member => 'member_10', :score => 10.0, :rank => 16}
     members[5].should eql(member_10)
 
-    members = @leaderboard.members_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
+    members = @leaderboard.members_from_score_range(10, 15, {:with_member_data => true})
 
     member_15 = {:member => 'member_15', :rank => 11, :score => 15.0, :member_data => {:member_name => 'Leaderboard member 15'}.to_s}
     members[0].should == member_15
@@ -178,29 +178,16 @@ describe 'Leaderboard' do
     members[5].should == member_10
   end
 
-  it 'should allow you to retrieve leaders without scores and ranks' do
-    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
-
-    @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
-
-    member_25 = {:member => 'member_25'}
-    leaders[0].should eql(member_25)
-
-    member_1 = {:member => 'member_1'}
-    leaders[24].should eql(member_1)
-  end
-
   it 'should allow you to retrieve leaders with extra data' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
 
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false, :with_member_data => true})
+    leaders = @leaderboard.leaders(1, {:with_member_data => true})
 
-    member_25 = {:member => 'member_25', :member_data => { :member_name => "Leaderboard member 25" }.to_s }
+    member_25 = {:member => 'member_25', :score => 25.0, :rank => 1, :member_data => { :member_name => "Leaderboard member 25" }.to_s }
     leaders[0].should == member_25
     
-    member_1 = {:member => 'member_1', :member_data => { :member_name => "Leaderboard member 1" }.to_s }
+    member_1 = {:member => 'member_1', :score => 1.0, :rank => 25, :member_data => { :member_name => "Leaderboard member 1" }.to_s }
     leaders[24].should == member_1
   end
 
@@ -232,33 +219,7 @@ describe 'Leaderboard' do
 
     leaders = @leaderboard.leaders(1, :page_size => 1)
     leaders.size.should be(1)
-
-    leaders = @leaderboard.leaders(1, :with_rank => false)
-    leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_26 = {:member => 'member_26', :score => 26.0}
-    member_25 = {:member => 'member_25', :score => 25.0}
-    member_24 = {:member => 'member_24', :score => 24.0}
-    leaders[0].should eql(member_26)
-    leaders[1].should eql(member_25)
-    leaders[2].should eql(member_24)
-
-    leaders = @leaderboard.leaders(1, :with_scores => false)
-    leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_26 = {:member => 'member_26', :rank => 1}
-    member_25 = {:member => 'member_25', :rank => 2}
-    leaders[0].should eql(member_26)
-    leaders[1].should eql(member_25)
-
-    leaders = @leaderboard.leaders(1, :with_scores => false, :with_rank => false)
-    leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_26 = {:member => 'member_26'}
-    member_25 = {:member => 'member_25'}
-    leaders[0].should eql(member_26)
-    leaders[1].should eql(member_25)
-
-    leaders = @leaderboard.leaders(1, :with_rank => false, :page_size => 1)
-    leaders.size.should be(1)
-    member_26 = {:member => 'member_26', :score => 26.0}
+    member_26 = {:member => 'member_26', :score => 26.0, :rank => 1}
     leaders[0].should eql(member_26)
   end
 
@@ -313,7 +274,7 @@ describe 'Leaderboard' do
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
 
     members = ['member_1', 'member_5', 'member_10']
-    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true})
+    ranked_members = @leaderboard.ranked_in_list(members, {:with_rank => true})
     ranked_members.size.should be(3)
     ranked_members[0][:rank].should be(25)
     ranked_members[1][:rank].should be(21)
@@ -449,19 +410,15 @@ describe 'Leaderboard' do
     foobar.disconnect
   end
 
-  it 'should respect the with_scores option in the massage_leader_data method' do
+  it 'should respect options in the massage_leader_data method' do
     rank_members_in_leaderboard(25)
 
     @leaderboard.total_members.should be(25)
 
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
+    leaders = @leaderboard.leaders(1)
     leaders[0][:member].should_not be_nil
-    leaders[0][:score].should be_nil
-    leaders[0][:rank].should be_nil
-
-    @leaderboard.page_size = 25
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
-    leaders.size.should be(25)
+    leaders[0][:score].should_not be_nil
+    leaders[0][:rank].should_not be_nil
 
     @leaderboard.page_size = Leaderboard::DEFAULT_PAGE_SIZE
     leaders = @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
