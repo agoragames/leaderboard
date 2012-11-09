@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## leaderboard 3.0.1 (2012-11-08)
+## leaderboard 3.0.0.rc1 (2012-11-08)
 
 * Removes `:use_zero_index_for_rank_option` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/27)
 * Adds `:sort_by` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/30)
