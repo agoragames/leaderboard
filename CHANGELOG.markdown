@@ -3,8 +3,8 @@
 ## leaderboard 3.0.0.rc1 (2012-11-08)
 
 * Removes `:use_zero_index_for_rank_option` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/27)
+* Optional member data is stored in a single hash. [Original proposal](https://github.com/agoragames/leaderboard/pull/26)
 * Adds `:sort_by` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/30)
-* Optional member data is stored in a single hash. Many benefits to this approach. [Original proposal](https://github.com/agoragames/leaderboard/pull/26)
 * Removes `:with_scores` and `:with_ranks` as valid options for requesting data from the leaderboard.
 
 ## leaderboard 2.5.0 (2012-10-12)
