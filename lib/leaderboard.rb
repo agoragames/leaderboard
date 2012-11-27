@@ -120,7 +120,7 @@ class Leaderboard
   # @param member [String] Member name.
   # @param score [float] Member score.
   # @param member_data [Hash] Optional member data.
-  def rank_member_in(leaderboard_name, member, score, member_data)
+  def rank_member_in(leaderboard_name, member, score, member_data = nil)
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
       transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
@@ -320,7 +320,7 @@ class Leaderboard
   #
   # @param member Member name.
   #
-  # @return the score for a member in the leaderboard.
+  # @return the score for a member in the leaderboard or +nil+ if the member is not in the leaderboard.
   def score_for(member)
     score_for_in(@leaderboard_name, member)
   end
@@ -330,9 +330,10 @@ class Leaderboard
   # @param leaderboard_name Name of the leaderboard.
   # @param member [String] Member name.
   #
-  # @return the score for a member in the leaderboard.
+  # @return the score for a member in the leaderboard or +nil+ if the member is not in the leaderboard.
   def score_for_in(leaderboard_name, member)
-    @redis_connection.zscore(leaderboard_name, member).to_f
+    score = @redis_connection.zscore(leaderboard_name, member) 
+    score.to_f if score
   end
 
   # Check to see if a member exists in the leaderboard.
@@ -379,7 +380,7 @@ class Leaderboard
       end
     end
 
-    responses[0] = responses[0].to_f
+    responses[0] = responses[0].to_f if responses[0]
     responses[1] = responses[1] + 1 rescue nil
     
     {:member => member, :score => responses[0], :rank => responses[1]}    
@@ -790,7 +791,7 @@ class Leaderboard
       data = {}
       data[:member] = member
       data[:rank] = responses[index * 2] + 1 rescue nil
-      data[:score] = responses[index * 2 + 1].to_f
+      data[:score] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
 
       if leaderboard_options[:with_member_data]
         data[:member_data] = member_data_for_in(leaderboard_name, member)

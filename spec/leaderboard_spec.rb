@@ -75,6 +75,7 @@ describe 'Leaderboard' do
     rank_members_in_leaderboard(5)
 
     @leaderboard.score_for('member_4').should eql(4.0)
+    @leaderboard.score_for('jones').should be_nil
   end
 
   it 'should return the correct total pages' do
@@ -477,7 +478,7 @@ describe 'Leaderboard' do
     score_and_rank_for_member = @leaderboard.score_and_rank_for('jones')
 
     score_and_rank_for_member[:member].should eql('jones')
-    score_and_rank_for_member[:score].should eql(0.0)
+    score_and_rank_for_member[:score].should be_nil
     score_and_rank_for_member[:rank].should be_nil
   end
 
@@ -498,7 +499,7 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to change the score for a member not in the leaderboard' do
-    @leaderboard.score_for('jones').should eql(0.0)
+    @leaderboard.score_for('jones').should be_nil
     @leaderboard.change_score_for('jones', 5)
     @leaderboard.score_for('jones').should eql(5.0)
   end
@@ -629,5 +630,16 @@ describe 'Leaderboard' do
 
     ranked_members[2][:rank].should be(16)
     ranked_members[2][:score].should eql(10.0)
+  end
+
+  it 'should return nil for the score and rank for ranked_in_list if a member is not in the leaderboard' do
+    rank_members_in_leaderboard
+
+    ranked_members = @leaderboard.ranked_in_list(['jones'])
+
+    ranked_members.size.should be(1)
+    ranked_members[0][:member].should eql('jones')
+    ranked_members[0][:score].should be_nil
+    ranked_members[0][:rank].should be_nil
   end
 end
