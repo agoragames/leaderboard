@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 3.0.0.rc3 ()
+
+* Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda. 
+
 ## leaderboard 3.0.0.rc2 (2012-11-27)
 
 * No longer cast scores to a floating point automatically. If requesting a score for an unknown member in the leaderboard, return `nil`. Under the old behavior, a `nil` score gets returned as 0.0. This is misleading as 0.0 is a valid score.
