@@ -241,7 +241,7 @@ friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :so
 You can pass a lambda to the `rank_member_if` method to conditionally rank a member in the leaderboard. The lambda is passed the following 5 parameters:
 
 * `member`: Member name.
-* `current_score`: Current score for the member in the leaderboard.
+* `current_score`: Current score for the member in the leaderboard. May be `nil` if the member is not currently ranked in the leaderboard.
 * `score`: Member score.
 * `member_data`: Optional member data.
 * `leaderboard_options`: Leaderboard options, e.g. :reverse => Value of reverse option
