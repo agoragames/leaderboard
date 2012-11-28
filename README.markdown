@@ -238,8 +238,16 @@ friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :so
 
 Conditionally rank a member in the leaderboard:
 
+You can pass a lambda to the `rank_member_if` method to conditionally rank a member in the leaderboard. The lambda is passed the following 5 parameters:
+
+* `member`: Member name.
+* `current_score`: Current score for the member in the leaderboard.
+* `score`: Member score.
+* `member_data`: Optional member data.
+* `leaderboard_options`: Leaderboard options, e.g. :reverse => Value of reverse option
+
 ```ruby
-highscore_check = lambda do |member, current_score, score, member_data|
+highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
   return true if current_score.nil?
   return true if score > current_score
   false

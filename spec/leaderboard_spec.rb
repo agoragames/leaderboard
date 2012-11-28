@@ -644,7 +644,8 @@ describe 'Leaderboard' do
   end
 
   it 'should rank a member in the leaderboard with conditional execution' do
-    highscore_check = lambda do |member, current_score, score, member_data|
+    @leaderboard.reverse = true
+    highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
       return true if current_score.nil?
       return true if score > current_score
       false
