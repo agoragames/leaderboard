@@ -256,6 +256,8 @@ highscore_lb.score_for('david')
  => 1338.0
 ```
 
+NOTE: Use a lambda and not a proc, otherwise you will get a `LocalJumpError` as a return statement in the proc will return from the method enclosing the proc.
+
 ### Ranking multiple members in a leaderboard at once
 
 Insert multiple data items for members and their associated scores:
