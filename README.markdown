@@ -236,7 +236,7 @@ friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :so
  => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
 ```
 
-Conditionally rank a member in the leaderboard:
+### Conditionally rank a member in the leaderboard
 
 You can pass a lambda to the `rank_member_if` method to conditionally rank a member in the leaderboard. The lambda is passed the following 5 parameters:
 
