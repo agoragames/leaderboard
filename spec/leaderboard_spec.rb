@@ -642,4 +642,22 @@ describe 'Leaderboard' do
     ranked_members[0][:score].should be_nil
     ranked_members[0][:rank].should be_nil
   end
+
+  it 'should rank a member in the leaderboard with conditional execution' do
+    @leaderboard.reverse = true
+    highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
+      return true if current_score.nil?
+      return true if score > current_score
+      false
+    end
+
+    @leaderboard.total_members.should be(0)
+    @leaderboard.rank_member_if(highscore_check, 'david', 1337)
+    @leaderboard.total_members.should be(1)
+    @leaderboard.score_for('david').should eql(1337.0)
+    @leaderboard.rank_member_if(highscore_check, 'david', 1336)
+    @leaderboard.score_for('david').should eql(1337.0)
+    @leaderboard.rank_member_if(highscore_check, 'david', 1338)
+    @leaderboard.score_for('david').should eql(1338.0)
+  end
 end

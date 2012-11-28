@@ -236,6 +236,36 @@ friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :so
  => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
 ```
 
+### Conditionally rank a member in the leaderboard
+
+You can pass a lambda to the `rank_member_if` method to conditionally rank a member in the leaderboard. The lambda is passed the following 5 parameters:
+
+* `member`: Member name.
+* `current_score`: Current score for the member in the leaderboard. May be `nil` if the member is not currently ranked in the leaderboard.
+* `score`: Member score.
+* `member_data`: Optional member data.
+* `leaderboard_options`: Leaderboard options, e.g. :reverse => Value of reverse option
+
+```ruby
+highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
+  return true if current_score.nil?
+  return true if score > current_score
+  false
+end
+
+highscore_lb.rank_member_if(highscore_check, 'david', 1337)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1336)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1338)
+highscore_lb.score_for('david')
+ => 1338.0
+```
+
+NOTE: Use a lambda and not a proc, otherwise you will get a `LocalJumpError` as a return statement in the proc will return from the method enclosing the proc.
+
 ### Ranking multiple members in a leaderboard at once
 
 Insert multiple data items for members and their associated scores:
