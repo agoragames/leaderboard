@@ -236,6 +236,26 @@ friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :so
  => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
 ```
 
+Conditionally rank a member in the leaderboard:
+
+```ruby
+highscore_check = lambda do |member, current_score, score, member_data|
+  return true if current_score.nil?
+  return true if score > current_score
+  false
+end
+
+highscore_lb.rank_member_if(highscore_check, 'david', 1337)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1336)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1338)
+highscore_lb.score_for('david')
+ => 1338.0
+```
+
 ### Ranking multiple members in a leaderboard at once
 
 Insert multiple data items for members and their associated scores:
