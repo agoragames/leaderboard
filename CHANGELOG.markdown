@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## leaderboard 3.0.0.rc3 ()
+## leaderboard 3.0.0 (2012-12-03)
 
 * Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda. 
 
