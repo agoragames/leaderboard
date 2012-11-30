@@ -119,7 +119,7 @@ Get some information about your leaderboard:
    => 1
 ```
 
-The `rank_member` call will also accept an optional string member data that could 
+The `rank_member` call will also accept an optional parameter, `member_data` that could 
 be used to store other information about a given member in the leaderboard. This 
 may be useful in situations where you are storing member IDs in the leaderboard and 
 you want to be able to store a member name for display. You could use JSON to 
