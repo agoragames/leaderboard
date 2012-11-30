@@ -275,7 +275,7 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
 ```
 
-Check the [online documentation](http://rubydoc.info/github/agoragames/leaderboard/master/frames) for more detail on each method.
+Check the [online documentation](http://rubydoc.info/gems/leaderboard/frames) for more detail on each method.
 
 ## Performance Metrics
 
