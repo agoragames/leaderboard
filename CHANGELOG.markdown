@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## leaderboard 3.0.0.rc3 ()
+
+* Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda. 
+
+## leaderboard 3.0.0.rc2 (2012-11-27)
+
+* No longer cast scores to a floating point automatically. If requesting a score for an unknown member in the leaderboard, return `nil`. Under the old behavior, a `nil` score gets returned as 0.0. This is misleading as 0.0 is a valid score.
+
+## leaderboard 3.0.0.rc1 (2012-11-08)
+
+* Removes `:use_zero_index_for_rank_option` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/27)
+* Optional member data is stored in a single hash. [Original proposal](https://github.com/agoragames/leaderboard/pull/26)
+* Adds `:sort_by` as valid option for requesting data from the leaderboard. [Original proposal](https://github.com/agoragames/leaderboard/pull/30)
+* Removes `:with_scores` and `:with_ranks` as valid options for requesting data from the leaderboard.
+
 ## leaderboard 2.5.0 (2012-10-12)
 
 * Added `members_from_rank_range` and `members_from_rank_range_in` methods to be able to retrieve members from a leaderboard in a given rank range.

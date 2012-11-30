@@ -27,17 +27,13 @@ class Leaderboard
   }
 
   # Default options when requesting data from a leaderboard.
-  # +:with_scores+ true: Return scores along with the member names.
-  # +:with_rank+ true: Return ranks along with the member names.
   # +:with_member_data+ false: Return member data along with the member names.
-  # +:use_zero_index_for_rank+ false: If you want to 0-index ranks.
   # +:page_size+ nil: The default page size will be used.
+  # +:sort_by+ :none: The default sort for a call to `ranked_in_list`.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
-    :with_scores => true,
-    :with_rank => true,
     :with_member_data => false,
-    :use_zero_index_for_rank => false,
-    :page_size => nil
+    :page_size => nil,
+    :sort_by => :none
   }
 
   # Name of the leaderboard.
@@ -103,7 +99,10 @@ class Leaderboard
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   def delete_leaderboard_named(leaderboard_name)
-    @redis_connection.del(leaderboard_name)
+    @redis_connection.multi do |transaction|
+      transaction.del(leaderboard_name)
+      transaction.del(member_data_key(leaderboard_name))
+    end
   end
 
   # Rank a member in the leaderboard.
@@ -121,12 +120,50 @@ class Leaderboard
   # @param member [String] Member name.
   # @param score [float] Member score.
   # @param member_data [Hash] Optional member data.
-  def rank_member_in(leaderboard_name, member, score, member_data)
+  def rank_member_in(leaderboard_name, member, score, member_data = nil)
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
-      if member_data
-        transaction.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
-      end
+      transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
+    end
+  end
+
+  # Rank a member in the leaderboard based on execution of the +rank_conditional+. 
+  #
+  # The +rank_conditional+ is passed the following parameters:
+  #   member: Member name.
+  #   current_score: Current score for the member in the leaderboard.
+  #   score: Member score.
+  #   member_data: Optional member data.
+  #   leaderboard_options: Leaderboard options, e.g. :reverse => Value of reverse option
+  #
+  # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
+  # @param member [String] Member name.
+  # @param score [String] Member score.
+  # @param member_data [Hash] Optional member_data.
+  def rank_member_if(rank_conditional, member, score, member_data = nil)
+    rank_member_if_in(@leaderboard_name, rank_conditional, member, score, member_data)
+  end
+
+  # Rank a member in the named leaderboard based on execution of the +rank_conditional+. 
+  #
+  # The +rank_conditional+ is passed the following parameters:
+  #   member: Member name.
+  #   current_score: Current score for the member in the leaderboard.
+  #   score: Member score.
+  #   member_data: Optional member data.
+  #   leaderboard_options: Leaderboard options, e.g. :reverse => Value of reverse option
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
+  # @param member [String] Member name.
+  # @param score [String] Member score.
+  # @param member_data [Hash] Optional member_data.
+  def rank_member_if_in(leaderboard_name, rank_conditional, member, score, member_data = nil)
+    current_score = @redis_connection.zscore(leaderboard_name, member) 
+    current_score = current_score.to_f if current_score
+
+    if rank_conditional.call(member, current_score, score, member_data, {:reverse => @reverse})
+      rank_member_in(leaderboard_name, member, score, member_data)
     end
   end
 
@@ -146,7 +183,7 @@ class Leaderboard
   #
   # @return Hash of optional member data.
   def member_data_for_in(leaderboard_name, member)
-    @redis_connection.hgetall(member_data_key(leaderboard_name, member))
+    @redis_connection.hget(member_data_key(leaderboard_name), member)
   end
 
   # Update the optional member data for a given member in the leaderboard.
@@ -163,7 +200,7 @@ class Leaderboard
   # @param member [String] Member name.
   # @param member_data [Hash] Optional member data.
   def update_member_data_in(leaderboard_name, member, member_data)
-    @redis_connection.hmset(member_data_key(leaderboard_name, member), *member_data.to_a.flatten)
+    @redis_connection.hset(member_data_key(leaderboard_name), member, member_data)
   end
 
   # Remove the optional member data for a given member in the leaderboard.
@@ -178,7 +215,7 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   def remove_member_data_in(leaderboard_name, member)
-    @redis_connection.del(member_data_key(leaderboard_name, member))
+    @redis_connection.hdel(member_data_key(leaderboard_name), member)
   end
 
   # Rank an array of members in the leaderboard.
@@ -218,7 +255,7 @@ class Leaderboard
   def remove_member_from(leaderboard_name, member)
     @redis_connection.multi do |transaction|
       transaction.zrem(leaderboard_name, member)
-      transaction.del(member_data_key(leaderboard_name, member))
+      transaction.del(member_data_key(leaderboard_name), member)
     end
   end
 
@@ -299,33 +336,23 @@ class Leaderboard
   # Retrieve the rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
-  #
+  # 
   # @return the rank for a member in the leaderboard.
-  def rank_for(member, use_zero_index_for_rank = false)
-    rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  def rank_for(member)
+    rank_for_in(@leaderboard_name, member)
   end
 
   # Retrieve the rank for a member in the named leaderboard.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
-  #
+  # 
   # @return the rank for a member in the leaderboard.
-  def rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
+  def rank_for_in(leaderboard_name, member)
     if @reverse
-      if use_zero_index_for_rank
-        return @redis_connection.zrank(leaderboard_name, member)
-      else
-        return @redis_connection.zrank(leaderboard_name, member) + 1 rescue nil
-      end
+      return @redis_connection.zrank(leaderboard_name, member) + 1 rescue nil
     else
-      if use_zero_index_for_rank
-        return @redis_connection.zrevrank(leaderboard_name, member)
-      else
-        return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
-      end
+      return @redis_connection.zrevrank(leaderboard_name, member) + 1 rescue nil
     end
   end
 
@@ -333,7 +360,7 @@ class Leaderboard
   #
   # @param member Member name.
   #
-  # @return the score for a member in the leaderboard.
+  # @return the score for a member in the leaderboard or +nil+ if the member is not in the leaderboard.
   def score_for(member)
     score_for_in(@leaderboard_name, member)
   end
@@ -343,9 +370,10 @@ class Leaderboard
   # @param leaderboard_name Name of the leaderboard.
   # @param member [String] Member name.
   #
-  # @return the score for a member in the leaderboard.
+  # @return the score for a member in the leaderboard or +nil+ if the member is not in the leaderboard.
   def score_for_in(leaderboard_name, member)
-    @redis_connection.zscore(leaderboard_name, member).to_f
+    score = @redis_connection.zscore(leaderboard_name, member) 
+    score.to_f if score
   end
 
   # Check to see if a member exists in the leaderboard.
@@ -370,21 +398,19 @@ class Leaderboard
   # Retrieve the score and rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the score and rank for a member in the leaderboard as a Hash.
-  def score_and_rank_for(member, use_zero_index_for_rank = false)
-    score_and_rank_for_in(@leaderboard_name, member, use_zero_index_for_rank)
+  def score_and_rank_for(member)
+    score_and_rank_for_in(@leaderboard_name, member)
   end
 
   # Retrieve the score and rank for a member in the named leaderboard.
   #
   # @param leaderboard_name [String]Name of the leaderboard.
   # @param member [String] Member name.
-  # @param use_zero_index_for_rank [boolean, false] If the returned rank should be 0-indexed.
   #
   # @return the score and rank for a member in the named leaderboard as a Hash.
-  def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
+  def score_and_rank_for_in(leaderboard_name, member)
     responses = @redis_connection.multi do |transaction|
       transaction.zscore(leaderboard_name, member)
       if @reverse
@@ -394,12 +420,10 @@ class Leaderboard
       end
     end
 
-    responses[0] = responses[0].to_f
-    if !use_zero_index_for_rank
-      responses[1] = responses[1] + 1 rescue nil
-    end
-
-    {:member => member, :score => responses[0], :rank => responses[1]}
+    responses[0] = responses[0].to_f if responses[0]
+    responses[1] = responses[1] + 1 rescue nil
+    
+    {:member => member, :score => responses[0], :rank => responses[1]}    
   end
 
   # Remove members from the leaderboard in a given score range.
@@ -795,44 +819,32 @@ class Leaderboard
     responses = @redis_connection.multi do |transaction|
       members.each do |member|
         if @reverse
-          transaction.zrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+          transaction.zrank(leaderboard_name, member)
         else
-          transaction.zrevrank(leaderboard_name, member) if leaderboard_options[:with_rank]
+          transaction.zrevrank(leaderboard_name, member)
         end
-        transaction.zscore(leaderboard_name, member) if leaderboard_options[:with_scores]
+        transaction.zscore(leaderboard_name, member)
       end
     end
 
     members.each_with_index do |member, index|
       data = {}
       data[:member] = member
-      if leaderboard_options[:with_scores]
-        if leaderboard_options[:with_rank]
-          if leaderboard_options[:use_zero_index_for_rank]
-            data[:rank] = responses[index * 2]
-          else
-            data[:rank] = responses[index * 2] + 1 rescue nil
-          end
-
-          data[:score] = responses[index * 2 + 1].to_f
-        else
-          data[:score] = responses[index].to_f
-        end
-      else
-        if leaderboard_options[:with_rank]
-          if leaderboard_options[:use_zero_index_for_rank]
-            data[:rank] = responses[index]
-          else
-            data[:rank] = responses[index] + 1 rescue nil
-          end
-        end
-      end
+      data[:rank] = responses[index * 2] + 1 rescue nil
+      data[:score] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
 
       if leaderboard_options[:with_member_data]
         data[:member_data] = member_data_for_in(leaderboard_name, member)
       end
 
       ranks_for_members << data
+    end
+
+    case leaderboard_options[:sort_by]
+    when :rank
+      ranks_for_members = ranks_for_members.sort_by { |member| member[:rank] }
+    when :score
+      ranks_for_members = ranks_for_members.sort_by { |member| member[:score] }
     end
 
     ranks_for_members
@@ -861,11 +873,10 @@ class Leaderboard
   # Key for retrieving optional member data.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
-  # @param member [String] Member name.
-  #
-  # @return a key in the form of +leaderboard_name:data:member+
-  def member_data_key(leaderboard_name, member)
-    "#{leaderboard_name}:member_data:#{member}"
+  # 
+  # @return a key in the form of +leaderboard_name:member_data+
+  def member_data_key(leaderboard_name)
+    "#{leaderboard_name}:member_data" 
   end
 
   # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.

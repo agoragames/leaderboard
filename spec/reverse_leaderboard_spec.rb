@@ -16,7 +16,6 @@ describe 'Leaderboard (reverse option)' do
     rank_members_in_leaderboard(5)
 
     @leaderboard.rank_for('member_4').should be(4)
-    @leaderboard.rank_for('member_4', true).should be(3)
   end
 
   it 'should return the correct list when calling leaders' do
@@ -52,32 +51,19 @@ describe 'Leaderboard (reverse option)' do
 
     members = @leaderboard.members_from_score_range(10, 15, {:with_scores => false, :with_rank => false})
 
-    member_10 = {:member => 'member_10'}
+    member_10 = {:member => 'member_10', :score => 10.0, :rank => 10}
     members[0].should eql(member_10)
 
-    member_15 = {:member => 'member_15'}
+    member_15 = {:member => 'member_15', :score => 15.0, :rank => 15}
     members[5].should eql(member_15)
 
-    members = @leaderboard.members_from_score_range(10, 15, {:with_scores => true, :with_rank => true, :with_member_data => true})
+    members = @leaderboard.members_from_score_range(10, 15, {:with_member_data => true})
 
-    member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {'member_name' => 'Leaderboard member 10'}}
-    members[0].should eql(member_10)
+    member_10 = {:member => 'member_10', :rank => 10, :score => 10.0, :member_data => {:member_name => 'Leaderboard member 10'}.to_s}
+    members[0].should == member_10
 
-    member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {'member_name' => 'Leaderboard member 15'}}
-    members[5].should eql(member_15)
-  end
-
-  it 'should allow you to retrieve leaders without scores and ranks' do
-    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
-
-    @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
-
-    member_1 = {:member => 'member_1'}
-    leaders[0].should eql(member_1)
-
-    member_25 = {:member => 'member_25'}
-    leaders[24].should eql(member_25)
+    member_15 = {:member => 'member_15', :rank => 15, :score => 15.0, :member_data => {:member_name => 'Leaderboard member 15'}.to_s}
+    members[5].should == member_15
   end
 
   it 'should allow you to call leaders with various options that respect the defaults for the options not passed in' do
@@ -86,33 +72,14 @@ describe 'Leaderboard (reverse option)' do
     leaders = @leaderboard.leaders(1, :page_size => 1)
     leaders.size.should be(1)
 
-    leaders = @leaderboard.leaders(1, :with_rank => false)
+    leaders = @leaderboard.leaders(1)
     leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_1 = {:member => 'member_1', :score => 1.0}
-    member_2 = {:member => 'member_2', :score => 2.0}
-    member_3 = {:member => 'member_3', :score => 3.0}
+    member_1 = {:member => 'member_1', :score => 1.0, :rank => 1}
+    member_2 = {:member => 'member_2', :score => 2.0, :rank => 2}
+    member_3 = {:member => 'member_3', :score => 3.0, :rank => 3}
     leaders[0].should eql(member_1)
     leaders[1].should eql(member_2)
     leaders[2].should eql(member_3)
-
-    leaders = @leaderboard.leaders(1, :with_scores => false)
-    leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_1 = {:member => 'member_1', :rank => 1}
-    member_2 = {:member => 'member_2', :rank => 2}
-    leaders[0].should eql(member_1)
-    leaders[1].should eql(member_2)
-
-    leaders = @leaderboard.leaders(1, :with_scores => false, :with_rank => false)
-    leaders.size.should be(Leaderboard::DEFAULT_PAGE_SIZE)
-    member_1 = {:member => 'member_1'}
-    member_2 = {:member => 'member_2'}
-    leaders[0].should eql(member_1)
-    leaders[1].should eql(member_2)
-
-    leaders = @leaderboard.leaders(1, :with_rank => false, :page_size => 1)
-    leaders.size.should be(1)
-    member_1 = {:member => 'member_1', :score => 1.0}
-    leaders[0].should eql(member_1)
   end
 
   it 'should return a single member when calling member_at' do
@@ -122,8 +89,7 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.member_at(26)[:rank].should eql(26)
     @leaderboard.member_at(50)[:rank].should eql(50)
     @leaderboard.member_at(51).should be_nil
-    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should eql({'member_name' => 'Leaderboard member 1'})
-    @leaderboard.member_at(1, :use_zero_index_for_rank => true)[:rank].should eql(0)
+    @leaderboard.member_at(1, :with_member_data => true)[:member_data].should == {:member_name => 'Leaderboard member 1'}.to_s
   end
 
   it 'should return the correct information when calling around_me' do
@@ -167,8 +133,7 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.total_members.should be(Leaderboard::DEFAULT_PAGE_SIZE)
 
     members = ['member_1', 'member_5', 'member_10']
-    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true, :use_zero_index_for_rank => false})
-
+    ranked_members = @leaderboard.ranked_in_list(members, {:with_scores => false, :with_rank => true})
     ranked_members.size.should be(3)
 
     ranked_members[0][:rank].should be(1)
@@ -261,29 +226,22 @@ describe 'Leaderboard (reverse option)' do
     foobar.disconnect
   end
 
-  it 'should respect the with_scores option in the massage_leader_data method' do
+  it 'should respect options in the massage_leader_data method' do
     rank_members_in_leaderboard(25)
 
     @leaderboard.total_members.should be(25)
 
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
-    leaders[0][:member].should_not be_nil
-    leaders[0][:score].should be_nil
-    leaders[0][:rank].should be_nil
-
-    @leaderboard.page_size = 25
-    leaders = @leaderboard.leaders(1, {:with_scores => false, :with_rank => false})
-    leaders.size.should be(25)
-
-    @leaderboard.page_size = Leaderboard::DEFAULT_PAGE_SIZE
-    leaders = @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
+    leaders = @leaderboard.leaders(1)
     leaders[0][:member].should_not be_nil
     leaders[0][:score].should_not be_nil
     leaders[0][:rank].should_not be_nil
 
-    @leaderboard.page_size = 25
+    @leaderboard.page_size = Leaderboard::DEFAULT_PAGE_SIZE
     leaders = @leaderboard.leaders(1, Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS)
     leaders.size.should be(25)
+    leaders[0][:member].should_not be_nil
+    leaders[0][:score].should_not be_nil
+    leaders[0][:rank].should_not be_nil
   end
 
   it 'should return the correct number of members when calling around_me with a page_size options' do
@@ -353,5 +311,41 @@ describe 'Leaderboard (reverse option)' do
     members[0][:member].should eql('member_1')
     members[0][:score].to_i.should be(1)    
     members[24][:member].should eql('member_25')
+  end
+
+  it 'should sort by rank if the :sort_by option is set to :rank' do
+    rank_members_in_leaderboard(25)
+
+    members = ['member_5', 'member_1', 'member_10']
+    ranked_members = @leaderboard.ranked_in_list(members, :sort_by => :rank)
+
+    ranked_members.size.should be(3)
+
+    ranked_members[0][:rank].should be(1)
+    ranked_members[0][:score].should eql(1.0)
+
+    ranked_members[1][:rank].should be(5)
+    ranked_members[1][:score].should eql(5.0)
+
+    ranked_members[2][:rank].should be(10)
+    ranked_members[2][:score].should eql(10.0)
+  end
+
+  it 'should sort by score if the :sort_by option is set to :score' do
+    rank_members_in_leaderboard(25)
+
+    members = ['member_5', 'member_1', 'member_10']
+    ranked_members = @leaderboard.ranked_in_list(members, :sort_by => :score)
+
+    ranked_members.size.should be(3)
+
+    ranked_members[0][:rank].should be(1)
+    ranked_members[0][:score].should eql(1.0)
+
+    ranked_members[1][:rank].should be(5)
+    ranked_members[1][:score].should eql(5.0)
+
+    ranked_members[2][:rank].should be(10)
+    ranked_members[2][:score].should eql(10.0)
   end
 end

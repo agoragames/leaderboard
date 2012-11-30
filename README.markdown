@@ -119,30 +119,34 @@ Get some information about your leaderboard:
    => 1
 ```
 
-The `rank_member` call will also accept an optional hash of member data that could
-be used to store other information about a given member in the leaderboard. This
-may be useful in situations where you are storing member IDs in the leaderboard and
-you want to be able to store a member name for display. Example:
+The `rank_member` call will also accept an optional string member data that could 
+be used to store other information about a given member in the leaderboard. This 
+may be useful in situations where you are storing member IDs in the leaderboard and 
+you want to be able to store a member name for display. You could use JSON to 
+encode a Hash of member data. Example:
 
 ```ruby
-highscore_lb.rank_member('84849292', 1, {'username' => 'member_name'})
+require 'json'
+highscore_lb.rank_member('84849292', 1, JSON.generate({'username' => 'member_name'})
 ```
 
 You can retrieve, update and remove the optional member data using the
 `member_data_for`, `update_member_data` and `remove_member_data` calls. Example:
 
 ```ruby
-highscore_lb.member_data_for('84849292')
+JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"member_name"}
 
-highscore_lb.update_member_data('84849292', {'last_updated' => Time.now, 'username' => 'updated_member_name'})
- => "OK"
-highscore_lb.member_data_for('84849292')
+highscore_lb.update_member_data('84849292', JSON.generate({'last_updated' => Time.now, 'username' => 'updated_member_name'}))
+ => "OK" 
+JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
 
 highscore_lb.remove_member_data('84849292')
 ```
 
+If you delete the leaderboard, ALL of the member data is deleted as well.
+  
 Get some information about a specific member(s) in the leaderboard:
 
 ```ruby
@@ -162,23 +166,10 @@ Get page 1 in the leaderboard:
   highscore_lb.leaders(1)
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}]
 ```
-
-You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`.
-Valid options are `:with_scores`, `:with_rank`, `:with_member_data`, `:use_zero_index_for_rank`
-and `:page_size`. Below is an example of retrieving the first page in the leaderboard
-without ranks:
-
-```ruby
-  highscore_lb.leaders(1, :with_rank => false)
-   => [{:member=>"member_10", :score=>9.0}, {:member=>"member_9", :score=>7.0}, {:member=>"member_8", :score=>5.0}, {:member=>"member_7", :score=>3.0}, {:member=>"member_6", :score=>1.0}, {:member=>"member_5", :score=>0.0}, {:member=>"member_4", :score=>0.0}, {:member=>"member_3", :score=>0.0}, {:member=>"member_2", :score=>0.0}, {:member=>"member_1", :score=>0.0}]
-```
-
-Below is an example of retrieving the first page in the leaderboard without scores or ranks:
-
-```ruby
-  highscore_lb.leaders(1, :with_scores => false, :with_rank => false)
-   => [{:member=>"member_10"}, {:member=>"member_9"}, {:member=>"member_8"}, {:member=>"member_7"}, {:member=>"member_6"}, {:member=>"member_5"}, {:member=>"member_4"}, {:member=>"member_3"}, {:member=>"member_2"}, {:member=>"member_1"}]
-```
+	
+You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
+Valid options are `:with_member_data`, `:page_size` and `:sort_option`. Valid values for 
+`:sort_option` are `:none` (default), `:score` and `:rank`. 
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
@@ -230,6 +221,50 @@ Retrieve a range of members from the leaderboard within a given rank range:
 members = highscore_lb.members_from_rank_range(1, 5)
  => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}] 
 ```
+
+The option `:sort_option` is useful for retrieving an arbitrary list of 
+members from a given leaderboard where you would like the data sorted 
+when returned. The follow examples demonstrate its use:
+
+```ruby
+friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :rank)
+ => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_1", :rank=>56, :score=>1.0}] 
+```
+
+```ruby
+friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :score)
+ => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
+```
+
+### Conditionally rank a member in the leaderboard
+
+You can pass a lambda to the `rank_member_if` method to conditionally rank a member in the leaderboard. The lambda is passed the following 5 parameters:
+
+* `member`: Member name.
+* `current_score`: Current score for the member in the leaderboard. May be `nil` if the member is not currently ranked in the leaderboard.
+* `score`: Member score.
+* `member_data`: Optional member data.
+* `leaderboard_options`: Leaderboard options, e.g. :reverse => Value of reverse option
+
+```ruby
+highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
+  return true if current_score.nil?
+  return true if score > current_score
+  false
+end
+
+highscore_lb.rank_member_if(highscore_check, 'david', 1337)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1336)
+highscore_lb.score_for('david')
+ => 1337.0
+highscore_lb.rank_member_if(highscore_check, 'david', 1338)
+highscore_lb.score_for('david')
+ => 1338.0
+```
+
+NOTE: Use a lambda and not a proc, otherwise you will get a `LocalJumpError` as a return statement in the proc will return from the method enclosing the proc.
 
 ### Ranking multiple members in a leaderboard at once
 
