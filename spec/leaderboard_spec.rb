@@ -659,4 +659,16 @@ describe 'Leaderboard' do
     @leaderboard.rank_member_if(highscore_check, 'david', 1338)
     @leaderboard.score_for('david').should eql(1338.0)
   end
+
+  it 'should not delete all the member data when calling remove_member' do
+    rank_members_in_leaderboard
+    
+    @redis_connection.exists("name:member_data").should be_true
+    @redis_connection.hgetall("name:member_data").size.should be(5)
+    @leaderboard.total_members.should be(5)
+    @leaderboard.remove_member('member_1')
+    @redis_connection.exists("name:member_data").should be_true
+    @redis_connection.hgetall("name:member_data").size.should be(4)
+    @leaderboard.total_members.should be(4)
+  end
 end

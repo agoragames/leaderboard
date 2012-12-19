@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 3.0.1 (2012-12-19)
+
+* Fixed a bug in `remove_member` that would remove all of the optional member data.
+
 ## leaderboard 3.0.0 (2012-12-03)
 
 * Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda. 
