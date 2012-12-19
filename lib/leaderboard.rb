@@ -255,7 +255,7 @@ class Leaderboard
   def remove_member_from(leaderboard_name, member)
     @redis_connection.multi do |transaction|
       transaction.zrem(leaderboard_name, member)
-      transaction.del(member_data_key(leaderboard_name), member)
+      transaction.hdel(member_data_key(leaderboard_name), member)
     end
   end
 
