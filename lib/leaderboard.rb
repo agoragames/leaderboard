@@ -138,7 +138,7 @@ class Leaderboard
   #
   # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
   # @param member [String] Member name.
-  # @param score [String] Member score.
+  # @param score [float] Member score.
   # @param member_data [Hash] Optional member_data.
   def rank_member_if(rank_conditional, member, score, member_data = nil)
     rank_member_if_in(@leaderboard_name, rank_conditional, member, score, member_data)
@@ -156,7 +156,7 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
   # @param member [String] Member name.
-  # @param score [String] Member score.
+  # @param score [float] Member score.
   # @param member_data [Hash] Optional member_data.
   def rank_member_if_in(leaderboard_name, rank_conditional, member, score, member_data = nil)
     current_score = @redis_connection.zscore(leaderboard_name, member) 
