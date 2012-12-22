@@ -404,8 +404,8 @@ end
 
 The following ports have been made of the leaderboard gem.
 
+* CoffeeScript: https://github.com/agoragames/leaderboard-coffeescript
 * Java: https://github.com/agoragames/java-leaderboard
-* NodeJS: https://github.com/omork/node-leaderboard
 * PHP: https://github.com/agoragames/php-leaderboard
 * Python: https://github.com/agoragames/leaderboard-python
 * Scala: https://github.com/agoragames/scala-leaderboard
