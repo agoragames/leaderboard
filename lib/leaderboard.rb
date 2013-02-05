@@ -109,7 +109,7 @@ class Leaderboard
   #
   # @param member [String] Member name.
   # @param score [float] Member score.
-  # @param member_data [Hash] Optional member data.
+  # @param member_data [String] Optional member data.
   def rank_member(member, score, member_data = nil)
     rank_member_in(@leaderboard_name, member, score, member_data)
   end
@@ -119,7 +119,7 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   # @param score [float] Member score.
-  # @param member_data [Hash] Optional member data.
+  # @param member_data [String] Optional member data.
   def rank_member_in(leaderboard_name, member, score, member_data = nil)
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
@@ -127,7 +127,7 @@ class Leaderboard
     end
   end
 
-  # Rank a member in the leaderboard based on execution of the +rank_conditional+. 
+  # Rank a member in the leaderboard based on execution of the +rank_conditional+.
   #
   # The +rank_conditional+ is passed the following parameters:
   #   member: Member name.
@@ -139,12 +139,12 @@ class Leaderboard
   # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
   # @param member [String] Member name.
   # @param score [float] Member score.
-  # @param member_data [Hash] Optional member_data.
+  # @param member_data [String] Optional member_data.
   def rank_member_if(rank_conditional, member, score, member_data = nil)
     rank_member_if_in(@leaderboard_name, rank_conditional, member, score, member_data)
   end
 
-  # Rank a member in the named leaderboard based on execution of the +rank_conditional+. 
+  # Rank a member in the named leaderboard based on execution of the +rank_conditional+.
   #
   # The +rank_conditional+ is passed the following parameters:
   #   member: Member name.
@@ -157,9 +157,9 @@ class Leaderboard
   # @param rank_conditional [lambda] Lambda which must return +true+ or +false+ that controls whether or not the member is ranked in the leaderboard.
   # @param member [String] Member name.
   # @param score [float] Member score.
-  # @param member_data [Hash] Optional member_data.
+  # @param member_data [String] Optional member_data.
   def rank_member_if_in(leaderboard_name, rank_conditional, member, score, member_data = nil)
-    current_score = @redis_connection.zscore(leaderboard_name, member) 
+    current_score = @redis_connection.zscore(leaderboard_name, member)
     current_score = current_score.to_f if current_score
 
     if rank_conditional.call(member, current_score, score, member_data, {:reverse => @reverse})
@@ -171,7 +171,7 @@ class Leaderboard
   #
   # @param member [String] Member name.
   #
-  # @return Hash of optional member data.
+  # @return String of optional member data.
   def member_data_for(member)
     member_data_for_in(@leaderboard_name, member)
   end
@@ -181,7 +181,7 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   #
-  # @return Hash of optional member data.
+  # @return String of optional member data.
   def member_data_for_in(leaderboard_name, member)
     @redis_connection.hget(member_data_key(leaderboard_name), member)
   end
@@ -189,7 +189,7 @@ class Leaderboard
   # Update the optional member data for a given member in the leaderboard.
   #
   # @param member [String] Member name.
-  # @param member_data [Hash] Optional member data.
+  # @param member_data [String] Optional member data.
   def update_member_data(member, member_data)
     update_member_data_in(@leaderboard_name, member, member_data)
   end
@@ -198,7 +198,7 @@ class Leaderboard
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
-  # @param member_data [Hash] Optional member data.
+  # @param member_data [String] Optional member data.
   def update_member_data_in(leaderboard_name, member, member_data)
     @redis_connection.hset(member_data_key(leaderboard_name), member, member_data)
   end
@@ -336,7 +336,7 @@ class Leaderboard
   # Retrieve the rank for a member in the leaderboard.
   #
   # @param member [String] Member name.
-  # 
+  #
   # @return the rank for a member in the leaderboard.
   def rank_for(member)
     rank_for_in(@leaderboard_name, member)
@@ -346,7 +346,7 @@ class Leaderboard
   #
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
-  # 
+  #
   # @return the rank for a member in the leaderboard.
   def rank_for_in(leaderboard_name, member)
     if @reverse
@@ -372,7 +372,7 @@ class Leaderboard
   #
   # @return the score for a member in the leaderboard or +nil+ if the member is not in the leaderboard.
   def score_for_in(leaderboard_name, member)
-    score = @redis_connection.zscore(leaderboard_name, member) 
+    score = @redis_connection.zscore(leaderboard_name, member)
     score.to_f if score
   end
 
@@ -422,8 +422,8 @@ class Leaderboard
 
     responses[0] = responses[0].to_f if responses[0]
     responses[1] = responses[1] + 1 rescue nil
-    
-    {:member => member, :score => responses[0], :rank => responses[1]}    
+
+    {:member => member, :score => responses[0], :rank => responses[1]}
   end
 
   # Remove members from the leaderboard in a given score range.
@@ -873,10 +873,10 @@ class Leaderboard
   # Key for retrieving optional member data.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
-  # 
+  #
   # @return a key in the form of +leaderboard_name:member_data+
   def member_data_key(leaderboard_name)
-    "#{leaderboard_name}:member_data" 
+    "#{leaderboard_name}:member_data"
   end
 
   # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
