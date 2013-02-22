@@ -426,27 +426,6 @@ class Leaderboard
     {:member => member, :score => responses[0], :rank => responses[1]}
   end
 
-  # Remove members from the leaderboard in a given rank range.
-  #
-  # @param starting_rank [int] Starting rank.
-  # @param ending_rank [int] Ending rank.
-  def remove_members_in_rank_range(starting_rank, ending_rank)
-    remove_members_in_rank_range_in(@leaderboard_name, starting_rank, ending_rank)
-  end
-
-  # Remove members from the named leaderboard in a given rank range.
-  #
-  # @param leaderboard_name [String] Name of the leaderboard.
-  # @param starting_rank [int] Starting rank.
-  # @param ending_rank [int] Ending rank.
-  def remove_members_in_rank_range_in(leaderboard_name, starting_rank, ending_rank)
-    if @reverse
-      @redis_connection.zremrangebyrank(leaderboard_name, starting_rank, ending_rank)
-    else
-      @redis_connection.zremrangebyrank(leaderboard_name, -1 * ending_rank, -1 * starting_rank)
-    end
-  end
-
   # Remove members from the leaderboard in a given score range.
   #
   # @param min_score [float] Minimum score.

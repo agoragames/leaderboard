@@ -306,7 +306,6 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
   score_for(member): Retrieve the score for a given member in the leaderboard
   check_member?(member): Check to see whether member is in the leaderboard
   score_and_rank_for(member): Retrieve the score and rank for a member in a single call
-  remove_members_in_rank_range(starting_rank, ending_rank): Remove members from the leaderboard within a rank range
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
   page_for(member, page_size): Determine the page where a member falls in the leaderboard

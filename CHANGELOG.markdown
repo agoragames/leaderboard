@@ -3,7 +3,6 @@
 ## leaderboard 3.0.2 (2013-02-22)
 
 * Fixed a data leak in `expire_leaderboard` and `expire_leaderboard_at` to also set expiration on the member data hash.
-* Added `remove_members_in_rank_range(starting_rank, ending_rank)` method to be able to remove members from a given rank range.
 
 ## leaderboard 3.0.1 (2012-12-19)
 
