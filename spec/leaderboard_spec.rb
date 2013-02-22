@@ -528,6 +528,10 @@ describe 'Leaderboard' do
       ttl.should be > 1
       ttl.should be <= 3
     end
+    @redis_connection.ttl(@leaderboard.send(:member_data_key, @leaderboard.leaderboard_name)).tap do |ttl|
+      ttl.should be > 1
+      ttl.should be <= 3
+    end
   end
 
   it 'should set an expire on the leaderboard using a timestamp' do
@@ -535,6 +539,10 @@ describe 'Leaderboard' do
 
     @leaderboard.expire_leaderboard_at((Time.now + 10).to_i)
     @redis_connection.ttl(@leaderboard.leaderboard_name).tap do |ttl|
+      ttl.should be > 1
+      ttl.should be <= 10
+    end
+    @redis_connection.ttl(@leaderboard.send(:member_data_key, @leaderboard.leaderboard_name)).tap do |ttl|
       ttl.should be > 1
       ttl.should be <= 10
     end

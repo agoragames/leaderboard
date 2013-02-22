@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 3.0.2 (2013-02-22)
+
+* Fixed a data leak in `expire_leaderboard` and `expire_leaderboard_at` to also set expiration on the member data hash.
+
 ## leaderboard 3.0.1 (2012-12-19)
 
 * Fixed a bug in `remove_member` that would remove all of the optional member data.
