@@ -149,9 +149,9 @@ If you delete the leaderboard, ALL of the member data is deleted as well.
 
 #### Optional member data notes
 
-If you use optional member data, the use of the `remove_members_in_score_range` will leave data around in the member data hash. This is 
-because the internal Redis method, `zremrangebyscore`, only returns the number of items removed. It does not return the members that it 
-removed.
+If you use optional member data, the use of the `remove_members_in_score_range` or `remove_members_in_rank_range` will leave data around 
+in the member data hash. This is because the internal Redis methods, `zremrangebyscore` and `zremrangebyrank`, only return the number of 
+items removed. It does not return the members that it removed.
   
 Get some information about a specific member(s) in the leaderboard:
 
@@ -306,6 +306,7 @@ Use this method to do bulk insert of data, but be mindful of the amount of data 
   score_for(member): Retrieve the score for a given member in the leaderboard
   check_member?(member): Check to see whether member is in the leaderboard
   score_and_rank_for(member): Retrieve the score and rank for a member in a single call
+  remove_members_in_rank_range(starting_rank, ending_rank): Remove members from the leaderboard within a rank range
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   percentile_for(member): Calculate the percentile for a given member
   page_for(member, page_size): Determine the page where a member falls in the leaderboard

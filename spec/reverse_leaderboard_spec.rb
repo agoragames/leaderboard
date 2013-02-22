@@ -173,6 +173,27 @@ describe 'Leaderboard (reverse option)' do
     end
   end
 
+  it 'should allow you to remove members in a given rank range' do
+    rank_members_in_leaderboard
+
+    @leaderboard.total_members.should be(5)
+
+    @leaderboard.rank_member('cheater_1', 100)
+    @leaderboard.rank_member('cheater_2', 101)
+    @leaderboard.rank_member('cheater_3', 102)
+
+    @leaderboard.total_members.should be(8)
+
+    @leaderboard.remove_members_in_rank_range(5, 8)
+
+    @leaderboard.total_members.should be(5)
+
+    leaders = @leaderboard.leaders(1)
+    leaders.each do |leader|
+      leader[:score].should be < 100
+    end
+  end
+
   it 'should allow you to merge leaderboards' do
     foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
