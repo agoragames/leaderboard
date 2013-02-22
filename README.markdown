@@ -146,6 +146,12 @@ highscore_lb.remove_member_data('84849292')
 ```
 
 If you delete the leaderboard, ALL of the member data is deleted as well.
+
+#### Optional member data notes
+
+If you use optional member data, the use of the `remove_members_in_score_range` will leave data around in the member data hash. This is 
+because the internal Redis method, `zremrangebyscore`, only returns the number of items removed. It does not return the members that it 
+removed.
   
 Get some information about a specific member(s) in the leaderboard:
 

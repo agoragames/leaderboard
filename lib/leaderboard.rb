@@ -521,7 +521,10 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param seconds [int] Number of seconds after which the leaderboard will be expired.
   def expire_leaderboard_for(leaderboard_name, seconds)
-    @redis_connection.expire(leaderboard_name, seconds)
+    @redis_connection.multi do |transaction|
+      transaction.expire(leaderboard_name, seconds)
+      transaction.expire(member_data_key(leaderboard_name), seconds)
+    end
   end
 
   # Expire the current leaderboard at a specific UNIX timestamp. Do not use this with
@@ -540,7 +543,10 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param timestamp [int] UNIX timestamp at which the leaderboard will be expired.
   def expire_leaderboard_at_for(leaderboard_name, timestamp)
-    @redis_connection.expireat(leaderboard_name, timestamp)
+    @redis_connection.multi do |transaction|
+      transaction.expireat(leaderboard_name, timestamp)
+      transaction.expireat(member_data_key(leaderboard_name), timestamp)
+    end
   end
 
   # Retrieve a page of leaders from the leaderboard.
