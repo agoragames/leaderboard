@@ -4,6 +4,8 @@ Leaderboards backed by [Redis](http://redis.io) in Ruby.
 
 Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
 
+[![Build Status](https://secure.travis-ci.org/agoragames/leaderboard.png)](http://travis-ci.org/agoragames/leaderboard)
+
 ## Installation
 
 `gem install leaderboard`
