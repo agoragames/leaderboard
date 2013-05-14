@@ -187,7 +187,7 @@ describe 'Leaderboard' do
 
     member_25 = {:member => 'member_25', :score => 25.0, :rank => 1, :member_data => { :member_name => "Leaderboard member 25" }.to_s }
     leaders[0].should == member_25
-    
+
     member_1 = {:member => 'member_1', :score => 1.0, :rank => 25, :member_data => { :member_name => "Leaderboard member 1" }.to_s }
     leaders[24].should == member_1
   end
@@ -590,7 +590,7 @@ describe 'Leaderboard' do
     members = @leaderboard.members_from_rank_range(5, 9)
     members.size.should be(5)
     members[0][:member].should eql('member_21')
-    members[0][:score].to_i.should be(21)    
+    members[0][:score].to_i.should be(21)
     members[4][:member].should eql('member_17')
 
     members = @leaderboard.members_from_rank_range(1, 1)
@@ -670,7 +670,7 @@ describe 'Leaderboard' do
 
   it 'should not delete all the member data when calling remove_member' do
     rank_members_in_leaderboard
-    
+
     @redis_connection.exists("name:member_data").should be_true
     @redis_connection.hgetall("name:member_data").size.should be(5)
     @leaderboard.total_members.should be(5)
@@ -678,5 +678,33 @@ describe 'Leaderboard' do
     @redis_connection.exists("name:member_data").should be_true
     @redis_connection.hgetall("name:member_data").size.should be(4)
     @leaderboard.total_members.should be(4)
+  end
+
+  it 'should return the members only if the :members_only option is passed' do
+    rank_members_in_leaderboard(25)
+
+    leaders = @leaderboard.leaders(1, page_size: 10, members_only: true)
+    leaders.size.should == 10
+    leaders.collect { |leader| leader.keys.should == [:member] }
+
+    leaders = @leaderboard.all_leaders(members_only: true)
+    leaders.size.should == 25
+    leaders.collect { |leader| leader.keys.should == [:member] }
+
+    leaders = @leaderboard.members_from_score_range(10, 14, members_only: true)
+    leaders.size.should == 5
+    leaders.collect { |leader| leader.keys.should == [:member] }
+
+    leaders = @leaderboard.members_from_rank_range(1, 5, page_size: 10, members_only: true)
+    leaders.size.should == 5
+    leaders.collect { |leader| leader.keys.should == [:member] }
+
+    leaders = @leaderboard.around_me('member_10', page_size: 3, members_only: true)
+    leaders.size.should == 3
+    leaders.collect { |leader| leader.keys.should == [:member] }
+
+    leaders = @leaderboard.ranked_in_list(['member_1', 'member_25'], members_only: true)
+    leaders.size.should == 2
+    leaders.collect { |leader| leader.keys.should == [:member] }
   end
 end

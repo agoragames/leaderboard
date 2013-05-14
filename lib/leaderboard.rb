@@ -831,13 +831,15 @@ class Leaderboard
         end
         transaction.zscore(leaderboard_name, member)
       end
-    end
+    end unless leaderboard_options[:members_only]
 
     members.each_with_index do |member, index|
       data = {}
       data[:member] = member
-      data[:rank] = responses[index * 2] + 1 rescue nil
-      data[:score] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
+      unless leaderboard_options[:members_only]
+        data[:rank] = responses[index * 2] + 1 rescue nil
+        data[:score] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
+      end
 
       if leaderboard_options[:with_member_data]
         data[:member_data] = member_data_for_in(leaderboard_name, member)
