@@ -683,27 +683,27 @@ describe 'Leaderboard' do
   it 'should return the members only if the :members_only option is passed' do
     rank_members_in_leaderboard(25)
 
-    leaders = @leaderboard.leaders(1, page_size: 10, members_only: true)
+    leaders = @leaderboard.leaders(1, page_size: 10, :members_only => true)
     leaders.size.should == 10
     leaders.collect { |leader| leader.keys.should == [:member] }
 
-    leaders = @leaderboard.all_leaders(members_only: true)
+    leaders = @leaderboard.all_leaders(:members_only => true)
     leaders.size.should == 25
     leaders.collect { |leader| leader.keys.should == [:member] }
 
-    leaders = @leaderboard.members_from_score_range(10, 14, members_only: true)
+    leaders = @leaderboard.members_from_score_range(10, 14, :members_only => true)
     leaders.size.should == 5
     leaders.collect { |leader| leader.keys.should == [:member] }
 
-    leaders = @leaderboard.members_from_rank_range(1, 5, page_size: 10, members_only: true)
+    leaders = @leaderboard.members_from_rank_range(1, 5, page_size: 10, :members_only => true)
     leaders.size.should == 5
     leaders.collect { |leader| leader.keys.should == [:member] }
 
-    leaders = @leaderboard.around_me('member_10', page_size: 3, members_only: true)
+    leaders = @leaderboard.around_me('member_10', page_size: 3, :members_only => true)
     leaders.size.should == 3
     leaders.collect { |leader| leader.keys.should == [:member] }
 
-    leaders = @leaderboard.ranked_in_list(['member_1', 'member_25'], members_only: true)
+    leaders = @leaderboard.ranked_in_list(['member_1', 'member_25'], :members_only => true)
     leaders.size.should == 2
     leaders.collect { |leader| leader.keys.should == [:member] }
   end
