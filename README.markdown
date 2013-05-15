@@ -414,10 +414,15 @@ end
 
 The following ports have been made of the leaderboard gem.
 
+Officially supported:
+
 * CoffeeScript: https://github.com/agoragames/leaderboard-coffeescript
+* Python: https://github.com/agoragames/leaderboard-python
+
+Unofficially supported (they need some feature parity love):
+
 * Java: https://github.com/agoragames/java-leaderboard
 * PHP: https://github.com/agoragames/php-leaderboard
-* Python: https://github.com/agoragames/leaderboard-python
 * Scala: https://github.com/agoragames/scala-leaderboard
 
 ## Contributing to leaderboard
