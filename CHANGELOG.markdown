@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## leaderboard 3.1.0 (2013-05-15)
+
+* Added `:members_only` option for various leaderboard requests.
+
 ## leaderboard 3.0.2 (2013-02-22)
 
 * Fixed a data leak in `expire_leaderboard` and `expire_leaderboard_at` to also set expiration on the member data hash.
@@ -10,7 +14,7 @@
 
 ## leaderboard 3.0.0 (2012-12-03)
 
-* Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda. 
+* Added `rank_member_if` and `rank_member_if_in` methods that allow you to rank a member in the leaderboard based on execution of a lambda.
 
 ## leaderboard 3.0.0.rc2 (2012-11-27)
 
