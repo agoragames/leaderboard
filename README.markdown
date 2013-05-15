@@ -412,12 +412,13 @@ end
 
 ## Ports
 
-The following ports have been made of the leaderboard gem.
+The following ports have been made of the [leaderboard gem](https://github.com/agoragames/leaderboard).
 
 Officially supported:
 
 * CoffeeScript: https://github.com/agoragames/leaderboard-coffeescript
 * Python: https://github.com/agoragames/leaderboard-python
+* Ruby: https://github.com/agoragames/leaderboard
 
 Unofficially supported (they need some feature parity love):
 
