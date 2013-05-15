@@ -175,7 +175,7 @@ Get page 1 in the leaderboard:
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}]
 ```
 
-You can pass various options to the calls `leaders`, `all_leaders`, `around_me`, `members_from_score_range`, members_from_rank_range` and `ranked_in_list`. Valid options are:
+You can pass various options to the calls `leaders`, `all_leaders`, `around_me`, `members_from_score_range`, `members_from_rank_range` and `ranked_in_list`. Valid options are:
 
 * `:with_member_data` - `true` or `false` (default) to return the optional member data.
 * `:page_size` - An integer value to change the page size for that call.
