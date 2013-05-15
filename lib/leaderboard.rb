@@ -29,10 +29,12 @@ class Leaderboard
   # Default options when requesting data from a leaderboard.
   # +:with_member_data+ false: Return member data along with the member names.
   # +:page_size+ nil: The default page size will be used.
+  # +:members_only+ false: Only return the member name, not their score and rank.
   # +:sort_by+ :none: The default sort for a call to `ranked_in_list`.
   DEFAULT_LEADERBOARD_REQUEST_OPTIONS = {
     :with_member_data => false,
     :page_size => nil,
+    :members_only => false,
     :sort_by => :none
   }
 

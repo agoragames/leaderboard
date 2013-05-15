@@ -121,10 +121,10 @@ Get some information about your leaderboard:
    => 1
 ```
 
-The `rank_member` call will also accept an optional parameter, `member_data` that could 
-be used to store other information about a given member in the leaderboard. This 
-may be useful in situations where you are storing member IDs in the leaderboard and 
-you want to be able to store a member name for display. You could use JSON to 
+The `rank_member` call will also accept an optional parameter, `member_data` that could
+be used to store other information about a given member in the leaderboard. This
+may be useful in situations where you are storing member IDs in the leaderboard and
+you want to be able to store a member name for display. You could use JSON to
 encode a Hash of member data. Example:
 
 ```ruby
@@ -140,7 +140,7 @@ JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"member_name"}
 
 highscore_lb.update_member_data('84849292', JSON.generate({'last_updated' => Time.now, 'username' => 'updated_member_name'}))
- => "OK" 
+ => "OK"
 JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
 
@@ -151,10 +151,10 @@ If you delete the leaderboard, ALL of the member data is deleted as well.
 
 #### Optional member data notes
 
-If you use optional member data, the use of the `remove_members_in_score_range` will leave data around in the member data 
-hash. This is because the internal Redis method, `zremrangebyscore`, only returns the number of items removed. It does 
+If you use optional member data, the use of the `remove_members_in_score_range` will leave data around in the member data
+hash. This is because the internal Redis method, `zremrangebyscore`, only returns the number of items removed. It does
 not return the members that it removed.
-  
+
 Get some information about a specific member(s) in the leaderboard:
 
 ```ruby
@@ -174,15 +174,17 @@ Get page 1 in the leaderboard:
   highscore_lb.leaders(1)
    => [{:member=>"member_10", :rank=>1, :score=>10.0}, {:member=>"member_9", :rank=>2, :score=>9.0}, {:member=>"member_8", :rank=>3, :score=>8.0}, {:member=>"member_7", :rank=>4, :score=>7.0}, {:member=>"member_6", :rank=>5, :score=>6.0}, {:member=>"member_5", :rank=>6, :score=>5.0}, {:member=>"member_4", :rank=>7, :score=>4.0}, {:member=>"member_3", :rank=>8, :score=>3.0}, {:member=>"member_2", :rank=>9, :score=>2.0}, {:member=>"member_1", :rank=>10, :score=>1.0}]
 ```
-	
-You can pass various options to the calls `leaders`, `around_me` and `ranked_in_list`. 
-Valid options are `:with_member_data`, `:page_size` and `:sort_option`. Valid values for 
-`:sort_option` are `:none` (default), `:score` and `:rank`. 
+
+You can pass various options to the calls `leaders`, `all_leaders`, `around_me`, `members_from_score_range`, members_from_rank_range` and `ranked_in_list`. Valid options are:
+
+* `:with_member_data` - `true` or `false` (default) to return the optional member data.
+* `:page_size` - An integer value to change the page size for that call.
+* `:members_only` - `true` or `false` (default) to return only the members without their score and rank.
+* `:sort_option` - Valid values for `:sort_option` are `:none` (default), `:score` and `:rank`.
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
-There are also a few convenience methods to be able to retrieve all leaders from a given leaderboard. They are `all_leaders` and `all_leaders_from`. You
-may also use the aliases `all_members` or `all_members_from`. Use any of these methods sparingly as all the information in the leaderboard will be returned.
+There are also a few convenience methods to be able to retrieve all leaders from a given leaderboard. They are `all_leaders` and `all_leaders_from`. You may also use the aliases `all_members` or `all_members_from`. Use any of these methods sparingly as all the information in the leaderboard will be returned.
 
 Add more members to your leaderboard:
 
@@ -227,21 +229,21 @@ Retrieve a range of members from the leaderboard within a given rank range:
 
 ```ruby
 members = highscore_lb.members_from_rank_range(1, 5)
- => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}] 
+ => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}]
 ```
 
-The option `:sort_option` is useful for retrieving an arbitrary list of 
-members from a given leaderboard where you would like the data sorted 
+The option `:sort_option` is useful for retrieving an arbitrary list of
+members from a given leaderboard where you would like the data sorted
 when returned. The follow examples demonstrate its use:
 
 ```ruby
 friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :rank)
- => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_1", :rank=>56, :score=>1.0}] 
+ => [{:member=>"member_10", :rank=>47, :score=>10.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_1", :rank=>56, :score=>1.0}]
 ```
 
 ```ruby
 friends = highscore_lb.ranked_in_list(['member_6', 'member_1', 'member_10'], :sort_by => :score)
- => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}] 
+ => [{:member=>"member_1", :rank=>56, :score=>1.0}, {:member=>"member_6", :rank=>51, :score=>6.0}, {:member=>"member_10", :rank=>47, :score=>10.0}]
 ```
 
 ### Conditionally rank a member in the leaderboard
