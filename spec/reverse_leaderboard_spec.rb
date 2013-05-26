@@ -173,7 +173,7 @@ describe 'Leaderboard (reverse option)' do
     end
   end
 
-  it 'should allow you to remove members outside a given rank range' do
+  it 'should allow you to remove members outside a given rank' do
     rank_members_in_leaderboard
 
     @leaderboard.total_members.should be(5)
