@@ -358,6 +358,18 @@ describe 'Leaderboard' do
     end
   end
 
+  it 'should allow you to remove members outside a given rank range' do
+    rank_members_in_leaderboard
+
+    @leaderboard.total_members.should be(5)
+    @leaderboard.remove_members_outside_rank(3).should be(2)
+
+    leaders = @leaderboard.leaders(1)
+    leaders.size.should be(3)
+    leaders[0][:member].should == 'member_5'
+    leaders[2][:member].should == 'member_3'
+  end
+
   it 'should allow you to merge leaderboards' do
     foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
