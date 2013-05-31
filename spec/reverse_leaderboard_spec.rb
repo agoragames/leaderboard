@@ -173,6 +173,18 @@ describe 'Leaderboard (reverse option)' do
     end
   end
 
+  it 'should allow you to remove members outside a given rank' do
+    rank_members_in_leaderboard
+
+    @leaderboard.total_members.should be(5)
+    @leaderboard.remove_members_outside_rank(3).should be(2)
+
+    leaders = @leaderboard.leaders(1)
+    leaders.size.should be(3)
+    leaders[0][:member].should == 'member_1'
+    leaders[2][:member].should == 'member_3'
+  end
+
   it 'should allow you to merge leaderboards' do
     foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
     bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
@@ -299,7 +311,7 @@ describe 'Leaderboard (reverse option)' do
     members = @leaderboard.members_from_rank_range(5, 9)
     members.size.should be(5)
     members[0][:member].should eql('member_5')
-    members[0][:score].to_i.should be(5)    
+    members[0][:score].to_i.should be(5)
     members[4][:member].should eql('member_9')
 
     members = @leaderboard.members_from_rank_range(1, 1)
@@ -309,7 +321,7 @@ describe 'Leaderboard (reverse option)' do
     members = @leaderboard.members_from_rank_range(-1, 26)
     members.size.should be(25)
     members[0][:member].should eql('member_1')
-    members[0][:score].to_i.should be(1)    
+    members[0][:score].to_i.should be(1)
     members[24][:member].should eql('member_25')
   end
 

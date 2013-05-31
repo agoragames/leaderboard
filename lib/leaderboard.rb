@@ -445,6 +445,27 @@ class Leaderboard
     @redis_connection.zremrangebyscore(leaderboard_name, min_score, max_score)
   end
 
+  # Remove members from the leaderboard outside a given rank.
+  #
+  # @param rank [int] The rank (inclusive) which we should keep.
+  # @return the total number of members removed.
+  def remove_members_outside_rank(rank)
+    remove_members_outside_rank_in(@leaderboard_name, rank)
+  end
+
+  # Remove members from the leaderboard outside a given rank.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param rank [int] The rank (inclusive) which we should keep.
+  # @return the total number of members removed.
+  def remove_members_outside_rank_in(leaderboard_name, rank)
+    if @reverse
+      @redis_connection.zremrangebyrank(leaderboard_name, rank, -1)
+    else
+      @redis_connection.zremrangebyrank(leaderboard_name, 0, -(rank) - 1)
+    end
+  end
+
   # Retrieve the percentile for a member in the leaderboard.
   #
   # @param member [String] Member name.
