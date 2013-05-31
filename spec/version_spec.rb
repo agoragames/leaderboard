@@ -2,6 +2,6 @@ require 'spec_helper'
 
 describe 'Leaderboard::VERSION' do
   it 'should be the correct version' do
-    Leaderboard::VERSION.should == '3.1.0'
+    Leaderboard::VERSION.should == '3.2.0'
   end
 end
