@@ -719,4 +719,10 @@ describe 'Leaderboard' do
     leaders.size.should == 2
     leaders.collect { |leader| leader.keys.should == [:member] }
   end
+
+  it 'should allow you to rank a member across multiple leaderboards' do
+    @leaderboard.rank_member_across(['highscores', 'more_highscores'], 'david', 50000, { :member_name => "david" })
+    @leaderboard.leaders_in('highscores', 1).size.should eql(1)
+    @leaderboard.leaders_in('more_highscores', 1).size.should eql(1)
+  end
 end

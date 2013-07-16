@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## master
+
+* Added `rank_member_across` method to be able to rank a member across multiple leaderboards at once.
+
 ## 3.2.0 (2013-05-31)
 
 * Added `remove_members_outside_rank` method to remove members from the leaderboard outside a given rank.
