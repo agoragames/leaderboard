@@ -129,6 +129,21 @@ class Leaderboard
     end
   end
 
+  # Rank a member across multiple leaderboards.
+  #
+  # @param leaderboards [Array] Leaderboard names.
+  # @param member [String] Member name.
+  # @param score [float] Member score.
+  # @param member_data [String] Optional member data.
+  def rank_member_across(leaderboards, member, score, member_data = nil)
+    @redis_connection.multi do |transaction|
+      leaderboards.each do |leaderboard_name|
+        transaction.zadd(leaderboard_name, score, member)
+        transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
+      end
+    end
+  end
+
   # Rank a member in the leaderboard based on execution of the +rank_conditional+.
   #
   # The +rank_conditional+ is passed the following parameters:

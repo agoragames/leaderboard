@@ -294,6 +294,12 @@ highscore_lb.rank_members(['member_1', 1, 'member_5', 5, 'member_10', 10])
 
 Use this method to do bulk insert of data, but be mindful of the amount of data you are inserting since a single transaction can get quite large.
 
+### Ranking a member across multiple leaderboards
+
+```ruby
+highscore_lb.rank_member_across(['highscores', 'more_highscores'], 'david', 50000, { :member_name => "david" })
+```
+
 ### Other useful methods
 
 ```
