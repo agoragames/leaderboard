@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## master
+## 3.3.0 (2013-07-17)
 
 * Added `rank_member_across` method to be able to rank a member across multiple leaderboards at once.
 
