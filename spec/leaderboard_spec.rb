@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'Leaderboard' do
   before(:each) do
     @redis_connection = Redis.new(:host => "127.0.0.1", :db => 15)
-    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
   end
 
   after(:each) do
@@ -371,8 +371,8 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to merge leaderboards' do
-    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
-    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
+    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
 
     foo.rank_member('foo_1', 1)
     foo.rank_member('foo_2', 2)
@@ -383,7 +383,7 @@ describe 'Leaderboard' do
     foobar_keys = foo.merge_leaderboards('foobar', ['bar'])
     foobar_keys.should be(5)
 
-    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
     foobar.total_members.should be(5)
 
     first_leader_in_foobar = foobar.leaders(1).first
@@ -397,8 +397,8 @@ describe 'Leaderboard' do
   end
 
   it 'should allow you to intersect leaderboards' do
-    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
-    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    foo = Leaderboard.new('foo', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
+    bar = Leaderboard.new('bar', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
 
     foo.rank_member('foo_1', 1)
     foo.rank_member('foo_2', 2)
@@ -410,7 +410,7 @@ describe 'Leaderboard' do
     foobar_keys = foo.intersect_leaderboards('foobar', ['bar'], {:aggregate => :max})
     foobar_keys.should be(2)
 
-    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_LEADERBOARD_REQUEST_OPTIONS, :host => "127.0.0.1", :db => 15)
+    foobar = Leaderboard.new('foobar', Leaderboard::DEFAULT_OPTIONS, :host => "127.0.0.1", :db => 15)
     foobar.total_members.should be(2)
 
     first_leader_in_foobar = foobar.leaders(1).first
