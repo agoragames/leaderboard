@@ -512,6 +512,45 @@ class Leaderboard
     end
   end
 
+  # Calculate the score for a given percentile value in the leaderboard.
+  #
+  # @param percentile [float] Percentile value (0.0 to 100.0 inclusive)
+  def score_for_percentile(percentile)
+    score_for_percentile_in(@leaderboard_name, percentile)
+  end
+
+  # Calculate the score for a given percentile value in the named leaderboard.
+  #
+  # See http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm for
+  # implementation details (there are differing methods for calculating
+  # percentile scores that do not fall directly upon a ranked item; we are
+  # using the method specified by NIST, i.e. linear interpolation).
+  #
+  # @param percentile [float] Percentile value (0.0 to 100.0 inclusive)
+  def score_for_percentile_in(leaderboard_name, percentile)
+    return nil unless percentile.between?(0, 100)
+
+    total_members = total_members_in(leaderboard_name)
+    return nil if total_members < 1
+
+    if @reverse
+      percentile = 100 - percentile
+    end
+
+    index = (total_members - 1) * (percentile / 100.0)
+
+    scores = @redis_connection.zrange(
+      leaderboard_name, index.floor, index.ceil, :with_scores => true
+    ).map{ |pair| pair.last }
+
+    if index == index.floor
+      scores[0]
+    else
+      interpolate_fraction = index - index.floor
+      scores[0] + interpolate_fraction * (scores[1] - scores[0])
+    end
+  end
+
   # Determine the page where a member falls in the leaderboard.
   #
   # @param member [String] Member name.

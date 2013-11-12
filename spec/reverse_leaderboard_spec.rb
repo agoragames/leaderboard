@@ -275,6 +275,16 @@ describe 'Leaderboard (reverse option)' do
     @leaderboard.percentile_for('member_12').should eql(8)
   end
 
+  it 'should return the correct information when calling score_for_percentile' do
+    rank_members_in_leaderboard(5)
+
+    @leaderboard.score_for_percentile(0).should eql(5.0)
+    @leaderboard.score_for_percentile(75).should eql(2.0)
+    @leaderboard.score_for_percentile(87.5).should eql(1.5)
+    @leaderboard.score_for_percentile(93.75).should eql(1.25)
+    @leaderboard.score_for_percentile(100).should eql(1.0)
+  end
+
   it 'should return the correct page when calling page_for a given member in the leaderboard' do
     @leaderboard.page_for('jones').should be(0)
 

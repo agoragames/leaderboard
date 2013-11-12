@@ -319,6 +319,7 @@ highscore_lb.rank_member_across(['highscores', 'more_highscores'], 'david', 5000
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   remove_members_outside_rank(rank): Remove members from the leaderboard outside a given rank
   percentile_for(member): Calculate the percentile for a given member
+  score_for_percentile(percentile): Calculate the score for a given percentile value in the leaderboard
   page_for(member, page_size): Determine the page where a member falls in the leaderboard
   expire_leaderboard(seconds): Expire the leaderboard in a set number of seconds.
   expire_leaderboard_at(timestamp): Expire the leaderboard at a specific UNIX timestamp.
