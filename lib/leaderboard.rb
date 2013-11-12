@@ -528,8 +528,8 @@ class Leaderboard
   #
   # @param percentile [float] Percentile value (0.0 to 100.0 inclusive)
   def score_for_percentile_in(leaderboard_name, percentile)
-
     return nil unless percentile.between?(0, 100)
+
     total_members = total_members_in(leaderboard_name)
     return nil if total_members < 1
 
@@ -549,7 +549,6 @@ class Leaderboard
       interpolate_fraction = index - index.floor
       scores[0] + interpolate_fraction * (scores[1] - scores[0])
     end
-
   end
 
   # Determine the page where a member falls in the leaderboard.
