@@ -479,6 +479,16 @@ describe 'Leaderboard' do
     @leaderboard.percentile_for('member_12').should eql(92)
   end
 
+  it 'should return the correct information when calling score_for_percentile' do
+    rank_members_in_leaderboard(5)
+
+    @leaderboard.score_for_percentile(0).should eql(1.0)
+    @leaderboard.score_for_percentile(75).should eql(4.0)
+    @leaderboard.score_for_percentile(87.5).should eql(4.5)
+    @leaderboard.score_for_percentile(93.75).should eql(4.75)
+    @leaderboard.score_for_percentile(100).should eql(5.0)
+  end
+
   it 'should not throw an exception when calling around_me with a member not in the leaderboard' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
 

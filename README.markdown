@@ -2,7 +2,7 @@
 
 Leaderboards backed by [Redis](http://redis.io) in Ruby.
 
-Builds off ideas proposed in http://blog.agoragames.com/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
+Builds off ideas proposed in http://www.agoragames.com/blog/2011/01/01/creating-high-score-tables-leaderboards-using-redis/.
 
 [![Build Status](https://secure.travis-ci.org/agoragames/leaderboard.png)](http://travis-ci.org/agoragames/leaderboard)
 
@@ -22,8 +22,6 @@ check out the [Redis documentation](http://redis.io/documentation).
 ## Compatibility
 
 The gem has been built and tested under Ruby 1.8.7, Ruby 1.9.2 and Ruby 1.9.3.
-
-The gem is compatible with Redis 2.4.x and Redis 2.6.x.
 
 ## Usage
 
@@ -319,6 +317,7 @@ highscore_lb.rank_member_across(['highscores', 'more_highscores'], 'david', 5000
   remove_members_in_score_range(min_score, max_score): Remove members from the leaderboard within a score range
   remove_members_outside_rank(rank): Remove members from the leaderboard outside a given rank
   percentile_for(member): Calculate the percentile for a given member
+  score_for_percentile(percentile): Calculate the score for a given percentile value in the leaderboard
   page_for(member, page_size): Determine the page where a member falls in the leaderboard
   expire_leaderboard(seconds): Expire the leaderboard in a set number of seconds.
   expire_leaderboard_at(timestamp): Expire the leaderboard at a specific UNIX timestamp.
