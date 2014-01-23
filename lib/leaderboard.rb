@@ -10,7 +10,11 @@ class Leaderboard
   # highest-to-lowest order.
   DEFAULT_OPTIONS = {
     :page_size => DEFAULT_PAGE_SIZE,
-    :reverse => false
+    :reverse => false,
+    :member_key => :member,
+    :rank_key => :rank,
+    :score_key => :score,
+    :member_data_key => :member_data
   }
 
   # Default Redis host: localhost
@@ -60,13 +64,20 @@ class Leaderboard
   #   leaderboard = Leaderboard.new('highscores')
   #   leaderboard = Leaderboard.new('highscores', {:page_size => 10})
   def initialize(leaderboard_name, options = DEFAULT_OPTIONS, redis_options = DEFAULT_REDIS_OPTIONS)
+    leaderboard_options = DEFAULT_OPTIONS.dup
+    leaderboard_options.merge!(options)
+
     @leaderboard_name = leaderboard_name
 
-    @reverse   = options[:reverse]
-    @page_size = options[:page_size]
+    @reverse   = leaderboard_options[:reverse]
+    @page_size = leaderboard_options[:page_size]
     if @page_size.nil? || @page_size < 1
       @page_size = DEFAULT_PAGE_SIZE
     end
+    @member_key = leaderboard_options[:member_key]
+    @rank_key = leaderboard_options[:rank_key]
+    @score_key = leaderboard_options[:score_key]
+    @member_data_key = leaderboard_options[:member_data_key]
 
     @redis_connection = redis_options[:redis_connection]
     unless @redis_connection.nil?
@@ -440,7 +451,7 @@ class Leaderboard
     responses[0] = responses[0].to_f if responses[0]
     responses[1] = responses[1] + 1 rescue nil
 
-    {:member => member, :score => responses[0], :rank => responses[1]}
+    {@member_key => member, @score_key => responses[0], @rank_key => responses[1]}
   end
 
   # Remove members from the leaderboard in a given score range.
@@ -912,14 +923,14 @@ class Leaderboard
 
     members.each_with_index do |member, index|
       data = {}
-      data[:member] = member
+      data[@member_key] = member
       unless leaderboard_options[:members_only]
-        data[:rank] = responses[index * 2] + 1 rescue nil
-        data[:score] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
+        data[@rank_key] = responses[index * 2] + 1 rescue nil
+        data[@score_key] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
       end
 
       if leaderboard_options[:with_member_data]
-        data[:member_data] = member_data_for_in(leaderboard_name, member)
+        data[@member_data_key] = member_data_for_in(leaderboard_name, member)
       end
 
       ranks_for_members << data
@@ -927,9 +938,9 @@ class Leaderboard
 
     case leaderboard_options[:sort_by]
     when :rank
-      ranks_for_members = ranks_for_members.sort_by { |member| member[:rank] }
+      ranks_for_members = ranks_for_members.sort_by { |member| member[@rank_key] }
     when :score
-      ranks_for_members = ranks_for_members.sort_by { |member| member[:score] }
+      ranks_for_members = ranks_for_members.sort_by { |member| member[@score_key] }
     end
 
     ranks_for_members
