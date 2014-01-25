@@ -40,6 +40,25 @@ Create a new leaderboard or attach to an existing leaderboard named 'highscores'
    => #<Leaderboard:0x0000010307b530 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/0 (Redis v2.2.5)>>
 ```
 
+### Defining leaderboard options
+
+The `Leaderboard::DEFAULT_OPTIONS` are as follows:
+
+```ruby
+DEFAULT_OPTIONS = {
+  :page_size => DEFAULT_PAGE_SIZE,
+  :reverse => false,
+  :member_key => :member,
+  :rank_key => :rank,
+  :score_key => :score,
+  :member_data_key => :member_data
+}
+```
+
+The `DEFAULT_PAGE_SIZE` is 25.
+
+You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard. The various `..._key` options above control what data is returned in the hash of leaderboard data from calls such as `leaders` or `around_me`.
+
 If you need to pass in options for Redis, you can do this in the initializer:
 
 ```ruby
@@ -49,23 +68,7 @@ If you need to pass in options for Redis, you can do this in the initializer:
    => #<Leaderboard:0x00000103095200 @leaderboard_name="highscores", @page_size=25, @redis_connection=#<Redis client v2.2.2 connected to redis://localhost:6379/1 (Redis v2.2.5)>>
 ```
 
-### Defining leaderboard options
-
-The `Leaderboard::DEFAULT_OPTIONS` are as follows:
-
-```ruby
-DEFAULT_OPTIONS = {
-  :page_size => DEFAULT_PAGE_SIZE,
-  :reverse => false
-}
-```
-
-The `DEFAULT_PAGE_SIZE` is 25.
-
-You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You
-may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard.
-
-You can pass in an existing connection to Redis using `:redis_connection` in the Redis options hash:
+You can pass in an existing connection to Redis using `:redis_connection` in the `redis_options` hash:
 
 ```ruby
   redis = Redis.new

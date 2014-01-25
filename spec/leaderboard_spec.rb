@@ -735,4 +735,28 @@ describe 'Leaderboard' do
     @leaderboard.leaders_in('highscores', 1).size.should eql(1)
     @leaderboard.leaders_in('more_highscores', 1).size.should eql(1)
   end
+
+  it 'should allow you to set custom keys for member, score, rank and member_data' do
+    @leaderboard = Leaderboard.new('name',
+      {
+        :member_key => :custom_member_key,
+        :rank_key => :custom_rank_key,
+        :score_key => :custom_score_key,
+        :member_data_key => :custom_member_data_key
+      },
+      {:host => "127.0.0.1", :db => 15})
+
+    rank_members_in_leaderboard(5)
+    leaders = @leaderboard.leaders(1, :with_member_data => true)
+    leaders.each do |leader|
+      leader[:custom_member_key].should_not be_nil
+      leader[:member].should be_nil
+      leader[:custom_score_key].should_not be_nil
+      leader[:score].should be_nil
+      leader[:custom_rank_key].should_not be_nil
+      leader[:rank].should be_nil
+      leader[:custom_member_data_key].should_not be_nil
+      leader[:member_data].should be_nil
+    end
+  end
 end
