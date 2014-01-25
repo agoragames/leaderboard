@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.5.0 (2014-01-24)
+
+* Allow for custom keys to be set for customizing the data returned from calls like `leaders` or `around_me` [#44](https://github.com/agoragames/leaderboard/pull/44)
+
 ## 3.4.0 (2013-11-12)
 
 * Added `score_for_percentile` method to be able to calculate the score for a given percentile value in the leaderboard.
