@@ -14,7 +14,8 @@ class Leaderboard
     :member_key => :member,
     :rank_key => :rank,
     :score_key => :score,
-    :member_data_key => :member_data
+    :member_data_key => :member_data,
+    :member_data_namespace => 'member_data'
   }
 
   # Default Redis host: localhost
@@ -78,6 +79,7 @@ class Leaderboard
     @rank_key = leaderboard_options[:rank_key]
     @score_key = leaderboard_options[:score_key]
     @member_data_key = leaderboard_options[:member_data_key]
+    @member_data_namespace = leaderboard_options[:member_data_namespace]
 
     @redis_connection = redis_options[:redis_connection]
     unless @redis_connection.nil?
@@ -972,7 +974,7 @@ class Leaderboard
   #
   # @return a key in the form of +leaderboard_name:member_data+
   def member_data_key(leaderboard_name)
-    "#{leaderboard_name}:member_data"
+    "#{leaderboard_name}:#{@member_data_namespace}"
   end
 
   # Validate and return the page size. Returns the +DEFAULT_PAGE_SIZE+ if the page size is less than 1.
