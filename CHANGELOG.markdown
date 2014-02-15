@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.6.0 (2014-02-15)
+
+* Allow for customization of member_data namespace [#45](https://github.com/agoragames/leaderboard/pull/45)
+
 ## 3.5.0 (2014-01-24)
 
 * Allow for custom keys to be set for customizing the data returned from calls like `leaders` or `around_me` [#44](https://github.com/agoragames/leaderboard/pull/44)
