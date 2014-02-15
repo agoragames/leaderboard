@@ -759,4 +759,12 @@ describe 'Leaderboard' do
       leader[:member_data].should be_nil
     end
   end
+
+  it 'should allow you to change the :member_data_namespace option' do
+    @leaderboard = Leaderboard.new('name', {:member_data_namespace => 'md'}, {:host => "127.0.0.1", :db => 15})
+    rank_members_in_leaderboard
+
+    @redis_connection.exists("name:member_data").should be_false
+    @redis_connection.exists("name:md").should be_true
+  end
 end
