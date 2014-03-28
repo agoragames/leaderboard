@@ -22,8 +22,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency('redis')
   s.add_development_dependency('rake')
-  if '1.8.7'.eql?(RUBY_VERSION)
-    s.add_development_dependency('SystemTimer')
-  end
   s.add_development_dependency('rspec')
 end
