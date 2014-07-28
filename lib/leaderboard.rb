@@ -966,7 +966,7 @@ class Leaderboard
     @redis_connection.zinterstore(destination, keys.insert(0, @leaderboard_name), options)
   end
 
-  private
+  protected
 
   # Key for retrieving optional member data.
   #
