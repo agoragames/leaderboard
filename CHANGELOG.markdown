@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.7.0 (2014-07-28)
+
+* Add support for tie handling in leaderboards [#46](https://github.com/agoragames/leaderboard/pull/46)
+
 ## 3.6.0 (2014-02-15)
 
 * Allow for customization of member_data namespace [#45](https://github.com/agoragames/leaderboard/pull/45)
