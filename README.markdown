@@ -182,7 +182,7 @@ You can pass various options to the calls `leaders`, `all_leaders`, `around_me`,
 * `:with_member_data` - `true` or `false` (default) to return the optional member data.
 * `:page_size` - An integer value to change the page size for that call.
 * `:members_only` - `true` or `false` (default) to return only the members without their score and rank.
-* `:sort_option` - Valid values for `:sort_option` are `:none` (default), `:score` and `:rank`.
+* `:sort_by` - Valid values for `:sort_by` are `:none` (default), `:score` and `:rank`.
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
@@ -234,7 +234,7 @@ members = highscore_lb.members_from_rank_range(1, 5)
  => [{:member=>"member_95", :rank=>1, :score=>95.0}, {:member=>"member_94", :rank=>2, :score=>94.0}, {:member=>"member_93", :rank=>3, :score=>93.0}, {:member=>"member_92", :rank=>4, :score=>92.0}, {:member=>"member_91", :rank=>5, :score=>91.0}]
 ```
 
-The option `:sort_option` is useful for retrieving an arbitrary list of
+The option `:sort_by` is useful for retrieving an arbitrary list of
 members from a given leaderboard where you would like the data sorted
 when returned. The follow examples demonstrate its use:
 
