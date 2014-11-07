@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.8.0 (2014-11-07)
+
+* Add support for `change_score_for(...)` in the `TieRankingLeaderboard` class.
+
 ## 3.7.0 (2014-07-28)
 
 * Add support for tie handling in leaderboards [#46](https://github.com/agoragames/leaderboard/pull/46)

@@ -138,6 +138,40 @@ describe 'TieRankingLeaderboard' do
       leaderboard.disconnect
     end
 
+    it 'should have the correct rankings and scores when using change_score_for' do
+      leaderboard = TieRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
+
+      leaderboard.rank_member('member_1', 50)
+      leaderboard.rank_member('member_2', 50)
+      leaderboard.rank_member('member_3', 30)
+      leaderboard.rank_member('member_4', 30)
+      leaderboard.rank_member('member_5', 10)
+      leaderboard.change_score_for('member_3', 10)
+
+      expect(leaderboard.rank_for('member_3')).to eq(2)
+      expect(leaderboard.rank_for('member_4')).to eq(3)
+      expect(leaderboard.score_for('member_3')).to eq(40.0)
+
+      leaderboard.disconnect
+    end
+
+    it 'should have the correct rankings and scores when using change_score_for (varying scores)' do
+      leaderboard = TieRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
+
+      leaderboard.rank_member('member_1', 5)
+      leaderboard.rank_member('member_2', 4)
+      leaderboard.rank_member('member_3', 3)
+      leaderboard.rank_member('member_4', 2)
+      leaderboard.rank_member('member_5', 1)
+      leaderboard.change_score_for('member_3', 0.5)
+
+      expect(leaderboard.rank_for('member_3')).to eq(3)
+      expect(leaderboard.rank_for('member_4')).to eq(4)
+      expect(leaderboard.score_for('member_3')).to eq(3.5)
+
+      leaderboard.disconnect
+    end
+
     it 'should allow you to remove members in a given score range using #remove_members_in_score_range' do
       @leaderboard = TieRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
 

@@ -112,5 +112,23 @@ describe 'CompetitionRankingLeaderboard (reverse option)' do
 
       leaderboard.disconnect
     end
+
+    it 'should have the correct rankings and scores when using change_score_for' do
+      leaderboard = CompetitionRankingLeaderboard.new('ties', {:reverse => true}, {:host => "127.0.0.1", :db => 15})
+
+      leaderboard.rank_member('member_1', 50)
+      leaderboard.rank_member('member_2', 50)
+      leaderboard.rank_member('member_3', 30)
+      leaderboard.rank_member('member_4', 30)
+      leaderboard.rank_member('member_5', 10)
+      leaderboard.change_score_for('member_3', 10)
+
+      expect(leaderboard.rank_for('member_3')).to eq(3)
+      expect(leaderboard.rank_for('member_4')).to eq(2)
+      expect(leaderboard.score_for('member_3')).to eq(40.0)
+
+      leaderboard.disconnect
+    end
+
   end
 end

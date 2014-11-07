@@ -45,6 +45,27 @@ class TieRankingLeaderboard < Leaderboard
     end
   end
 
+  # Change the score for a member in the named leaderboard by a delta which can be positive or negative.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param member [String] Member name.
+  # @param delta [float] Score change.
+  def change_score_for_member_in(leaderboard_name, member, delta)
+    previous_score = score_for(member)
+    new_score = previous_score + delta
+
+    total_members_at_previous_score = @redis_connection.zrevrangebyscore(leaderboard_name, previous_score, previous_score)
+
+    @redis_connection.multi do |transaction|
+      transaction.zadd(leaderboard_name, new_score, member)
+      transaction.zadd(ties_leaderboard_key(leaderboard_name), new_score, new_score.to_f.to_s)
+    end
+
+    if total_members_at_previous_score.length == 1
+      @redis_connection.zrem(ties_leaderboard_key(leaderboard_name), previous_score.to_f.to_s)
+    end
+  end
+
   # Rank a member in the named leaderboard.
   #
   # @param leaderboard_name [String] Name of the leaderboard.
