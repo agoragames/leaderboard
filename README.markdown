@@ -131,7 +131,7 @@ encode a Hash of member data. Example:
 
 ```ruby
 require 'json'
-highscore_lb.rank_member('84849292', 1, JSON.generate({'username' => 'member_name'}))
+highscore_lb.rank_member('84849292', 1, {'username' => 'member_name'}.to_json)
 ```
 
 You can retrieve, update and remove the optional member data using the
@@ -141,7 +141,7 @@ You can retrieve, update and remove the optional member data using the
 JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"member_name"}
 
-highscore_lb.update_member_data('84849292', JSON.generate({'last_updated' => Time.now, 'username' => 'updated_member_name'}))
+highscore_lb.update_member_data('84849292', {'last_updated' => Time.now, 'username' => 'updated_member_name'}.to_json)
  => "OK"
 JSON.parse(highscore_lb.member_data_for('84849292'))
  => {"username"=>"updated_member_name", "last_updated"=>"2012-06-09 09:11:06 -0400"}
