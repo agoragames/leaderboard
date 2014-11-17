@@ -812,6 +812,29 @@ class Leaderboard
     end
   end
 
+  # Retrieve members from the leaderboard within a range from 1 to the number given.
+  #
+  # @param ending_rank [int] Ending rank (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return number from the leaderboard that fall within the given rank range.
+  def top(number, options = {})
+    members_from_rank_range(1, number, options)
+  end
+
+  # Retrieve members from the named leaderboard within a range from 1 to the number given.
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param starting_rank [int] Starting rank (inclusive).
+  # @param ending_rank [int] Ending rank (inclusive).
+  # @param options [Hash] Options to be used when retrieving the data from the leaderboard.
+  #
+  # @return members from the leaderboard that fall within the given rank range.
+  def top_in(leaderboard_name, number, options={})
+    members_from_rank_range_in(leaderboard_name, 1, number, options)
+  end
+
+
   # Retrieve a member at the specified index from the leaderboard.
   #
   # @param position [int] Position in leaderboard.

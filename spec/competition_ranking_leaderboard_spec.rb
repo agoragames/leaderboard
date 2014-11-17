@@ -123,5 +123,48 @@ describe 'CompetitionRankingLeaderboard' do
 
       leaderboard.disconnect
     end
+
+    it 'should allow you to retrieve a given set of members from the leaderboard in a range from 1 to the number given' do
+      @leaderboard = CompetitionRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
+      rank_members_in_leaderboard(25)
+
+      members = @leaderboard.top(5)
+      expect(members.size).to be(5)
+      expect(members[0][:member]).to eql('member_25')
+      expect(members[0][:score].to_i).to be(25)
+      expect(members[4][:member]).to eql('member_21')
+
+      members = @leaderboard.top(1)
+      expect(members.size).to be(1)
+      expect(members[0][:member]).to eql('member_25')
+
+      members = @leaderboard.top(26)
+      expect(members.size).to be(25)
+      expect(members[0][:member]).to eql('member_25')
+      expect(members[0][:score].to_i).to be(25)
+      expect(members[24][:member]).to eql('member_1')
+    end
+
+    it 'should allow you to retrieve a given set of members from the named leaderboard in a range from 1 to the number given' do
+      @leaderboard = CompetitionRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
+      rank_members_in_leaderboard(25)
+
+      members = @leaderboard.top_in("ties", 5)
+      expect(members.size).to be(5)
+      expect(members[0][:member]).to eql('member_25')
+      expect(members[0][:score].to_i).to be(25)
+      expect(members[4][:member]).to eql('member_21')
+
+      members = @leaderboard.top(1)
+      expect(members.size).to be(1)
+      expect(members[0][:member]).to eql('member_25')
+
+      members = @leaderboard.top(26)
+      expect(members.size).to be(25)
+      expect(members[0][:member]).to eql('member_25')
+      expect(members[0][:score].to_i).to be(25)
+      expect(members[24][:member]).to eql('member_1')
+    end
+
   end
 end
