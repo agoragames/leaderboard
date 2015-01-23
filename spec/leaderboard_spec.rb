@@ -767,4 +767,12 @@ describe 'Leaderboard' do
     expect(@redis_connection.exists("name:member_data")).to be_falsey
     expect(@redis_connection.exists("name:md")).to be_truthy
   end
+
+  it 'should allow you to have a global member data namespace' do
+    @leaderboard = Leaderboard.new('name', {:global_member_data => true}, {:host => "127.0.0.1", :db => 15})
+    rank_members_in_leaderboard
+
+    expect(@redis_connection.exists("member_data")).to be_truthy
+    expect(@redis_connection.exists("name:member_data")).to be_falsey
+  end
 end
