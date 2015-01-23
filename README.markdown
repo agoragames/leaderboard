@@ -52,7 +52,8 @@ DEFAULT_OPTIONS = {
   :rank_key => :rank,
   :score_key => :score,
   :member_data_key => :member_data,
-  :member_data_namespace => 'member_data'
+  :member_data_namespace => 'member_data',
+  :global_member_data => false
 }
 ```
 
