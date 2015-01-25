@@ -836,7 +836,6 @@ class Leaderboard
     members_from_rank_range_in(leaderboard_name, 1, number, options)
   end
 
-
   # Retrieve a member at the specified index from the leaderboard.
   #
   # @param position [int] Position in leaderboard.
