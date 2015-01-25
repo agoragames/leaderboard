@@ -821,7 +821,7 @@ class Leaderboard
   #
   # @return number from the leaderboard that fall within the given rank range.
   def top(number, options = {})
-    members_from_rank_range(1, number, options)
+    top_in(@leaderboard_name, number, options)
   end
 
   # Retrieve members from the named leaderboard within a range from 1 to the number given.
