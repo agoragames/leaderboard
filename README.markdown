@@ -59,7 +59,7 @@ DEFAULT_OPTIONS = {
 
 The `DEFAULT_PAGE_SIZE` is 25.
 
-You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard. The various `..._key` options above control what data is returned in the hash of leaderboard data from calls such as `leaders` or `around_me`.
+You would use the option, `:reverse => true`, if you wanted a leaderboard sorted from lowest-to-highest score. You may also set the `reverse` option on a leaderboard after you have created a new instance of a leaderboard. The various `..._key` options above control what data is returned in the hash of leaderboard data from calls such as `leaders` or `around_me`. Finally, the `global_member_data` option allows you to control whether optional member data is per-leaderboard (`false`) or global (`true`).
 
 If you need to pass in options for Redis, you can do this in the initializer:
 
@@ -361,6 +361,7 @@ Competition ranking: The `CompetitionRankingLeaderboard` subclass of `Leaderboar
   rank_members(members_and_scores): Rank an array of members in the leaderboard where you can call via (member_name, score) or pass in an array of [member_name, score]
   merge_leaderboards(destination, keys, options = {:aggregate => :min}): Merge leaderboards given by keys with this leaderboard into destination
   intersect_leaderboards(destination, keys, options = {:aggregate => :min}): Intersect leaderboards given by keys with this leaderboard into destination
+  top(number, options): Retrieve members from the leaderboard within a range from 1 to the number given.
 ```
 
 Check the [online documentation](http://rubydoc.info/gems/leaderboard/frames) for more detail on each method.
