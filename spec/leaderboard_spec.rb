@@ -50,7 +50,7 @@ describe 'Leaderboard' do
     @leaderboard = Leaderboard.new('name', Leaderboard::DEFAULT_OPTIONS, {:redis_connection => @redis_connection})
     rank_members_in_leaderboard
 
-    expect(@redis_connection.info["connected_clients"].to_i).to be(1)
+    expect(@redis_connection.info["connected_clients"].to_i).to be >= 1
   end
 
   it 'should allow you to rank a member and see that reflected in total members' do
