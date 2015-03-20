@@ -21,7 +21,7 @@ check out the [Redis documentation](http://redis.io/documentation).
 
 ## Compatibility
 
-The gem has been built and tested under Ruby 1.9.3 and Ruby 2.1.2.
+The gem has been built and tested under 2.2.1.
 
 ## Usage
 
