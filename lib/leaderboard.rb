@@ -41,7 +41,8 @@ class Leaderboard
     :with_member_data => false,
     :page_size => nil,
     :members_only => false,
-    :sort_by => :none
+    :sort_by => :none,
+    :include_missing => true
   }
 
   # Name of the leaderboard.
@@ -957,6 +958,9 @@ class Leaderboard
       data[@member_key] = member
       unless leaderboard_options[:members_only]
         data[@rank_key] = responses[index * 2] + 1 rescue nil
+        if data[@rank_key] == nil
+          next unless leaderboard_options[:include_missing]
+        end
         data[@score_key] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
       end
 

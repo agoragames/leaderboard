@@ -243,6 +243,10 @@ class TieRankingLeaderboard < Leaderboard
         else
           data[@rank_key] = @redis_connection.zrevrank(ties_leaderboard_key(leaderboard_name), data[@score_key].to_s) + 1 rescue nil
         end
+
+        if data[@rank_key] == nil
+          next unless leaderboard_options[:include_missing]
+        end
       end
 
       if leaderboard_options[:with_member_data]
