@@ -352,8 +352,9 @@ class Leaderboard
   #
   # @param member [String] Member name.
   # @param delta [float] Score change.
-  def change_score_for(member, delta)
-    change_score_for_member_in(@leaderboard_name, member, delta)
+  # @param member_data [String] Optional member data.
+  def change_score_for(member, delta, member_data = nil)
+    change_score_for_member_in(@leaderboard_name, member, delta, member_data)
   end
 
   # Change the score for a member in the named leaderboard by a delta which can be positive or negative.
@@ -361,8 +362,12 @@ class Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   # @param delta [float] Score change.
-  def change_score_for_member_in(leaderboard_name, member, delta)
-    @redis_connection.zincrby(leaderboard_name, delta, member)
+  # @param member_data [String] Optional member data.
+  def change_score_for_member_in(leaderboard_name, member, delta, member_data)
+    @redis_connection.multi do |transaction|
+      transaction.zincrby(leaderboard_name, delta, member)
+      transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
+    end
   end
 
   # Retrieve the rank for a member in the leaderboard.

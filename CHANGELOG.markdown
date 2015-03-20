@@ -3,6 +3,7 @@
 ## 3.10.0 (Unreleased)
 
 * Fixes TieRankingLeaderboard doesn't rank if the score is 0 [#53](https://github.com/agoragames/leaderboard/issues/53).
+* Allow member data to be set in the `change_score_for(...)` method.
 
 ## 3.9.0 (2015-02-15)
 
