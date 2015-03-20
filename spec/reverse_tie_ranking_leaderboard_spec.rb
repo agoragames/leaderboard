@@ -171,5 +171,21 @@ describe 'TieRankingLeaderboard (reverse option)' do
 
       leaderboard.disconnect
     end
+
+    it 'should output the correct rank when initial score is 0 and then later scores are tied' do
+      # See https://github.com/agoragames/leaderboard/issues/53
+      leaderboard = TieRankingLeaderboard.new('ties', {:reverse => true}, {:host => "127.0.0.1", :db => 15})
+
+      leaderboard.rank_members('member_1', 0, 'member_2', 0)
+      expect(leaderboard.rank_for('member_1')).to eq(1)
+      expect(leaderboard.rank_for('member_2')).to eq(1)
+      leaderboard.rank_members('member_1', 1, 'member_2', 1)
+      expect(leaderboard.rank_for('member_1')).to eq(1)
+      expect(leaderboard.rank_for('member_2')).to eq(1)
+      leaderboard.rank_members('member_1', 1, 'member_2', 1, 'member_3', 4)
+      expect(leaderboard.rank_for('member_3')).to eq(2)
+      expect(leaderboard.rank_for('member_1')).to eq(1)
+      expect(leaderboard.rank_for('member_2')).to eq(1)
+    end
   end
 end

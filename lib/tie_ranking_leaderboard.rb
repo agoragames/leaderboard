@@ -73,9 +73,15 @@ class TieRankingLeaderboard < Leaderboard
   # @param score [float] Member score.
   # @param member_data [String] Optional member data.
   def rank_member_in(leaderboard_name, member, score, member_data = nil)
+    member_score = @redis_connection.zscore(leaderboard_name, member) || nil
+    can_delete_score = member_score &&
+      members_from_score_range_in(leaderboard_name, member_score, member_score).length == 1 &&
+      member_score != score
+
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, score, member)
       transaction.zadd(ties_leaderboard_key(leaderboard_name), score, score.to_f.to_s)
+      transaction.zrem(ties_leaderboard_key(leaderboard_name), member_score.to_f.to_s) if can_delete_score
       transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
     end
   end
@@ -87,12 +93,8 @@ class TieRankingLeaderboard < Leaderboard
   # @param score [float] Member score.
   # @param member_data [String] Optional member data.
   def rank_member_across(leaderboards, member, score, member_data = nil)
-    @redis_connection.multi do |transaction|
-      leaderboards.each do |leaderboard_name|
-        transaction.zadd(leaderboard_name, score, member)
-        transaction.zadd(ties_leaderboard_key(leaderboard_name), score, score.to_f.to_s)
-        transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
-      end
+    leaderboards.each do |leaderboard_name|
+      rank_member_in(leaderboard_name, member, score, member_data)
     end
   end
 
@@ -105,11 +107,8 @@ class TieRankingLeaderboard < Leaderboard
       members_and_scores.flatten!
     end
 
-    @redis_connection.multi do |transaction|
-      members_and_scores.each_slice(2) do |member_and_score|
-        transaction.zadd(leaderboard_name, member_and_score[1], member_and_score[0])
-        transaction.zadd(ties_leaderboard_key(leaderboard_name), member_and_score[0], member_and_score[0].to_f.to_s)
-      end
+    members_and_scores.each_slice(2) do |member_and_score|
+      rank_member_in(leaderboard_name, member_and_score[0], member_and_score[1])
     end
   end
 
