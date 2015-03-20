@@ -184,6 +184,7 @@ You can pass various options to the calls `leaders`, `all_leaders`, `around_me`,
 * `:page_size` - An integer value to change the page size for that call.
 * `:members_only` - `true` or `false` (default) to return only the members without their score and rank.
 * `:sort_by` - Valid values for `:sort_by` are `:none` (default), `:score` and `:rank`.
+* `:include_missing` - `true` (default) or `false` to return members that are not ranked. 
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
