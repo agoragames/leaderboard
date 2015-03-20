@@ -304,6 +304,12 @@ describe 'Leaderboard' do
     expect(@leaderboard.score_for('member_1')).to eql(5.0)
   end
 
+  it 'should allow you to change the score and member data for a member' do
+    @leaderboard.change_score_for('member_1', 5, 'optional-data')
+    expect(@leaderboard.score_for('member_1')).to eql(5.0)
+    expect(@leaderboard.member_data_for('member_1')).to eql('optional-data')
+  end
+
   it 'should allow you to check if a member exists' do
     @leaderboard.rank_member('member_1', 10)
 

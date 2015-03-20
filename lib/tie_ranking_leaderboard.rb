@@ -50,15 +50,17 @@ class TieRankingLeaderboard < Leaderboard
   # @param leaderboard_name [String] Name of the leaderboard.
   # @param member [String] Member name.
   # @param delta [float] Score change.
-  def change_score_for_member_in(leaderboard_name, member, delta)
+  # @param member_data [String] Optional member data.
+  def change_score_for_member_in(leaderboard_name, member, delta, member_data = nil)
     previous_score = score_for(member)
-    new_score = previous_score + delta
+    new_score = (previous_score || 0) + delta
 
     total_members_at_previous_score = @redis_connection.zrevrangebyscore(leaderboard_name, previous_score, previous_score)
 
     @redis_connection.multi do |transaction|
       transaction.zadd(leaderboard_name, new_score, member)
       transaction.zadd(ties_leaderboard_key(leaderboard_name), new_score, new_score.to_f.to_s)
+      transaction.hset(member_data_key(leaderboard_name), member, member_data) if member_data
     end
 
     if total_members_at_previous_score.length == 1

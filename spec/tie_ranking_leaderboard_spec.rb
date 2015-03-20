@@ -155,6 +155,15 @@ describe 'TieRankingLeaderboard' do
       leaderboard.disconnect
     end
 
+    it 'should allow you to change the score and member data for a member' do
+      leaderboard = TieRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
+
+      leaderboard.change_score_for('member_1', 10, 'optional-data')
+
+      expect(leaderboard.rank_for('member_1')).to eq(1)
+      expect(leaderboard.member_data_for('member_1')).to eql('optional-data')
+    end
+
     it 'should have the correct rankings and scores when using change_score_for (varying scores)' do
       leaderboard = TieRankingLeaderboard.new('ties', Leaderboard::DEFAULT_OPTIONS, {:host => "127.0.0.1", :db => 15})
 
