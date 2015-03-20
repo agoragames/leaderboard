@@ -821,4 +821,21 @@ describe 'Leaderboard' do
     expect(@redis_connection.exists("member_data")).to be_truthy
     expect(@redis_connection.exists("name:member_data")).to be_falsey
   end
+
+  it 'should allow you to include or exclude missing members using the :include_missing option' do
+    rank_members_in_leaderboard(25)
+
+    leaders = @leaderboard.ranked_in_list(['member_1', 'member_15', 'member_25', 'member_200'])
+    expect(leaders.size).to be(4)
+    expect(leaders[0][:member]).to eql('member_1')
+    expect(leaders[1][:member]).to eql('member_15')
+    expect(leaders[2][:member]).to eql('member_25')
+    expect(leaders[3][:member]).to eql('member_200')
+
+    leaders = @leaderboard.ranked_in_list(['member_1', 'member_15', 'member_25', 'member_200'], :include_missing => false)
+    expect(leaders.size).to be(3)
+    expect(leaders[0][:member]).to eql('member_1')
+    expect(leaders[1][:member]).to eql('member_15')
+    expect(leaders[2][:member]).to eql('member_25')
+  end
 end

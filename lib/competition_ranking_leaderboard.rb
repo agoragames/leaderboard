@@ -72,6 +72,10 @@ class CompetitionRankingLeaderboard < Leaderboard
       data[@member_key] = member
       unless leaderboard_options[:members_only]
         data[@score_key] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
+        if data[@score_key] == nil
+          next unless leaderboard_options[:include_missing]
+        end
+
         if @reverse
           data[@rank_key] = @redis_connection.zcount(leaderboard_name, '-inf', "(#{data[@score_key]}") + 1 rescue nil
         else
