@@ -249,11 +249,13 @@ class TieRankingLeaderboard < Leaderboard
         end
       end
 
-      if leaderboard_options[:with_member_data]
-        data[@member_data_key] = member_data_for_in(leaderboard_name, member)
-      end
-
       ranks_for_members << data
+    end
+
+    if leaderboard_options[:with_member_data]
+      members_data_for_in(leaderboard_name, members).each_with_index do |member_data, index|
+        ranks_for_members[index][@member_data_key] = member_data
+      end
     end
 
     case leaderboard_options[:sort_by]

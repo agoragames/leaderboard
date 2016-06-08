@@ -67,27 +67,34 @@ class CompetitionRankingLeaderboard < Leaderboard
       end
     end unless leaderboard_options[:members_only]
 
+    included_members = []
+    scores = []
+
     members.each_with_index do |member, index|
       data = {}
       data[@member_key] = member
       unless leaderboard_options[:members_only]
         data[@score_key] = responses[index * 2 + 1].to_f if responses[index * 2 + 1]
+
         if data[@score_key] == nil
           next unless leaderboard_options[:include_missing]
         end
-
-        if @reverse
-          data[@rank_key] = @redis_connection.zcount(leaderboard_name, '-inf', "(#{data[@score_key]}") + 1 rescue nil
-        else
-          data[@rank_key] = @redis_connection.zcount(leaderboard_name, "(#{data[@score_key]}", '+inf') + 1 rescue nil
-        end
       end
 
-      if leaderboard_options[:with_member_data]
-        data[@member_data_key] = member_data_for_in(leaderboard_name, member)
-      end
+      included_members << member
+      scores << data[@score_key]
 
       ranks_for_members << data
+    end
+
+    if leaderboard_options[:with_member_data]
+      members_data_for_in(leaderboard_name, included_members).each_with_index do |member_data, index|
+        ranks_for_members[index][@member_data_key] = member_data
+      end
+    end
+
+    rankings_for_members_having_scores_in(leaderboard_name, included_members, scores).each_with_index do |rank, index|
+      ranks_for_members[index][@rank_key] = rank
     end
 
     case leaderboard_options[:sort_by]
@@ -99,4 +106,26 @@ class CompetitionRankingLeaderboard < Leaderboard
 
     ranks_for_members
   end
+
+  protected
+
+  # Retrieve a list of the rankings of leaders given their member names and scores
+  #
+  # @param leaderboard_name [String] Name of the leaderboard.
+  # @param members [Array] Member names.
+  # @param scores [Array] a list of scores for the members, aligned with the member names
+  #
+  # @return a list of the rankings for the passed in members and scores
+  def rankings_for_members_having_scores_in(leaderboard_name, members, scores)
+    @redis_connection.multi do |transaction|
+      members.each_with_index do |member, index|
+        if @reverse
+          transaction.zcount(leaderboard_name, '-inf', "(#{scores[index]}")
+        else
+          transaction.zcount(leaderboard_name, "(#{scores[index]}", '+inf')
+        end
+      end
+    end.map{|rank| rank ? rank + 1 : rank}
+  end
+
 end
