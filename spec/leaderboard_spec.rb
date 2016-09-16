@@ -242,6 +242,12 @@ describe 'Leaderboard' do
     expect(@leaderboard.member_at(1, :with_member_data => true)[:member_data]).to eq({:member_name => 'Leaderboard member 50'}.to_s)
   end
 
+  it 'should not return a single member when calling member_at with a position < 0' do
+    rank_members_in_leaderboard(5)
+    expect(@leaderboard.member_at(1)[:rank]).to eql(1)
+    expect(@leaderboard.member_at(-5)).to be nil
+  end
+
   it 'should return the correct information when calling around_me' do
     rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE * 3 + 1)
 

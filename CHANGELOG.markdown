@@ -4,6 +4,7 @@
 
 * More pipelining [#58](https://github.com/agoragames/leaderboard/pull/58).
   Also adds `members_data_for(...) and `members_data_for_in(...)` methods.
+* Guard against an out of bounds index in `member_at`
 
 ## 3.10.0 (2015-03-20)
 

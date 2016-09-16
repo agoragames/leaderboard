@@ -880,7 +880,7 @@ class Leaderboard
   #
   # @return a page of leaders from the named leaderboard.
   def member_at_in(leaderboard_name, position, options = {})
-    if position <= total_members_in(leaderboard_name)
+    if position > 0 && position <= total_members_in(leaderboard_name)
       leaderboard_options = DEFAULT_LEADERBOARD_REQUEST_OPTIONS.dup
       leaderboard_options.merge!(options)
       page_size = validate_page_size(leaderboard_options[:page_size]) || @page_size
