@@ -21,7 +21,7 @@ check out the [Redis documentation](http://redis.io/documentation).
 
 ## Compatibility
 
-The gem has been built and tested under 2.2.1. 
+The gem has been built and tested under 2.2.1.
 
 NOTE: The gem should work fine in earlier versions of Ruby such as 1.8.7 or 1.9.3. There are no specific aspects of Ruby 2.x that we utilize at this time.
 
@@ -186,7 +186,7 @@ You can pass various options to the calls `leaders`, `all_leaders`, `around_me`,
 * `:page_size` - An integer value to change the page size for that call.
 * `:members_only` - `true` or `false` (default) to return only the members without their score and rank.
 * `:sort_by` - Valid values for `:sort_by` are `:none` (default), `:score` and `:rank`.
-* `:include_missing` - `true` (default) or `false` to return members that are not ranked. 
+* `:include_missing` - `true` (default) or `false` to return members that are not ranked.
 
 You can also use the `members` and `members_in` methods as aliases for the `leaders` and `leaders_in` methods.
 
@@ -343,6 +343,7 @@ Competition ranking: The `CompetitionRankingLeaderboard` subclass of `Leaderboar
 ```
   delete_leaderboard: Delete the current leaderboard
   member_data_for(member): Retrieve the optional member data for a given member in the leaderboard
+  members_data_for(members): Retrieve the optional member data for a given list of members in the leaderboard
   update_member_data(member, member_data): Update the optional member data for a given member in the leaderboard
   remove_member_data(member): Remove the optional member data for a given member in the leaderboard
   remove_member(member): Remove a member from the leaderboard
@@ -485,5 +486,5 @@ Unofficially supported (they need some feature parity love):
 
 ## Copyright
 
-Copyright (c) 2011-2015 David Czarnecki. See LICENSE.txt for further details.
+Copyright (c) 2011-2016 David Czarnecki. See LICENSE.txt for further details.
 

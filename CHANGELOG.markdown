@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.11.0 (2016-09-16)
+
+* More pipelining [#58](https://github.com/agoragames/leaderboard/pull/58).
+  Also adds `members_data_for(...) and `members_data_for_in(...)` methods.
+
 ## 3.10.0 (2015-03-20)
 
 * Fixes TieRankingLeaderboard doesn't rank if the score is 0 [#53](https://github.com/agoragames/leaderboard/issues/53).

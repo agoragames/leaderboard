@@ -199,6 +199,14 @@ describe 'Leaderboard' do
     expect(@leaderboard.member_data_for('member_id')).to eq({'username' => 'member_name', 'other_data_key' => 'other_data_value'}.to_s)
   end
 
+  it 'should allow you to retrieve optional member data for multiple members' do
+    rank_members_in_leaderboard(Leaderboard::DEFAULT_PAGE_SIZE)
+
+    members_data = @leaderboard.members_data_for(['member_1', 'member_3'])
+    expect(members_data[0]).to eq({:member_name => 'Leaderboard member 1'}.to_s)
+    expect(members_data[1]).to eq({:member_name => 'Leaderboard member 3'}.to_s)
+  end
+
   it 'should allow you to update optional member data' do
     @leaderboard.rank_member('member_id', 1, {'username' => 'member_name'})
 
