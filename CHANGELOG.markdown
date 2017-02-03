@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.12.0 (2017-02-03)
+
+* Fixed an error with the `ranked_in_list` method when using certain options [#62](https://github.com/agoragames/leaderboard/pull/62)
+* Added `total_scores` method [#63](https://github.com/agoragames/leaderboard/pull/63)
+
 ## 3.11.0 (2016-09-16)
 
 * More pipelining [#58](https://github.com/agoragames/leaderboard/pull/58).
