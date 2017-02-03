@@ -855,4 +855,10 @@ describe 'Leaderboard' do
     leaders = @leaderboard.ranked_in_list(['member_200'], :include_missing => false, :with_member_data => true)
     expect(leaders.size).to be(0)
   end
+
+  it 'should return the sum of all scores in the leaderboard' do
+    rank_members_in_leaderboard(25)
+
+    expect(@leaderboard.total_scores()).to eq(325)
+  end
 end

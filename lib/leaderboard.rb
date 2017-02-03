@@ -369,6 +369,13 @@ class Leaderboard
     @redis_connection.zcount(leaderboard_name, min_score, max_score)
   end
 
+  # Sum of scores for all members in leaderboard
+  #
+  # @return Sum of scores for all members in leaderboard
+  def total_scores
+    all_leaders.map{|hash| hash[:score] }.inject(0, :+)
+  end
+
   # Change the score for a member in the leaderboard by a score delta which can be positive or negative.
   #
   # @param member [String] Member name.
