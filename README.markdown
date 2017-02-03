@@ -487,5 +487,5 @@ Unofficially supported (they need some feature parity love):
 
 ## Copyright
 
-Copyright (c) 2011-2016 David Czarnecki. See LICENSE.txt for further details.
+Copyright (c) 2011-2017 David Czarnecki. See LICENSE.txt for further details.
 
